@@ -17,6 +17,7 @@
 package sky.demo.tictactoe;
 
 import sky.engine.core.Config;
+import sky.engine.core.Engine;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -38,6 +39,12 @@ public class TicTacToeDesktop{
 		cfg.x = Config.SCREEN_X;
 		cfg.y = Config.SCREEN_Y;
 		cfg.addIcon(Config.icon, FileType.Internal);
-		new LwjglApplication(new GameEngine(), cfg);
+		new LwjglApplication(new Engine(){
+			@Override
+			public void create(){
+				super.create();
+				splashPanel = new SplashPanel();
+			}
+		}, cfg);
 	}
 }
