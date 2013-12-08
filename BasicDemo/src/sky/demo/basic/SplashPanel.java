@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sky.demo.tictactoe;
+package sky.demo.basic;
 
-
-import sink.core.Asset;
-import sink.core.Config;
-import sink.core.LogPane;
-import sink.core.Scene;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -33,6 +28,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Disposable;
+
+import sink.core.Asset;
+import sink.core.Config;
+import sink.core.LogPane;
+import sink.core.Scene;
 
 /** A Basic SplashScreen/SplashMenu/SplashPanel for the Game
  * <p>

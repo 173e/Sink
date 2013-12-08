@@ -2,8 +2,8 @@ package sky.demo.tictactoe;
 
 import java.util.Random;
 
-import sky.engine.core.Asset;
-import sky.engine.core.Scene;
+import sink.core.Asset;
+import sink.core.Scene;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;

@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sky.demo.tictactoe;
+package sky.demo.basic;
 
 import sink.core.Config;
 import sink.core.Engine;
@@ -23,7 +23,7 @@ import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-public class TicTacToeDesktop{
+public class BasicDesktop{
 	public static void main(String[] argc) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.audioDeviceBufferCount = 20;
@@ -45,6 +45,6 @@ public class TicTacToeDesktop{
 				super.create();
 				splashPanel = new SplashPanel();
 			}
-		}, cfg);
+		}, cfg); 
 	}
 }

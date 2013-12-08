@@ -14,27 +14,38 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sky.demo.tictactoe;
+package sky.demo.basic;
 
+import static sink.core.Asset.$musicPlay;
+import static sink.core.Asset.$unloadTmx;
+import sink.core.Asset;
 import sink.core.Config;
+import sink.core.Engine;
 import sink.core.Scene;
+import sink.map.Map;
 
 import com.badlogic.gdx.utils.Base64Coder;
 
 public class GameMan {
 	/* Game Constants */
 	private static GameState gameState = GameState.GAME_MENU;
-	private static GameMode gameMode = GameMode.SINGLE_PLAYER_VS_COMPUTER;
-	
 	public static boolean $IS_GAME_SCREEN = false;
+	public static int $CURRENT_LEVEL = 0;
+	
+	static World world;
+	static Map map;
 	static String playerMusic;
 	static String enemyMusic;
-	
-	public static Turn currentTurn = Turn.Player;
-	static GamePanel gamePanel;
+	static int currentTurn = 1;
 	
 	public static void startLevel() {
-		gamePanel = new GamePanel();
+		Engine.$stage.clear();
+		map = new Map(Asset.$loadTmx(GameMan.$CURRENT_LEVEL+1), 24);
+		map.loadLayer(0);
+		map.loadLayer(1);
+		world = new World();
+		Engine.$camera.setActor(world);
+		$musicPlay("level1");
 		GameMan.$setState(GameState.GAME_RUNNING);
 		GameMan.$IS_GAME_SCREEN = true;
 	}
@@ -42,10 +53,30 @@ public class GameMan {
 	public static void update(float delta){
 		if($IS_GAME_SCREEN){
 			if ($state(GameState.GAME_RUNNING)){
-				gamePanel.update();
+				map.act(delta);
+				//checkGameCondition();
+				//if (touchpad.isTouched()) map.touchPad(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+				world.hidePause();
+			}
+			else if($state(GameState.GAME_PAUSED)){
+				world.showPause();
+			}
+			else if($state(GameState.GAME_LEVELWIN)){
+				back();
+			}
+			else if($state(GameState.GAME_OVER)){
+				back();
+			}
+			else if($state(GameState.GAME_WIN)){
+				//final credits
 			}
 		}
 	}
+	
+	static void checkGameCondition() {
+	}
+
+	
 
 	public void save() {
 		//FileHandle file = Gdx.files.internal("data/savedata.bin");
@@ -63,21 +94,18 @@ public class GameMan {
 	}
 
 	public static void back() {
+		Map.removeController();
+		$unloadTmx(GameMan.$CURRENT_LEVEL+1);
 		GameMan.$setState(GameState.GAME_MENU);
 		GameMan.$IS_GAME_SCREEN = false;
 	}
 	
-	/* Check if state is current return true */
-	public static boolean $mode(GameMode gm){
-		if(gameMode == gm)
-			return true;
-		else
-			return false;
+	public static void addCamX(float x){
+		Engine.$camera.moveBy(x, 0, 0.003f);
 	}
 	
-	public static void $setMode(GameMode gm){
-		gameMode = gm;
-		Scene.$log("Game State: " + gameState.toString());
+	public static void addCamY(float y){
+		Engine.$camera.moveBy(0, y, 0.003f);
 	}
 	
 	/* Check if state is current return true */

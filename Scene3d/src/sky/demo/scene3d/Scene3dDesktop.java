@@ -16,10 +16,10 @@
 
 package sky.demo.scene3d;
 
-import sky.engine.scene3d.Actor3d;
-import sky.engine.scene3d.Group3d;
-import sky.engine.scene3d.Stage3d;
-import sky.engine.scene3d.actions.Actions3d;
+import sink.scene3d.Actor3d;
+import sink.scene3d.Group3d;
+import sink.scene3d.Stage3d;
+import sink.scene3d.actions.Actions3d;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;

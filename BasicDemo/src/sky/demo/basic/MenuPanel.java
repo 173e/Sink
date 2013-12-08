@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sky.demo.tictactoe;
+package sky.demo.basic;
 
+import static sink.core.Asset.$musicPlay;
 import sink.core.Asset;
 import sink.core.Scene;
 
@@ -25,9 +26,13 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import java.io.File;
+import java.util.Date;
+
 public class MenuPanel extends Scene{
 	@Override
 	public void init(){
+		$musicPlay("title");
 		setBackground("title");
 		grid.setPosition(-999, 0);
  		grid.addAction(Actions.moveTo(0,  0, 0.5f));
@@ -39,27 +44,36 @@ public class MenuPanel extends Scene{
 		 * |_______Credits__________|
 		 * |_________Exit___________|
 		*/
- 		TextButton btn1 = new TextButton("Play VS Computer", Asset.skin);
-		TextButton btn3 = new TextButton("SinglePlayer", Asset.skin);
+ 		TextButton btn1 = new TextButton("Start", Asset.skin);
+		TextButton btn2 = new TextButton("Options", Asset.skin);
+		TextButton btn3 = new TextButton("Credits", Asset.skin);
+		TextButton btn5 = new TextButton("Login", Asset.skin);
 		TextButton btn4 = new TextButton("Exit", Asset.skin);
 		grid.add(btn1).size(200, 75).padTop(15).row();
+		grid.add(btn2).size(200, 75).padTop(15).row();
 		grid.add(btn3).size(200, 75).padTop(15).row();
+		grid.add(btn5).size(200, 75).padTop(15).row();
 		if(Gdx.app.getType() != ApplicationType.Android || Gdx.app.getType() != ApplicationType.iOS)
 			grid.add(btn4).size(200, 75).padTop(15).row();
 		btn1.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				GameMan.$setMode(GameMode.SINGLE_PLAYER_VS_COMPUTER);
-				GameMan.startLevel();
+				new LevelPanel();
+ 			}
+ 		});
+		btn2.addListener(new ClickListener(){
+ 			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				new OptionsPanel();
  			}
  		});
 		btn3.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				GameMan.$setMode(GameMode.SINGLE_PLAYER);
-				GameMan.startLevel();
+				new CreditsPanel();
  			}
  		});
 		btn4.addListener(new ClickListener(){
@@ -67,6 +81,13 @@ public class MenuPanel extends Scene{
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				Gdx.app.exit();
+ 			}
+ 		});
+		btn5.addListener(new ClickListener(){
+ 			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				//new LoginPanel();
  			}
  		});
 		backBtn.addListener(new ClickListener(){
