@@ -38,7 +38,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 
-/** Automatic Assets Loading for the libGdx Game
+/** Automatic Assets Loading for the Sink Game
  * <p>
  *  This class automatically loads all the assets in the prescribed folders into the appropriate 
  *  class types. All This can be accessed using an neat api
@@ -637,49 +637,49 @@ public final class Asset {
 	}
 	
 /***********************************************************************************************************
-* 								DEBUG Related Functions							   				   	   	   *
+* 								LOG Related Functions							   				   	   	   *
 ************************************************************************************************************/
-	public static void debugAssets(){
-		debugTextures();
-		debugAnimations();
-		debugFonts();
-		debugSounds();
-		debugMusics();
+	public static void logAssets(){
+		logTextures();
+		logAnimations();
+		logFonts();
+		logSounds();
+		logMusics();
 	}
 	
-	public static void debugTextures(){
-		Scene.log("Debugging Textures------------------");
+	public static void logTextures(){
+		Scene.log("BEGIN logging Textures------------------");
 		for(String na: texMap.keys)
 			Scene.log(na);
-		Scene.log("END Debugging Textures------------------");
+		Scene.log("END logging Textures------------------");
 	}
 	
-	public static void debugAnimations(){
-		Scene.log("Debugging Animations------------------");
+	public static void logAnimations(){
+		Scene.log("BEGIN logging Animations------------------");
 		for(String na: animMap.keys)
 			Scene.log(na);
-		Scene.log("END Debugging Animations------------------");
+		Scene.log("END logging Animations------------------");
 	}
 	
-	public static void debugFonts(){
-		Scene.log("Debugging Fonts------------------");
+	public static void logFonts(){
+		Scene.log("BEGIN logging Fonts------------------");
 		for(String na: fontMap.keys)
 			Scene.log(na);
-		Scene.log("END Debugging Fonts------------------");
+		Scene.log("END logging Fonts------------------");
 	}
 	
-	public static void debugSounds(){
-		Scene.log("Debugging Sounds------------------");
+	public static void logSounds(){
+		Scene.log("BEGIN logging Sounds------------------");
 		for(String na: soundMap.keys)
 			Scene.log(na);
-		Scene.log("END Debugging Sounds------------------");
+		Scene.log("END logging Sounds------------------");
 	}
 	
-	public static void debugMusics(){
-		Scene.log("Debugging Musics------------------");
+	public static void logMusics(){
+		Scene.log("BEGIN logging Musics------------------");
 		for(String na: musicMap.keys)
 			Scene.log(na);
-		Scene.log("END Debugging Musics------------------");
+		Scene.log("END logging Musics------------------");
 	}
 	
 	public static void unloadAll(){

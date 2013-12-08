@@ -16,23 +16,16 @@
 
 package sink.map;
 
-import sink.core.Config;
 import sink.core.Scene;
 import sink.core.Stage;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
@@ -53,7 +46,6 @@ public final class Map extends Group{
 	private Array<MapTile[][]> layersTiles = new Array<MapTile[][]>();
 	public final static ArrayMap<String, MapUnit> $units = new ArrayMap<String, MapUnit>();
 	
-	
 	private int NoOfColumns;
 	private int NoOfRows;
 	private float mapWidth;
@@ -68,9 +60,7 @@ public final class Map extends Group{
 		setOrigin(0, 0);
 		this.tileSize = tileSize;
 		mlayers  = map.getLayers();
-		addController();
-		addListener(touchInput);
-		Stage.addActor(this);
+		//Stage.addActor(this);
 	}
 	
 	public void loadLayer(int layerNo){
@@ -104,18 +94,6 @@ public final class Map extends Group{
 		Scene.log("Objects Layer no: "+no);
 		MapLayer layer1 = mlayers.get(no);
 		mobjects = layer1.getObjects();
-	}
-	
-	@Override
-	public void act(float delta){
-		super.act(delta);
-		if(hasControl){
-			if(Config.usePan) Stage.camera.panCameraWithMouse();
-			if(Config.useKeyboard) Stage.camera.panCameraWithKeyboard();
-		}
-		if(currentFocus != null){
-			Stage.camera.follow(currentFocus);
-		}
 	}
 	
 	public float getWidth(){
@@ -155,50 +133,5 @@ public final class Map extends Group{
 ************************************************************************************************************/
 	public void addTile(MapTile mapTile){
 		addActor(mapTile);
-	}
-	
-/***********************************************************************************************************
-* 								Controller Related Functions												   	   *
-************************************************************************************************************/	
-	static boolean hasControl = false;
-	
-	public static void addController(){
-		if(hasControl)
-			return;
-		hasControl = true;
-	}
-	
-	public static void removeController(){
-		if(!hasControl)
-			return;
-		hasControl = false;
-	}
-	
-	InputListener touchInput = new InputListener(){
-		@Override
-		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
-			super.touchDown(event, x, y, pointer, button);
-			return true;
-		}
-		
-		@Override
-		public void touchDragged(InputEvent event, float x, float y, int pointer){
-			super.touchDragged(event, x, y, pointer);
-			//if(hasControl)
-				//if(Config.isDrag)dragCam((int)x, (int)-y);
-		}
-		
-		@Override
-		public void touchUp(InputEvent event, float x, float y, int pointer, int button){
-			super.touchUp(event, x, y, pointer, button);
-			//if(hasControl)
-			//	last.set(-1, -1, -1);
-		}
-	};
-	
-	public void touchPad(float xPercent, float yPercent){
-		//MapUnit player = Map.$units.get(0);
-		//player.setX(player.getX() + xPercent*5);
-		//player.setY(player.getY() + yPercent*5);
 	}
 }

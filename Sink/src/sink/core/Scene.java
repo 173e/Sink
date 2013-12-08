@@ -29,12 +29,13 @@ import com.badlogic.gdx.utils.Scaling;
 
 import static sink.core.Asset.$tex;
 
-/** The base class for creating easy Menus/Screens/Panels/Scenes
+/** The base class for creating Scenes
  * <p>
  * Use this class to to create screens or menus for your game. Just extend this class and override the
  * {@link #init} method all other things are done automatically like clearing the stage and populating it with the
  * actors of this group.
- * It also contains a Table which can be used a a box layout for layouting the gui components.
+ * It also contains a Table which can be used as a box layout for ui components.
+ * A scene can be set using {@link SceneManager.setCurrentScene}
  * <p>
  * @author pyros2097 */
 
@@ -52,7 +53,7 @@ public abstract class Scene extends Group {
 	
 	public Scene(){
 		Stage.camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
-		Stage.clear();
+		//Stage.clear();
 		removeBackground();
 		setPosition(0, 0);
 		setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
@@ -71,14 +72,14 @@ public abstract class Scene extends Group {
 	protected abstract void init();
 	
 	private void showScene(){
-		Stage.addActor(this);
+		//Stage.addActor(this);
 		if (fpsLabel != null && Config.fpsVisible){
 			fpsLabel.setPosition(Config.TARGET_WIDTH - 80, Config.TARGET_HEIGHT - 20);
-			Stage.addActor(fpsLabel);
+			//Stage.addActor(fpsLabel);
 		}
 		if (logPane != null && Config.loggerVisible){
 			logPane.setPosition(0, 0);
-			Stage.addActor(logPane);
+			//Stage.addActor(logPane);
 		}
 	}
 	
@@ -93,7 +94,7 @@ public abstract class Scene extends Group {
 		imgbg = new Image(tBg, Scaling.stretch);
 		imgbg.setFillParent(true);
 		if(!bgSet){
-			Stage.addActor(imgbg);
+			//Stage.addActor(imgbg);
 			bgSet = true;
 		}
 		log("SCREEN BG IMAGE SET");
@@ -102,7 +103,7 @@ public abstract class Scene extends Group {
 	
 	private void removeBackground() {
 		if(bgSet){
-			Stage.getRoot().removeActor(imgbg);
+			//Stage.getRoot().removeActor(imgbg);
 			bgSet = false;
 		}
 		log("SCREEN BG IMAGE REMOVED");

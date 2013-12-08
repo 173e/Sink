@@ -13,11 +13,17 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Array;
 
+/** The Main Entry Point for the Sink Game
+ * <p>
+ * 
+ * <p>
+ * @author pyros2097 */
+
 public final class Stage extends com.badlogic.gdx.scenes.scene2d.Stage implements ApplicationListener {
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
 	
-	public static SmoothCamera camera;
+	public static StageCamera camera;
 	private static final Group root = new Group();
 	
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
@@ -26,7 +32,7 @@ public final class Stage extends com.badlogic.gdx.scenes.scene2d.Stage implement
 	
 	public Stage(){
 		super(Config.SCREEN_WIDTH, Config.TARGET_HEIGHT, Config.keepAspectRatio);
-		camera = new SmoothCamera();
+		camera = new StageCamera();
 		camera.setToOrtho(false, Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
 		camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
 		setCamera(camera);
