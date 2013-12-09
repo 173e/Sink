@@ -1,5 +1,6 @@
 package sink.core;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ArrayMap;
 
 /** The Singleton Class for managing Scenes
@@ -29,10 +30,16 @@ public final class SceneManager {
 	 * @param sceneName The registered scene's name
 	 **/
 	public static void setCurrentScene(String sceneName){
-		if(sceneMap.containsKey(sceneName))
-			currentScene = sceneMap.get(sceneName);//scene.init();
-		else
+		if(sceneMap.containsKey(sceneName)){
+			currentScene = sceneMap.get(sceneName);
+			clearScene();
+			currentScene.init();
+			showScene();
+		}
+		else{
 			Scene.log(sceneName+": Scene Does not Exist");
+			return;
+		}
 	}
 	
 	/**
@@ -92,6 +99,34 @@ public final class SceneManager {
 	public static void update(){
 		if(currentScene != null)
 			currentScene.update();
+	}
+	
+	private static void clearScene(){
+		Stage.camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
+		//Stage.clear();
+		currentScene.setPosition(0, 0);
+		currentScene.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
+		currentScene.setBounds(0,0,Config.TARGET_WIDTH,Config.TARGET_HEIGHT);
+		currentScene.grid = new Table();
+		currentScene.grid.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
+		currentScene.grid.setFillParent(true);
+		currentScene.grid.setPosition(0, 0);
+		currentScene.grid.top().left();
+		currentScene.xcenter = currentScene.getWidth()/2;
+		currentScene.ycenter = currentScene.getHeight()/2;
+	}
+	
+
+	private static void showScene(){
+		//Stage.addActor(this);
+		if (Scene.fpsLabel != null && Config.fpsVisible){
+			Scene.fpsLabel.setPosition(Config.TARGET_WIDTH - 80, Config.TARGET_HEIGHT - 20);
+			//Stage.addActor(fpsLabel);
+		}
+		if (Scene.logPane != null && Config.loggerVisible){
+			Scene.logPane.setPosition(0, 0);
+			//Stage.addActor(logPane);
+		}
 	}
 	
 }

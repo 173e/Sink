@@ -16,8 +16,7 @@
 
 package sink.utils;
 
-public final class XXTEA
-{
+public final class XXTEA {
 
     private static final int delta = 0x9E3779B9;
     private static final int MX(int sum, int y, int z, int p, int e, int[] k) 

@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Array;
 
-/** The Main Entry Point for the Sink Game
+/** The Main Entry Point for the Sink Game and Singleton Stage
  * <p>
  * 
  * <p>
@@ -24,7 +24,6 @@ public final class Stage extends com.badlogic.gdx.scenes.scene2d.Stage implement
 	public static float gameUptime = 0;
 	
 	public static StageCamera camera;
-	private static final Group root = new Group();
 	
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
@@ -129,27 +128,6 @@ public final class Stage extends com.badlogic.gdx.scenes.scene2d.Stage implement
 	}
 	
 	/**
-	 * Camera Related methods
-	 * "secondsTime" parameter.
-	 * */
-	
-	public static void setCamX(float x){
-		camera.position.x  = x;
-	}
-	
-	public static void setCamY(float y){
-		camera.position.y = y;
-	}
-	
-	public static void addCamX(float x){
-		camera.position.x += x;
-	}
-	
-	public static void addCamY(float y){
-		camera.position.y += y;
-	}
-	
-	/**
 	 * Get screen time from start in format of HH:MM:SS. It is calculated from
 	 * "secondsTime" parameter.
 	 * */
@@ -169,4 +147,10 @@ public final class Stage extends com.badlogic.gdx.scenes.scene2d.Stage implement
 		return str;
 	}
 
+}
+
+class Layer extends Group{
+	Layer(Stage stage){
+		this.setStage(stage);
+	}
 }

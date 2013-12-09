@@ -33,8 +33,8 @@ import static sink.core.Asset.$musicVolume;
 
 public final class Config {
 	// Desktop Settings
-	public static final String title = "ArchEngine";
-	public static String version = "0.60";
+	public static final String title = "Sink";
+	public static String version = "0.70";
 	public static final boolean useGL20 = false;
 	public static final boolean diableAudio = false;
 	public static final boolean forceExit = false;

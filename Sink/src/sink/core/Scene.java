@@ -42,8 +42,8 @@ import static sink.core.Asset.$tex;
 
 public abstract class Scene extends Group {
 	protected Table grid;
-	protected float xoffset, yoffset; // can be used for manual placing of widgets
-	protected float xcenter, ycenter;
+	public float xoffset, yoffset; // can be used for manual placing of widgets
+	public float xcenter, ycenter;
 	protected Image imgbg;
 	protected boolean bgSet = false; // mutex
 	
@@ -51,62 +51,24 @@ public abstract class Scene extends Group {
 	public static LogPane logPane; 
 	protected static TextButton backBtn;
 	
-	public Scene(){
-		Stage.camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
-		//Stage.clear();
-		removeBackground();
-		setPosition(0, 0);
-		setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
-		setBounds(0,0,Config.TARGET_WIDTH,Config.TARGET_HEIGHT);
-		grid = new Table();
-		grid.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
-		grid.setFillParent(true);
-		grid.setPosition(0, 0);
-		grid.top().left();
-		xcenter = getWidth()/2;
-		ycenter = getHeight()/2;
-		init();
-		showScene();
-	}
 	
-	protected abstract void init();
-	
-	private void showScene(){
-		//Stage.addActor(this);
-		if (fpsLabel != null && Config.fpsVisible){
-			fpsLabel.setPosition(Config.TARGET_WIDTH - 80, Config.TARGET_HEIGHT - 20);
-			//Stage.addActor(fpsLabel);
-		}
-		if (logPane != null && Config.loggerVisible){
-			logPane.setPosition(0, 0);
-			//Stage.addActor(logPane);
-		}
-	}
 	
 	protected void addActor(Actor a, float x, float y){
 		a.setPosition(x, y);
 		addActor(a);
 	}
 	
-	public void setBackground(String bgname) {
-		if($tex(bgname) != null){
-		Drawable tBg = new TextureRegionDrawable($tex(bgname));
-		imgbg = new Image(tBg, Scaling.stretch);
-		imgbg.setFillParent(true);
-		if(!bgSet){
-			//Stage.addActor(imgbg);
-			bgSet = true;
+	public void setBackground(String texName) {
+		if($tex(texName) != null){
+			Drawable tBg = new TextureRegionDrawable($tex(texName));
+			imgbg = new Image(tBg, Scaling.stretch);
+			imgbg.setFillParent(true);
+			if(!bgSet){
+				//Stage.addActor(imgbg);
+				bgSet = true;
+			}
+			log("SCREEN BG IMAGE SET");
 		}
-		log("SCREEN BG IMAGE SET");
-		}
-	}
-	
-	private void removeBackground() {
-		if(bgSet){
-			//Stage.getRoot().removeActor(imgbg);
-			bgSet = false;
-		}
-		log("SCREEN BG IMAGE REMOVED");
 	}
 	
 	public static void log(String log) {
@@ -116,6 +78,6 @@ public abstract class Scene extends Group {
 				logPane.update(log);
 		}
 	}
-	
-	public void update(){}
+	protected abstract void init();
+	protected abstract void update();
 }
