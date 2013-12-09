@@ -18,8 +18,8 @@ package sink.map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 
@@ -61,7 +61,7 @@ public abstract class MapUnit extends MapActor {
 	}
 	
 	@Override
-	public void draw(SpriteBatch batch, float parentAlpha) {
+	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 		batch.setColor(getColor());
 		if (isAnimationActive) {
@@ -72,7 +72,7 @@ public abstract class MapUnit extends MapActor {
 	}
 	
 	
-	void drawParticleEffect(SpriteBatch batch){
+	void drawParticleEffect(Batch batch){
 		if (isParticleEffectActive) {
 			particleEffect.draw(batch, Gdx.graphics.getDeltaTime());
 			particleEffect.setPosition(getX() + particlePosX, getY()+ particlePosY);

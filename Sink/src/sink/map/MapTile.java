@@ -16,7 +16,7 @@
 
 package sink.map;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class MapTile extends MapActor{
@@ -34,7 +34,7 @@ public class MapTile extends MapActor{
 	}
 	
 	@Override
-	public void draw(SpriteBatch batch, float parentAlpha){
+	public void draw(Batch batch, float parentAlpha){
 		super.draw(batch, parentAlpha);
 		batch.setColor(getColor());		// WARNING THIS IS THE ORIGINAL TILE SIZE DONOT CHANGE
 		if(tileImage != null)
