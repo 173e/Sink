@@ -38,7 +38,7 @@ import com.badlogic.gdx.utils.SnapshotArray;
  * <p>
  * @author pyros2097 */
 
-public final class Stage implements ApplicationListener {
+public class Stage implements ApplicationListener {
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
 	public static StageCamera camera;
@@ -46,11 +46,14 @@ public final class Stage implements ApplicationListener {
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
 	
-	public void init(){
+	@Override
+	public void create() {
+		Scene.log("Stage: Created");
+		batch = new SpriteBatch();
 		width = Config.SCREEN_WIDTH;
 		height = Config.SCREEN_HEIGHT;
-		setViewport(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.keepAspectRatio);
 		camera = new StageCamera();
+		setViewport(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.keepAspectRatio);
 		camera.setToOrtho(false, Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
 		camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
 		Gdx.input.setCatchBackKey(true);
@@ -58,11 +61,6 @@ public final class Stage implements ApplicationListener {
  		Gdx.input.setInputProcessor(inputAdapter);
  		//Scene.$log("TotalTime: "+toScreenTime(Config.readTotalTime()));
  		//Config.writeTotalTime(gameUptime);
-	}
-	
-	@Override
-	public final void create() {
-		Scene.log("Stage: Created");
 	}
 	
 	@Override
@@ -177,7 +175,7 @@ public final class Stage implements ApplicationListener {
 	private static float viewportX, viewportY, viewportWidth, viewportHeight;
 	private static float width, height;
 	private static float gutterWidth, gutterHeight;
-	public static Batch batch = new SpriteBatch();
+	public static Batch batch ;
 	public static boolean ownsBatch;
 	public static Group root = new Group();
 	private static final Vector2 stageCoords = new Vector2();
@@ -329,7 +327,7 @@ public final class Stage implements ApplicationListener {
 		return over;
 	}
 	
-	public static InputAdapter inputAdapter = new InputAdapter(){
+	public InputAdapter inputAdapter = new InputAdapter(){
 		/** Applies a touch down event to the stage and returns true if an actor in the scene {@link Event#handle() handled} the event. */
 		public boolean touchDown (int screenX, int screenY, int pointer, int button) {
 			if (screenX < viewportX || screenX >= viewportX + viewportWidth) return false;

@@ -20,9 +20,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
@@ -33,7 +31,8 @@ import static sink.core.Asset.$tex;
  * <p>
  * Use this class to to create screens or menus for your game. Just extend this class and override the
  * {@link #init} method all other things are done automatically like clearing the stage and populating it with the
- * actors of this group.
+ * actors of this group and use {@link #update} method which is called in the main render method for updating your
+ * scene logic such as splash scene, timers, delays etc...
  * It also contains a Table which can be used as a box layout for ui components.
  * A scene can be set using {@link SceneManager.setCurrentScene}
  * <p>
@@ -47,12 +46,6 @@ public abstract class Scene extends Group {
 	protected Image imgbg;
 	protected boolean bgSet = false; // mutex
 	
-	public static Label fpsLabel;
-	public static LogPane logPane; 
-	protected static TextButton backBtn;
-	
-	
-	
 	protected void addActor(Actor a, float x, float y){
 		a.setPosition(x, y);
 		addActor(a);
@@ -64,18 +57,26 @@ public abstract class Scene extends Group {
 			imgbg = new Image(tBg, Scaling.stretch);
 			imgbg.setFillParent(true);
 			if(!bgSet){
-				//Stage.addActor(imgbg);
+				Stage.addActor(imgbg);
 				bgSet = true;
 			}
 			log("SCREEN BG IMAGE SET");
 		}
 	}
 	
+	public void removeBackground() {
+		if(bgSet){
+			Stage.removeActor(imgbg);
+			bgSet = false;
+		}
+		log("SCREEN BG IMAGE REMOVED");
+	}
+	
 	public static void log(String log) {
 		if(Config.loggingEnabled){
 			Gdx.app.log("", log);
-			if(logPane != null && Config.loggerVisible)
-				logPane.update(log);
+			if(SceneManager.logPane != null && Config.loggerVisible)
+				SceneManager.logPane.update(log);
 		}
 	}
 	protected abstract void init();

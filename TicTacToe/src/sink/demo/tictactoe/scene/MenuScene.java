@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sky.demo.tictactoe;
+package sink.demo.tictactoe.scene;
 
 import sink.core.Asset;
 import sink.core.Scene;
+import sky.demo.tictactoe.GameMode;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -25,7 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class MenuPanel extends Scene{
+public class MenuScene extends Scene{
 	@Override
 	public void init(){
 		setBackground("title");
@@ -50,16 +51,16 @@ public class MenuPanel extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				GameMan.$setMode(GameMode.SINGLE_PLAYER_VS_COMPUTER);
-				GameMan.startLevel();
+				GameScene.setMode(GameMode.SINGLE_PLAYER_VS_COMPUTER);
+				GameScene.startLevel();
  			}
  		});
 		btn3.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				GameMan.$setMode(GameMode.SINGLE_PLAYER);
-				GameMan.startLevel();
+				GameScene.setMode(GameMode.SINGLE_PLAYER);
+				GameScene.startLevel();
  			}
  		});
 		btn4.addListener(new ClickListener(){
@@ -69,13 +70,18 @@ public class MenuPanel extends Scene{
 				Gdx.app.exit();
  			}
  		});
-		backBtn.addListener(new ClickListener(){
+		/*backBtn.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				new MenuPanel();
  			}
- 		});
+ 		});*/
 		addActor(grid);
+	}
+
+	@Override
+	protected void update() {
+		
 	}
 }

@@ -1,21 +1,64 @@
-package sky.demo.tictactoe;
+package sink.demo.tictactoe.scene;
 
 import java.util.Random;
 
 import sink.core.Asset;
 import sink.core.Scene;
+import sky.demo.tictactoe.GameMode;
+import sky.demo.tictactoe.GameState;
+import sky.demo.tictactoe.MarkType;
+import sky.demo.tictactoe.Turn;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class GamePanel extends Scene{
+public class GameScene extends Scene{
 	Box[][] boxes;
 	public static int turnCounter;
 	
-	public GamePanel(){
+	/* Game Constants */
+	private static GameState gameState = GameState.GAME_MENU;
+	private static GameMode gameMode = GameMode.SINGLE_PLAYER_VS_COMPUTER;
+	public static Turn currentTurn = Turn.Player;
+	
+	public GameScene(){
 		super();
+	}
+	
+	public static void startLevel() {
+		setState(GameState.GAME_RUNNING);
+	}
+	
+	public static void back() {
+		setState(GameState.GAME_MENU);
+	}
+	
+	/* Check if state is current return true */
+	public static boolean mode(GameMode gm){
+		if(gameMode == gm)
+			return true;
+		else
+			return false;
+	}
+	
+	public static void setMode(GameMode gm){
+		gameMode = gm;
+		Scene.log("Game State: " + gameState.toString());
+	}
+	
+	/* Check if state is current return true */
+	public static boolean state(GameState ss){
+		if(gameState == ss)
+			return true;
+		else
+			return false;
+	}
+	
+	public static void setState(GameState ss){
+		gameState = ss;
+		Scene.log("Game State: " + gameState.toString());
 	}
 	
 	@Override
@@ -28,17 +71,20 @@ public class GamePanel extends Scene{
 				addActor(box, box.getWidth()*j, box.getHeight()*i);
 			}
 		}
-		addActor(Scene.backBtn, 50, 300);
+		//addActor(Scene.backBtn, 50, 300);
 	}
 	
 	public void reset(){
-		Scene.$log("Reset");
+		Scene.log("Reset");
 		turnCounter = 0;
 		this.clear();
 		init();
 	}
 	
+	@Override
 	public void update(){
+		if (state(GameState.GAME_RUNNING)){
+		}
 		AI();
 		if(turnCounter < 9){
 			for(int i=0; i<3;i++){
@@ -48,7 +94,7 @@ public class GamePanel extends Scene{
 			checkForDiagonal();
 		}
 		else{
-			Scene.$log("Draw Match");
+			Scene.log("Draw Match");
 			reset();
 		}
 	}
@@ -57,9 +103,9 @@ public class GamePanel extends Scene{
 	int random2 = 0;
 	Random rand = new Random();
 	void AI(){
-		if(GameMan.$mode(GameMode.SINGLE_PLAYER_VS_COMPUTER)){
-			if(GameMan.currentTurn == Turn.Computer){
-				Scene.$log("AI");
+		if(mode(GameMode.SINGLE_PLAYER_VS_COMPUTER)){
+			if(currentTurn == Turn.Computer){
+				Scene.log("AI");
 				random1 = rand.nextInt(3);
 				random2 = rand.nextInt(3);
 				if(!boxes[random1][random2].isMarked){
@@ -72,12 +118,12 @@ public class GamePanel extends Scene{
 	
 	
 	public void playerWin(){
-		Scene.$log("Player Win");
+		Scene.log("Player Win");
 		reset();
 	}
 	
 	public void computerWin(){
-		Scene.$log("Computer Win");
+		Scene.log("Computer Win");
 		reset();
 	}
 	
@@ -140,15 +186,15 @@ class Box extends Group{
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				if(!Box.this.isMarked){
-					if(GameMan.$mode(GameMode.SINGLE_PLAYER))
-						if(GameMan.currentTurn == Turn.Player)
+					if(GameScene.mode(GameMode.SINGLE_PLAYER))
+						if(GameScene.currentTurn == Turn.Player)
 							markByPlayer();
 						else
 							markByComputer();
-					else if(GameMan.$mode(GameMode.SINGLE_PLAYER_VS_COMPUTER))
-						if(GameMan.currentTurn == Turn.Player)
+					else if(GameScene.mode(GameMode.SINGLE_PLAYER_VS_COMPUTER))
+						if(GameScene.currentTurn == Turn.Player)
 							markByPlayer();
-					Scene.$log("Box Clicked "+Box.this.row+Box.this.col);
+					Scene.log("Box Clicked "+Box.this.row+Box.this.col);
 				}
  			}
 		});
@@ -156,17 +202,17 @@ class Box extends Group{
 	
 	public void markByPlayer(){
 		isMarked = true;
-		GamePanel.turnCounter++;
+		GameScene.turnCounter++;
 		addActor(x);
-		GameMan.currentTurn = Turn.Computer;
+		GameScene.currentTurn = Turn.Computer;
 		type = MarkType.X;
 	}
 	
 	public void markByComputer(){
 		isMarked = true;
-		GamePanel.turnCounter++;
+		GameScene.turnCounter++;
 		addActor(o);
-		GameMan.currentTurn = Turn.Player;
+		GameScene.currentTurn = Turn.Player;
 		type = MarkType.O;
 	}
 }

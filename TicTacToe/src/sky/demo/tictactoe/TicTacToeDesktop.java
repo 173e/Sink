@@ -17,7 +17,10 @@
 package sky.demo.tictactoe;
 
 import sink.core.Config;
-import sink.core.Engine;
+import sink.core.SceneManager;
+import sink.core.Stage;
+import sink.demo.tictactoe.scene.MenuScene;
+import sink.demo.tictactoe.scene.SplashScene;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -39,11 +42,13 @@ public class TicTacToeDesktop{
 		cfg.x = Config.SCREEN_X;
 		cfg.y = Config.SCREEN_Y;
 		cfg.addIcon(Config.icon, FileType.Internal);
-		new LwjglApplication(new Engine(){
+		new LwjglApplication(new Stage(){
 			@Override
 			public void create(){
 				super.create();
-				splashPanel = new SplashPanel();
+				SceneManager.registerScene("splash", new SplashScene());
+				SceneManager.registerScene("menu", new MenuScene());
+				SceneManager.setCurrentScene("splash");
 			}
 		}, cfg);
 	}

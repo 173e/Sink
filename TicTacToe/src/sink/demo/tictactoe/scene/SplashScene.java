@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sky.demo.tictactoe;
+package sink.demo.tictactoe.scene;
 
 
 import sink.core.Asset;
 import sink.core.Config;
 import sink.core.LogPane;
 import sink.core.Scene;
+import sink.core.SceneManager;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -31,7 +32,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Disposable;
 
 /** A Basic SplashScreen/SplashMenu/SplashPanel for the Game
@@ -41,7 +41,7 @@ import com.badlogic.gdx.utils.Disposable;
  * mostly we are going to use them only once throughout the game.
  * <p>
  * @author pyros2097 */
-public class SplashPanel extends Scene implements Disposable {
+public class SplashScene extends Scene implements Disposable {
 	boolean isActive;
 	Texture bg1, bg2;
 	LoadingText loadingText;
@@ -78,11 +78,9 @@ public class SplashPanel extends Scene implements Disposable {
 	        	isActive = false;
 	        	dispose();
 	        	Asset.setUp();
-	        	fpsLabel = new Label("", Asset.skin);
-	      		logPane = new LogPane();
-	      		backBtn = new TextButton("Back", Asset.skin);
-	      		backBtn.setSize(200, 75);
-			 	new MenuPanel();
+	        	SceneManager.fpsLabel = new Label("", Asset.skin);
+	        	SceneManager.logPane = new LogPane();
+			 	SceneManager.setCurrentScene("menu");
 	            return true;
 	          }
 	    };
@@ -95,7 +93,7 @@ public class SplashPanel extends Scene implements Disposable {
 		if(isActive)
 			Asset.update();
 		else
-			fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
+			SceneManager.fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
 	}
 
 	@Override
