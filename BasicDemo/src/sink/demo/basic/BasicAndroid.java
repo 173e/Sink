@@ -14,10 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sky.demo.basic;
+package sink.demo.basic;
 
 import sink.core.Config;
-import sink.core.Engine;
 
 
 public class BasicAndroid {

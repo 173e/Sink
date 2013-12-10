@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sky.demo.basic;
+package sink.demo.basic.scene;
 
 import sink.core.Asset;
 import sink.core.Scene;
+import sink.core.SceneManager;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class CreditsPanel extends Scene{
+public class CreditsScene extends Scene{
 
 	@Override
 	public void init(){
@@ -38,9 +41,17 @@ public class CreditsPanel extends Scene{
 		 * |_________Back___________|
 		*/
 		TextButton title = new TextButton("Credits", Asset.skin);
+		TextButton back = new TextButton("Back", Asset.skin);
+		back.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				SceneManager.setCurrentScene("menu");
+ 			}
+		});
 		grid.add(title).size(200, 75);
 		grid.row();
-		grid.add(backBtn).size(200, 75).center();
+		grid.add(back).size(200, 75).center();
 		addActor(grid);
 	}
 }

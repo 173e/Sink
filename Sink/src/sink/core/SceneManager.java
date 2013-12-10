@@ -99,14 +99,10 @@ public final class SceneManager {
 	 *  so can be used to add some calculations/ game logic to the current scene
 	 *  ex:	check collisions, check game state ..etc
 	 **/
-	public static void update(){
-		if(currentScene != null)
-			currentScene.update();
-	}
 	
 	private static void clearScene(){
-		Stage.camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
-		Stage.clear();
+		Sink.camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
+		Sink.stage.clear();
 		currentScene.setPosition(0, 0);
 		currentScene.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
 		currentScene.setBounds(0,0,Config.TARGET_WIDTH,Config.TARGET_HEIGHT);
@@ -121,14 +117,14 @@ public final class SceneManager {
 	
 
 	private static void showScene(){
-		Stage.addActor(currentScene);
+		Sink.stage.addActor(currentScene);
 		if (fpsLabel != null && Config.fpsVisible){
 			fpsLabel.setPosition(Config.TARGET_WIDTH - 80, Config.TARGET_HEIGHT - 20);
-			Stage.addActor(fpsLabel);
+			Sink.stage.addActor(fpsLabel);
 		}
 		if (logPane != null && Config.loggerVisible){
 			logPane.setPosition(0, 0);
-			Stage.addActor(logPane);
+			Sink.stage.addActor(logPane);
 		}
 	}
 	

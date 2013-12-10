@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sky.demo.basic;
+package sink.demo.basic.scene;
 
 import sink.core.Asset;
 import sink.core.Config;
 import sink.core.Scene;
+import sink.core.SceneManager;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class OptionsPanel extends Scene{
+public class OptionsScene extends Scene{
 	@Override
 	public void init(){
 		setBackground("title");
@@ -44,6 +47,16 @@ public class OptionsPanel extends Scene{
 		*/
 		TextButton title = new TextButton("Options", Asset.skin);
 		title.setSize(200, 75);
+		TextButton back = new TextButton("Back", Asset.skin);
+		back.setSize(200, 75);
+		back.addListener(new ClickListener(){
+ 			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				SceneManager.setCurrentScene("menu");
+ 			}
+ 		});
+		
 		CheckBox soundbtn = new CheckBox("  Sound ", Asset.skin);
 		soundbtn.setChecked(Config.isSound);
 		
@@ -58,13 +71,13 @@ public class OptionsPanel extends Scene{
         
         
 		CheckBox panbtn = new CheckBox("  PanScroll ", Asset.skin);
-		panbtn.setChecked(Config.isPan);
+		panbtn.setChecked(Config.usePan);
 		
 		CheckBox dragbtn = new CheckBox("  DragScroll ", Asset.skin);
-		dragbtn.setChecked(Config.isDrag);
+		dragbtn.setChecked(Config.useDrag);
 		
 		CheckBox keybtn = new CheckBox("  UseKeyboard ", Asset.skin);
-		keybtn.setChecked(Config.isKeyboard);
+		keybtn.setChecked(Config.useKeyboard);
         
 		Slider musicSlider = new Slider(0f, 1f, 0.1f, false, Asset.skin);
 		Slider soundSlider = new Slider(0f, 1f, 0.1f, false, Asset.skin);
@@ -82,7 +95,7 @@ public class OptionsPanel extends Scene{
         addActor(dragbtn, xcenter + 30, yoffset - 150);
         addActor(dragbtn, xcenter + 30, yoffset - 180);
         
-        addActor(backBtn, xcenter - backBtn.getWidth() + 30, 20);
+        addActor(back, xcenter - back.getWidth() + 30, 20);
 	}
 	
 	void addLeft(Actor a){

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sky.demo.basic;
+package sink.demo.basic.scene;
 
 import static sink.core.Asset.$musicPlay;
 import sink.core.Asset;
 import sink.core.Scene;
+import sink.core.SceneManager;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -26,10 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import java.io.File;
-import java.util.Date;
-
-public class MenuPanel extends Scene{
+public class MenuScene extends Scene{
 	@Override
 	public void init(){
 		$musicPlay("title");
@@ -37,13 +35,6 @@ public class MenuPanel extends Scene{
 		grid.setPosition(-999, 0);
  		grid.addAction(Actions.moveTo(0,  0, 0.5f));
  		grid.center();
- 		/*	________________________
-		 * |_______Warsong__________|
-		 * |________Start___________|
-		 * |_______Options__________|
-		 * |_______Credits__________|
-		 * |_________Exit___________|
-		*/
  		TextButton btn1 = new TextButton("Start", Asset.skin);
 		TextButton btn2 = new TextButton("Options", Asset.skin);
 		TextButton btn3 = new TextButton("Credits", Asset.skin);
@@ -59,21 +50,21 @@ public class MenuPanel extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				new LevelPanel();
+				SceneManager.setCurrentScene("level");
  			}
  		});
 		btn2.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				new OptionsPanel();
+				SceneManager.setCurrentScene("options");
  			}
  		});
 		btn3.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				new CreditsPanel();
+				SceneManager.setCurrentScene("credits");
  			}
  		});
 		btn4.addListener(new ClickListener(){
@@ -87,14 +78,7 @@ public class MenuPanel extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				//new LoginPanel();
- 			}
- 		});
-		backBtn.addListener(new ClickListener(){
- 			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				super.clicked(event, x, y);
-				new MenuPanel();
+				SceneManager.setCurrentScene("login");
  			}
  		});
 		addActor(grid);

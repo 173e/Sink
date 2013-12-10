@@ -17,7 +17,7 @@ package sink.demo.tictactoe.scene;
 
 import sink.core.Asset;
 import sink.core.Scene;
-import sky.demo.tictactoe.GameMode;
+import sink.demo.tictactoe.GameMode;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -70,18 +70,6 @@ public class MenuScene extends Scene{
 				Gdx.app.exit();
  			}
  		});
-		/*backBtn.addListener(new ClickListener(){
- 			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				super.clicked(event, x, y);
-				new MenuPanel();
- 			}
- 		});*/
 		addActor(grid);
-	}
-
-	@Override
-	protected void update() {
-		
 	}
 }

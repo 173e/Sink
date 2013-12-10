@@ -14,14 +14,14 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sky.demo.basic;
+package sink.demo.basic;
 
 import static sink.core.Asset.$musicPlay;
 import static sink.core.Asset.$unloadTmx;
 import sink.core.Asset;
 import sink.core.Config;
-import sink.core.Engine;
 import sink.core.Scene;
+import sink.core.Sink;
 import sink.map.Map;
 
 import com.badlogic.gdx.utils.Base64Coder;
@@ -29,53 +29,23 @@ import com.badlogic.gdx.utils.Base64Coder;
 public class GameMan {
 	/* Game Constants */
 	private static GameState gameState = GameState.GAME_MENU;
-	public static boolean $IS_GAME_SCREEN = false;
 	public static int $CURRENT_LEVEL = 0;
-	
 	static World world;
 	static Map map;
-	static String playerMusic;
-	static String enemyMusic;
 	static int currentTurn = 1;
 	
 	public static void startLevel() {
-		Engine.$stage.clear();
+		Sink.stage.clear();
 		map = new Map(Asset.$loadTmx(GameMan.$CURRENT_LEVEL+1), 24);
 		map.loadLayer(0);
 		map.loadLayer(1);
 		world = new World();
-		Engine.$camera.setActor(world);
+		Sink.stage.addActor(map);
+		Sink.stage.addActor(world);
+		Sink.camera.enablePanning();
 		$musicPlay("level1");
 		GameMan.$setState(GameState.GAME_RUNNING);
-		GameMan.$IS_GAME_SCREEN = true;
 	}
-
-	public static void update(float delta){
-		if($IS_GAME_SCREEN){
-			if ($state(GameState.GAME_RUNNING)){
-				map.act(delta);
-				//checkGameCondition();
-				//if (touchpad.isTouched()) map.touchPad(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
-				world.hidePause();
-			}
-			else if($state(GameState.GAME_PAUSED)){
-				world.showPause();
-			}
-			else if($state(GameState.GAME_LEVELWIN)){
-				back();
-			}
-			else if($state(GameState.GAME_OVER)){
-				back();
-			}
-			else if($state(GameState.GAME_WIN)){
-				//final credits
-			}
-		}
-	}
-	
-	static void checkGameCondition() {
-	}
-
 	
 
 	public void save() {
@@ -83,29 +53,28 @@ public class GameMan {
 		//byte[] bb = Tea.encrypt("zzd", "aa");
 		//Config.writeSaveData(bb.toString());//.writeBytes(bb, false);
 		Config.writeSaveData(Base64Coder.encodeString("faa"));
-		Scene.$log("Save: "+Config.readSaveData());
+		Scene.log("Save: "+Config.readSaveData());
 	}
 	
 	public void load(){
 		String data = Config.readSaveData();
 		//FileHandle file = Gdx.files.internal("data/savedata.bin");
 		//byte[] bytes = Tea.decrypt(data, "aa");
-		Scene.$log("Load: "+Base64Coder.decodeString(data));
+		Scene.log("Load: "+Base64Coder.decodeString(data));
 	}
 
 	public static void back() {
-		Map.removeController();
+		Sink.camera.disablePanning();
 		$unloadTmx(GameMan.$CURRENT_LEVEL+1);
 		GameMan.$setState(GameState.GAME_MENU);
-		GameMan.$IS_GAME_SCREEN = false;
 	}
 	
 	public static void addCamX(float x){
-		Engine.$camera.moveBy(x, 0, 0.003f);
+		Sink.camera.moveBy(x, 0, 0.003f);
 	}
 	
 	public static void addCamY(float y){
-		Engine.$camera.moveBy(0, y, 0.003f);
+		Sink.camera.moveBy(0, y, 0.003f);
 	}
 	
 	/* Check if state is current return true */
@@ -118,7 +87,7 @@ public class GameMan {
 	
 	public static void $setState(GameState ss){
 		gameState = ss;
-		Scene.$log("Game State: " + gameState.toString());
+		Scene.log("Game State: " + gameState.toString());
 	}
 
 }

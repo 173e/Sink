@@ -1,4 +1,4 @@
-package sky.demo.tictactoe;
+package sink.demo.tictactoe;
 
 public enum MarkType {
 	None,

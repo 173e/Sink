@@ -14,10 +14,17 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sky.demo.basic;
+package sink.demo.basic;
 
 import sink.core.Config;
-import sink.core.Engine;
+import sink.core.SceneManager;
+import sink.core.Sink;
+import sink.demo.basic.scene.CreditsScene;
+import sink.demo.basic.scene.LevelScene;
+import sink.demo.basic.scene.LoginScene;
+import sink.demo.basic.scene.MenuScene;
+import sink.demo.basic.scene.OptionsScene;
+import sink.demo.basic.scene.SplashScene;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -39,11 +46,17 @@ public class BasicDesktop{
 		cfg.x = Config.SCREEN_X;
 		cfg.y = Config.SCREEN_Y;
 		cfg.addIcon(Config.icon, FileType.Internal);
-		new LwjglApplication(new Engine(){
+		new LwjglApplication(new Sink(){
 			@Override
 			public void create(){
 				super.create();
-				splashPanel = new SplashPanel();
+				SceneManager.registerScene("splash", new SplashScene());
+				SceneManager.registerScene("menu", new MenuScene());
+				SceneManager.registerScene("options", new OptionsScene());
+				SceneManager.registerScene("credits", new CreditsScene());
+				SceneManager.registerScene("login", new LoginScene());
+				SceneManager.registerScene("level", new LevelScene());
+				SceneManager.setCurrentScene("splash");
 			}
 		}, cfg); 
 	}

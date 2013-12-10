@@ -11,12 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 /** The Camera class with all batteries included like panning, following, smoothing
  * <p>
- * This class can be used for panning the camera using mouse, keyboard, drag.. etc.
+ * This is a singleton class which can be used for panning the camera using mouse, keyboard, drag.. etc.
  * It can also automatically follow a actor by using {@link #followActor}
  * <p>
  * @author pyros2097 */
 
-public class StageCamera extends OrthographicCamera {
+public class SceneCamera extends OrthographicCamera {
 	private float duration, time;
 	private Interpolation interpolation;
     private boolean complete;
@@ -53,9 +53,9 @@ public class StageCamera extends OrthographicCamera {
 	private float deltaCamY = 0;
 	private static Actor followedActor;
 	
-	public StageCamera(){
-		addController();
-		//Stage.addListener(touchInput);
+	SceneCamera(){
+		Sink.stage.addListener(touchInput);
+		//addController();
 	}
      
      /** Moves the actor instantly. */
@@ -83,8 +83,8 @@ public class StageCamera extends OrthographicCamera {
     	if(!complete)
     		moveByAction(delta);
     	if(hasControl){
-			if(Config.usePan) Stage.camera.panCameraWithMouse();
-			if(Config.useKeyboard) Stage.camera.panCameraWithKeyboard();
+			if(Config.usePan) Sink.camera.panCameraWithMouse();
+			if(Config.useKeyboard) Sink.camera.panCameraWithKeyboard();
 		}
 		if(followedActor != null)
 			follow();
@@ -135,15 +135,15 @@ public class StageCamera extends OrthographicCamera {
 /***********************************************************************************************************
 * 					Controller Related Functions												   	       *
 ************************************************************************************************************/	
-    static boolean hasControl = false;
+    boolean hasControl = false;
     	
-    public static void addController(){
+    public void enablePanning(){
     	if(hasControl)
     		return;
     	hasControl = true;
     }
     	
-    public static void removeController(){
+    public void disablePanning(){
     	if(!hasControl)
     		return;
     	hasControl = false;

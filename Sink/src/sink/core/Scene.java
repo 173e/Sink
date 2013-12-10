@@ -46,6 +46,15 @@ public abstract class Scene extends Group {
 	protected Image imgbg;
 	protected boolean bgSet = false; // mutex
 	
+	public Scene(){}
+	
+	@Override
+	public void act(float delta){
+		super.act(delta);
+		if (SceneManager.fpsLabel != null && Config.fpsVisible)
+			SceneManager.fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
+	}
+	
 	protected void addActor(Actor a, float x, float y){
 		a.setPosition(x, y);
 		addActor(a);
@@ -57,7 +66,7 @@ public abstract class Scene extends Group {
 			imgbg = new Image(tBg, Scaling.stretch);
 			imgbg.setFillParent(true);
 			if(!bgSet){
-				Stage.addActor(imgbg);
+				Sink.stage.addActor(imgbg);
 				bgSet = true;
 			}
 			log("SCREEN BG IMAGE SET");
@@ -66,7 +75,7 @@ public abstract class Scene extends Group {
 	
 	public void removeBackground() {
 		if(bgSet){
-			Stage.removeActor(imgbg);
+			Sink.stage.getRoot().removeActor(imgbg);
 			bgSet = false;
 		}
 		log("SCREEN BG IMAGE REMOVED");
@@ -80,5 +89,4 @@ public abstract class Scene extends Group {
 		}
 	}
 	protected abstract void init();
-	protected abstract void update();
 }

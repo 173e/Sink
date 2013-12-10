@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sky.demo.basic;
+package sink.demo.basic.scene;
 
 import sink.core.Asset;
 import sink.core.Config;
 import sink.core.Scene;
+import sink.demo.basic.GameMan;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class LevelPanel extends Scene{
+public class LevelScene extends Scene{
 	public final static int maxLevel = 20;
 	@Override
 	public void init(){

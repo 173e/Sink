@@ -17,7 +17,7 @@
 package sink.map;
 
 import sink.core.Scene;
-import sink.core.Stage;
+import sink.core.Sink;
 
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
@@ -86,8 +86,8 @@ public final class Map extends Group{
 		}
 		mapWidth = tileSize * NoOfColumns;
 		mapHeight = tileSize * NoOfRows;
-		Stage.camera.mapOffsetX = mapWidth - Stage.camera.camOffsetX;
-		Stage.camera.mapOffsetY = mapHeight - Stage.camera.camOffsetYTop;
+		Sink.camera.mapOffsetX = mapWidth - Sink.camera.camOffsetX;
+		Sink.camera.mapOffsetY = mapHeight - Sink.camera.camOffsetYTop;
 	}
 	
 	public void loadObjects(int no){

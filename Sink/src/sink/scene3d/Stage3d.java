@@ -242,7 +242,7 @@ public class Stage3d extends InputAdapter implements Disposable{
 	}
 
 	/** Sets the stage's camera. The camera must be configured properly or {@link #setViewport(float, float, boolean)} can be called
-	 * after the camera is set. {@link Stage#draw()} will call {@link Camera#update()} and use the {@link Camera#combined} matrix
+	 * after the camera is set. {@link Sink#draw()} will call {@link Camera#update()} and use the {@link Camera#combined} matrix
 	 * for the SpriteBatch {@link SpriteBatch#setProjectionMatrix(com.badlogic.gdx.math.Matrix4) projection matrix}. */
 	public void setCamera (PerspectiveCamera camera) {
 		this.camera = camera;

@@ -14,11 +14,12 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sky.demo.tictactoe;
+package sink.demo.tictactoe;
 
 import sink.core.Config;
 import sink.core.SceneManager;
-import sink.core.Stage;
+import sink.core.Sink;
+import sink.demo.tictactoe.scene.GameScene;
 import sink.demo.tictactoe.scene.MenuScene;
 import sink.demo.tictactoe.scene.SplashScene;
 
@@ -42,12 +43,13 @@ public class TicTacToeDesktop{
 		cfg.x = Config.SCREEN_X;
 		cfg.y = Config.SCREEN_Y;
 		cfg.addIcon(Config.icon, FileType.Internal);
-		new LwjglApplication(new Stage(){
+		new LwjglApplication(new Sink(){
 			@Override
 			public void create(){
 				super.create();
 				SceneManager.registerScene("splash", new SplashScene());
 				SceneManager.registerScene("menu", new MenuScene());
+				SceneManager.registerScene("game", new GameScene());
 				SceneManager.setCurrentScene("splash");
 			}
 		}, cfg);

@@ -4,10 +4,11 @@ import java.util.Random;
 
 import sink.core.Asset;
 import sink.core.Scene;
-import sky.demo.tictactoe.GameMode;
-import sky.demo.tictactoe.GameState;
-import sky.demo.tictactoe.MarkType;
-import sky.demo.tictactoe.Turn;
+import sink.core.SceneManager;
+import sink.demo.tictactoe.GameMode;
+import sink.demo.tictactoe.GameState;
+import sink.demo.tictactoe.MarkType;
+import sink.demo.tictactoe.Turn;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -23,15 +24,13 @@ public class GameScene extends Scene{
 	private static GameMode gameMode = GameMode.SINGLE_PLAYER_VS_COMPUTER;
 	public static Turn currentTurn = Turn.Player;
 	
-	public GameScene(){
-		super();
-	}
-	
 	public static void startLevel() {
+		SceneManager.setCurrentScene("game");
 		setState(GameState.GAME_RUNNING);
 	}
 	
 	public static void back() {
+		SceneManager.setCurrentScene("menu");
 		setState(GameState.GAME_MENU);
 	}
 	
@@ -82,7 +81,8 @@ public class GameScene extends Scene{
 	}
 	
 	@Override
-	public void update(){
+	public void act(float delta){
+		super.act(delta);
 		if (state(GameState.GAME_RUNNING)){
 		}
 		AI();

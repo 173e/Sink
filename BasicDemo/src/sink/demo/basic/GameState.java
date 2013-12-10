@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sky.demo.basic;
+package sink.demo.basic;
 
 public enum GameState {
 	GAME_RUNNING,

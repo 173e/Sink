@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sky.demo.tictactoe;
+package sink.demo.tictactoe;
 
 public enum GameState {
 	GAME_RUNNING,

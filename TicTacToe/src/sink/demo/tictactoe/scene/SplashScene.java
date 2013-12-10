@@ -89,11 +89,10 @@ public class SplashScene extends Scene implements Disposable {
 	}
 	
 	@Override
-	public void update(){
+	public void act(float delta){
+		super.act(delta);
 		if(isActive)
 			Asset.update();
-		else
-			SceneManager.fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
 	}
 
 	@Override
