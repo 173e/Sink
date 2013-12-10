@@ -20,6 +20,7 @@ import sink.core.Config;
 import sink.core.SceneManager;
 import sink.core.Sink;
 import sink.demo.basic.scene.CreditsScene;
+import sink.demo.basic.scene.GameScene;
 import sink.demo.basic.scene.LevelScene;
 import sink.demo.basic.scene.LoginScene;
 import sink.demo.basic.scene.MenuScene;
@@ -56,6 +57,7 @@ public class BasicDesktop{
 				SceneManager.registerScene("credits", new CreditsScene());
 				SceneManager.registerScene("login", new LoginScene());
 				SceneManager.registerScene("level", new LevelScene());
+				SceneManager.registerScene("game", new GameScene());
 				SceneManager.setCurrentScene("splash");
 			}
 		}, cfg); 

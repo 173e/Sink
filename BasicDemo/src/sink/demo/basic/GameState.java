@@ -16,11 +16,4 @@
 
 package sink.demo.basic;
 
-public enum GameState {
-	GAME_RUNNING,
-	GAME_PAUSED,
-	GAME_OVER,
-	GAME_WIN,
-	GAME_LEVELWIN,
-	GAME_MENU,
-}
+

@@ -14,23 +14,23 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sink.demo.basic;
+package sink.demo.basic.scene;
 
 
+import static sink.core.Asset.$musicPlay;
+import static sink.core.Asset.$unloadTmx;
 import sink.core.Asset;
 import sink.core.Config;
+import sink.core.Scene;
 import sink.core.SceneManager;
 import sink.core.Sink;
 
-
-
-
 import sink.event.PauseListener;
 import sink.event.ResumeListener;
+import sink.map.Map;
 
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -38,14 +38,25 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Base64Coder;
 
-public final class World extends Group implements PauseListener, ResumeListener {
+public final class GameScene extends Scene implements PauseListener, ResumeListener {
 	Image pauseImage;
 	TextButton pauseBtn;
 	boolean pauseState = false; //mutex to prevent continuous actions and hiding and showing
 	
-	public World() {
-		setSize(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT);
+	/* Game Constants */
+	private GameState gameState = GameState.GAME_MENU;
+	public static int currentLevel = 0;
+	Map map;
+	
+	@Override
+	public void init() {
+		$musicPlay("level1");
+		map = new Map(Asset.$loadTmx(currentLevel+1), 24);
+		map.loadLayer(0);
+		map.loadLayer(1);
+		addActor(map);
 		pauseImage = new Image(Asset.skin.getRegion("default"));
 		pauseBtn = new TextButton("Pause", Asset.skin);
 		pauseBtn.setPosition(300, 300);
@@ -64,6 +75,8 @@ public final class World extends Group implements PauseListener, ResumeListener 
 		addActor(pauseBtn);
 		Sink.addListener((PauseListener)this);
 		Sink.addListener((ResumeListener)this);
+		Sink.camera.enablePanning();
+		setState(GameState.GAME_RUNNING);
 	}
 
 	@Override
@@ -94,4 +107,47 @@ public final class World extends Group implements PauseListener, ResumeListener 
 		pauseState = false;
 		Sink.camera.enablePanning();
 	}
+	
+	public void save() {
+		//FileHandle file = Gdx.files.internal("data/savedata.bin");
+		//byte[] bb = Tea.encrypt("zzd", "aa");
+		//Config.writeSaveData(bb.toString());//.writeBytes(bb, false);
+		Config.writeSaveData(Base64Coder.encodeString("faa"));
+		Scene.log("Save: "+Config.readSaveData());
+	}
+	
+	public void load(){
+		String data = Config.readSaveData();
+		//FileHandle file = Gdx.files.internal("data/savedata.bin");
+		//byte[] bytes = Tea.decrypt(data, "aa");
+		Scene.log("Load: "+Base64Coder.decodeString(data));
+	}
+
+	public void back() {
+		Sink.camera.disablePanning();
+		$unloadTmx(currentLevel+1);
+		setState(GameState.GAME_MENU);
+	}
+	
+	/* Check if state is current return true */
+	public boolean state(GameState ss){
+		if(gameState == ss)
+			return true;
+		else
+			return false;
+	}
+	
+	public void setState(GameState ss){
+		gameState = ss;
+		Scene.log("Game State: " + gameState.toString());
+	}
+}
+
+enum GameState {
+	GAME_RUNNING,
+	GAME_PAUSED,
+	GAME_OVER,
+	GAME_WIN,
+	GAME_LEVELWIN,
+	GAME_MENU,
 }

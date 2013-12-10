@@ -18,7 +18,7 @@ package sink.demo.basic.scene;
 import sink.core.Asset;
 import sink.core.Config;
 import sink.core.Scene;
-import sink.demo.basic.GameMan;
+import sink.core.SceneManager;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -50,8 +50,8 @@ public class LevelScene extends Scene{
 	 			@Override
 				public void clicked(InputEvent event, float x, float y) {
 					super.clicked(event, x, y);
-					GameMan.$CURRENT_LEVEL = index;
-					GameMan.startLevel();
+					GameScene.currentLevel = index;
+					SceneManager.setCurrentScene("game");
 	 			}
 	 		});
 		}
