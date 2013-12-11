@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.utils.Array;
 
 /** The Camera class with all batteries included like panning, following, smoothing
  * <p>
@@ -53,9 +54,24 @@ public class SceneCamera extends OrthographicCamera {
 	private float deltaCamY = 0;
 	private static Actor followedActor;
 	
+	private Array<Actor> hudActors = new Array<Actor>();
+	
 	SceneCamera(){
 		Sink.stage.addListener(touchInput);
-		//addController();
+	}
+	
+	/* If you want to make any elements/actors to move along with the camera like HUD's add them using
+	 * this method
+	 */
+	public void addHudActor(Actor actor){
+		hudActors.add(actor);
+	}
+	
+	/* If you want to stop any elements/actors from moving along with the camera like HUD's you can stop them
+	 * by using this method
+	 */
+	public void removeHudActor(Actor actor){
+		hudActors.removeValue(actor, true);
 	}
      
      /** Moves the actor instantly. */
@@ -160,35 +176,35 @@ public class SceneCamera extends OrthographicCamera {
 	}
     
     private void follow(){
-    	if(position.x < followedActor.getX() - followLeftOffset) position.x += followSpeed;
-		else if(position.x > followedActor.getX() + followRightOffset) position.x -= followSpeed;
-		else if(position.y < followedActor.getY() - followBotOffset) position.y += followSpeed;
-		else if(position.y > followedActor.getY() - followTopOffset) position.y -= followSpeed;
+    	if(position.x < followedActor.getX() - followLeftOffset) translateX(followSpeed);
+		else if(position.x > followedActor.getX() + followRightOffset) translateX(-followSpeed);
+		else if(position.y < followedActor.getY() - followBotOffset) translateY(followSpeed);
+		else if(position.y > followedActor.getY() - followTopOffset) translateY(-followSpeed);
 		//else actor = null;
     }
     
     public void panCameraWithMouse(){
     	mousePos.x = Gdx.input.getX();
     	mousePos.y = Gdx.input.getY();
-    	if(mousePos.x > panXRightOffset && position.x < mapOffsetX - 5) position.x += panSpeed;
-    	else if(mousePos.x < panXLeftOffset && position.x > camOffsetX +5)  position.x -= panSpeed;
-    	else if(mousePos.y < panYUpOffset && position.y < mapOffsetY -5) position.y += panSpeed;
-    	else if(mousePos.y > panYDownOffset && position.y > camOffsetYBot +5) position.y -= panSpeed;
+    	if(mousePos.x > panXRightOffset && position.x < mapOffsetX - 5) translateX(panSpeed);
+    	else if(mousePos.x < panXLeftOffset && position.x > camOffsetX +5)  translateX(-panSpeed);
+    	else if(mousePos.y < panYUpOffset && position.y < mapOffsetY -5) translateY(panSpeed);
+    	else if(mousePos.y > panYDownOffset && position.y > camOffsetYBot +5) translateY(-panSpeed);
     }
     	
     public void panCameraWithKeyboard(){
     	if(Gdx.input.isKeyPressed(Keys.LEFT))
     		if(position.x > camOffsetX +5)
-    			position.x -= panSpeed;
+    			translateX(-panSpeed);
     	else if(Gdx.input.isKeyPressed(Keys.RIGHT))
     		if(position.x < mapOffsetX - 5)
-    				position.x += panSpeed;
+    			translateX(panSpeed);
     	else if(Gdx.input.isKeyPressed(Keys.UP))
     		if(position.y < mapOffsetY -5)
-    			position.y += panSpeed;
+    			translateY(panSpeed);
     	else if(Gdx.input.isKeyPressed(Keys.DOWN))
     		if(position.y > camOffsetYBot +5)
-    			position.y -= panSpeed;
+    			translateY(-panSpeed);
     }
     	
     public void dragCam(int x, int y){
@@ -199,9 +215,9 @@ public class SceneCamera extends OrthographicCamera {
     		deltaCamX = delta.x + position.x;
     		deltaCamY = delta.y + position.y;
     		if(deltaCamX > camOffsetX && deltaCamX < mapOffsetX)
-    			position.x += delta.x;
+    			translateX(delta.x);
     		if(deltaCamY > camOffsetYBot && deltaCamY < mapOffsetY)
-    			position.y += delta.y;		
+    			translateY(delta.y);		
     	}
     	last.set(x, y, 0);
     }
@@ -227,4 +243,14 @@ public class SceneCamera extends OrthographicCamera {
 				last.set(-1, -1, -1);
 		}
 	};
+	
+	private void translateX(float x){
+		position.x += x;
+		for(Actor actor: hudActors) actor.translate(x, 0);
+	}
+	
+	private void translateY(float y){
+		position.y += y;
+		for(Actor actor: hudActors) actor.translate(0, y);
+	}
 }

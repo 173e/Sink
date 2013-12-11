@@ -43,10 +43,9 @@ import com.badlogic.gdx.utils.Base64Coder;
 public final class GameScene extends Scene implements PauseListener, ResumeListener {
 	Image pauseImage;
 	TextButton pauseBtn;
-	boolean pauseState = false; //mutex to prevent continuous actions and hiding and showing
 	
 	/* Game Constants */
-	private GameState gameState = GameState.GAME_MENU;
+	private GameState gameState = GameState.GAME_RUNNING;
 	public static int currentLevel = 0;
 	Map map;
 	
@@ -64,7 +63,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				if(!pauseState)
+				if(!Sink.pauseState)
 					Sink.firePauseEvent();
 				else
 					Sink.fireResumeEvent();
@@ -73,10 +72,12 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		addActor(SceneManager.fpsLabel);
 		addActor(SceneManager.logPane);
 		addActor(pauseBtn);
+		Sink.camera.addHudActor(SceneManager.fpsLabel);
+		Sink.camera.addHudActor(SceneManager.logPane);
+		Sink.camera.addHudActor(pauseBtn);
 		Sink.addListener((PauseListener)this);
 		Sink.addListener((ResumeListener)this);
 		Sink.camera.enablePanning();
-		setState(GameState.GAME_RUNNING);
 	}
 
 	@Override
@@ -86,8 +87,9 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		pauseImage.setTouchable(Touchable.disabled);
 		pauseImage.setColor(1, 1, 1, 0);
 		pauseImage.addAction(Actions.alpha(0.6f, 0.7f, Interpolation.linear));
+		pauseImage.setPosition(Sink.camera.position.x - Config.TARGET_WIDTH/2,
+				Sink.camera.position.y - Config.TARGET_HEIGHT/2);
 		addActor(pauseImage);
-		pauseState = true;
 		Sink.camera.disablePanning();
 	}
 
@@ -104,7 +106,6 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		};
 		SequenceAction sequence = Actions.sequence(hideAction, over);
 		pauseImage.addAction(sequence);
-		pauseState = false;
 		Sink.camera.enablePanning();
 	}
 	
@@ -126,15 +127,11 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 	public void back() {
 		Sink.camera.disablePanning();
 		$unloadTmx(currentLevel+1);
-		setState(GameState.GAME_MENU);
-	}
-	
-	/* Check if state is current return true */
-	public boolean state(GameState ss){
-		if(gameState == ss)
-			return true;
-		else
-			return false;
+		Sink.removeListener((PauseListener)this);
+		Sink.removeListener((ResumeListener)this);
+		Sink.camera.removeHudActor(SceneManager.fpsLabel);
+		Sink.camera.removeHudActor(SceneManager.logPane);
+		Sink.camera.removeHudActor(pauseBtn);
 	}
 	
 	public void setState(GameState ss){
@@ -145,9 +142,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 
 enum GameState {
 	GAME_RUNNING,
-	GAME_PAUSED,
 	GAME_OVER,
 	GAME_WIN,
-	GAME_LEVELWIN,
-	GAME_MENU,
+	GAME_LEVELWIN
 }

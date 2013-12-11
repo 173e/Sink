@@ -16,7 +16,6 @@
 
 package sink.demo.basic;
 
-import sink.core.Config;
 import sink.core.SceneManager;
 import sink.core.Sink;
 import sink.demo.basic.scene.CreditsScene;
@@ -26,27 +25,13 @@ import sink.demo.basic.scene.LoginScene;
 import sink.demo.basic.scene.MenuScene;
 import sink.demo.basic.scene.OptionsScene;
 import sink.demo.basic.scene.SplashScene;
+import sink.main.MainDesktop;
 
-import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-public class BasicDesktop{
+public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
-		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-		cfg.audioDeviceBufferCount = 20;
-		cfg.title = Config.title;
-		cfg.useGL20 = Config.useGL20;
-		LwjglApplicationConfiguration.disableAudio = Config.diableAudio;
-		cfg.width = Config.SCREEN_WIDTH;
-		cfg.height = Config.SCREEN_HEIGHT;
-		cfg.forceExit = Config.forceExit;
-		cfg.fullscreen = Config.fullscreen;
-		cfg.resizable = Config.resizable;
-		cfg.vSyncEnabled = Config.vSyncEnabled;
-		cfg.x = Config.SCREEN_X;
-		cfg.y = Config.SCREEN_Y;
-		cfg.addIcon(Config.icon, FileType.Internal);
+		init();
 		new LwjglApplication(new Sink(){
 			@Override
 			public void create(){

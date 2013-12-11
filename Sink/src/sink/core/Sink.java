@@ -25,6 +25,7 @@ public class Sink implements ApplicationListener {
 	public static SceneCamera camera;
 	
 	private float startTime = System.nanoTime();
+	public static boolean pauseState = false;
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
@@ -105,10 +106,29 @@ public class Sink implements ApplicationListener {
 		disposeListeners.add(dl);
 	}
 	
+	public static void removeListener(PauseListener pl){
+		pauseListeners.removeValue(pl, true);
+	}
+	
+	public static void removeListener(ResumeListener rl){
+		resumeListeners.removeValue(rl, true);
+	}
+	
+	public static void removeListener(DisposeListener dl){
+		disposeListeners.removeValue(dl, true);
+	}
+	
+	public static void clearAllListeners(){
+		pauseListeners.clear();
+		resumeListeners.clear();
+		disposeListeners.clear();
+	}
+	
 	/**
 	 * Manually Fire a Pause Event
 	 * */
 	public static void firePauseEvent(){
+		pauseState = true;
 		for(PauseListener pl: pauseListeners) pl.onPause();
 	}
 	
@@ -116,6 +136,7 @@ public class Sink implements ApplicationListener {
 	 * Manually Fire a Resume Event
 	 * */
 	public static void fireResumeEvent(){
+		pauseState = false;
 		for(ResumeListener rl: resumeListeners) rl.onResume();
 	}
 	

@@ -54,6 +54,17 @@ public final class Config {
 	public static final int SCREEN_HEIGHT = 480;
 	public static final int SCREEN_X = SCREEN_WIDTH/3;
 	public static final int SCREEN_Y = SCREEN_HEIGHT/3;
+	
+	/*Important:
+	 *  The Target Width  and Target Height refer to the nominal width and height of the game for the
+	 *  graphics which are created  for this width and height, this allows for the Stage to scale this
+	 *  graphics for all screen width and height. Therefore your game will work on all screen sizes 
+	 *  but maybe blurred on some.
+	 *  ex:
+	 *  My Game TARGET_WIDTH = 800 TARGET_HEIGHT = 480
+	 *  Then my game works perfectly for SCREEN_WIDTH = 800 SCREEN_HEIGHT = 480
+	 *  and on others screen sizes it is just zoomed/scaled but works fine thats all
+	 */
 	public final static float TARGET_WIDTH = 852;
 	public final static float TARGET_HEIGHT = 480;
 	
