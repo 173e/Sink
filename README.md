@@ -1,14 +1,19 @@
-SkyEngine v0.55
+Sink v0.70
 ===============
-A Game Engine built on top of libGDX with all the batteries included. It has all configuration for assets,
-splash screen, sound, music, textures, animations already setup. You can directly start coding your game
-without any knowledge of writing error free setup code etc..
+Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
+sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
+writing error free setup code etc.
+It consists of Scenes and has a SceneManager to control which scenes are to displayed when.
 Main Idea is about live coding any changes done to the game must be directly shown in the Engine running
-overlay in the SkyCode Editor.	
+overlay in the Sink IDE.	
+Also a Stage3d is being developed currently to support 3d games.
 
 Demo
 ====
-https://github.com/SkyScript/SkyEngine/releases/tag/0.55  
+There are 3 demos
+1. BasicDemo https://github.com/SkyScript/SkyEngine/releases/tag/0.55  
+2. TicTacToe
+3. Stage3d
 
 ScreenShots
 ============
@@ -52,12 +57,12 @@ All assets are accessed this way,
 First import what type of asset you wish to use as static,
 
 ```java
-import static sky.engine.core.Asset.$anim;
-import static sky.engine.core.Asset.$tex;
-import static sky.engine.core.Asset.$musicPlay;
-import static sky.engine.core.Asset.$soundPlay;
-import static sky.engine.core.Asset.$font;
-import static sky.engine.core.Engine.$log;
+import static sink.core.Asset.$anim;
+import static sink.core.Asset.$tex;
+import static sink.core.Asset.$musicPlay;
+import static sink.core.Asset.$soundPlay;
+import static sink.core.Asset.$font;
+import sink.core.Scene;
 
 
 //To load TextureRegion
@@ -74,7 +79,7 @@ import static sky.engine.core.Engine.$log;
 	$soundPlay("soundname");
 		
 //To Log to the Console or the Logger Widget In Game you can use,
-	$log("Some important data");
+	Scene.log("Some important data");
 //	This will display to your console and/or the loggerPanel in the engine
 
 //When exporting your game to jar Conig.isJar must be set so that
@@ -86,7 +91,7 @@ Also There is a great Config class which already has basic things needed in a ga
 	
 Currently Only Orthogonal Maps are supported
 
-In the Demo only level 1 Works Properly
+In the BasicDemo only level 1 Works Properly
 	
 ```
 	
@@ -96,18 +101,22 @@ Todo
 2. Tutorials
 3. Docs
 4. Hex Map
+4. Make AnimatedActor
 
 Credits
 --------
 Thanks to MTX Framework
-https://github.com/moribitotech/MTX
-http://moribitotechx.blogspot.co.uk/
+https://github.com/moribitotech/MTX  
+http://moribitotechx.blogspot.co.uk/  
+libgdx  
 
+Lwjgl  
 
+opeal  
 
 Documentation
 --------------
-#SkyPanel
+#Scene
 
 Use this class to to create screens or menus for your game. Just extend this class and override the
 init method all other things are done automatically like clearing the stage and populating it with the
