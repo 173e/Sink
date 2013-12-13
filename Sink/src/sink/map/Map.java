@@ -35,24 +35,24 @@ import com.badlogic.gdx.utils.ArrayMap;
  * The Map is a Group which automatically loads all the tiles and arranges them accordingly
  * <p>
  * @author pyros2097 */
-public final class Map extends Group{
+public class Map extends Group{
 	private final int tileSize;
 	
 	/* List of MapLayers */
-	private MapLayers mlayers;
-	private MapObjects mobjects;
+	protected MapLayers mlayers;
+	protected MapObjects mobjects;
 	
 	/* List of all the Tiles of Each Layer */
-	private Array<MapTile[][]> layersTiles = new Array<MapTile[][]>();
+	protected static Array<MapTile[][]> layersTiles = new Array<MapTile[][]>();
 	public final static ArrayMap<String, MapUnit> $units = new ArrayMap<String, MapUnit>();
 	
-	private int NoOfColumns;
-	private int NoOfRows;
-	private float mapWidth;
-	private float mapHeight;
+	protected int NoOfColumns;
+	protected int NoOfRows;
+	protected float mapWidth;
+	protected float mapHeight;
 	
-	public static MapUnit currentFocus;
-	public static MapUnit nearestUnit;
+	protected static MapUnit currentFocus;
+	protected static MapUnit nearestUnit;
 	Image select;
 	
 	public Map(TiledMap map, int tileSize){

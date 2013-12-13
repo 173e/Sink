@@ -110,14 +110,14 @@ public final class Asset {
 	private static Array<String> soundJarFiles = new Array<String>();
 	private static Array<String> fontJarFiles = new Array<String>();
 	private static Array<String> atlasJarFiles = new Array<String>();
-	private final static ArrayMap<String, Music> musicMap = new ArrayMap<String, Music>();
+	public final static ArrayMap<String, Music> musicMap = new ArrayMap<String, Music>();
 	private final static ArrayMap<String, Sound> soundMap = new ArrayMap<String, Sound>();
 	private final static ArrayMap<String, BitmapFont> fontMap = new ArrayMap<String, BitmapFont>();
 	private final static ArrayMap<String, TextureRegion> texMap = new ArrayMap<String, TextureRegion>();
 	private final static ArrayMap<String, Animation> animMap = new ArrayMap<String, Animation>();
 	
 	private static Music currentMusic = null;
-	private static String currentMusicName = ""; //Only file name no prefix or suffix
+	public static String currentMusicName = ""; //Only file name no prefix or suffix
 	private static Sound currentSound = null;
 	
 	

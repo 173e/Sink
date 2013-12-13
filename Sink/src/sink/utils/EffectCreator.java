@@ -17,32 +17,33 @@
 package sink.utils;
 
 import sink.core.Scene;
+import sink.core.Sink;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+/*<p>
+ * 	 COMMAND SHORTCUTS
+	 ################################################################
+	
+	 SC - Scale
+	 BTN - Back To Normal
+	 FI - Fade In
+	 FO - Fade Out
+	 SHK - Shake
 
+	 SINGLE EFFECTS
+	 ################################################################
+  </p>
+ */
 public class EffectCreator {
-	// COMMAND SHORTCUTS
-	// ################################################################
-	//
-	// SC - Scale
-	// BTN - Back To Normal
-	// FI - Fade In
-	// FO - Fade Out
-	// SHK - Shake
 
-	//
-	// SINGLE EFFECTS
-	// ################################################################
 	/**
 	 * Scale effect (SC)
 	 * */
 	public static void create_SC(Actor actor, float scaleRatioX,
-			float scaleRatioY, float duration, final Stage stage,
-			final boolean isRemoveActor) {
+			float scaleRatioY, float duration, final boolean isRemoveActor) {
 		if (actor != null) {
 			actor.addAction(Actions.sequence(
 					Actions.scaleTo(scaleRatioX, scaleRatioY, duration),
@@ -50,7 +51,7 @@ public class EffectCreator {
 						@Override
 						public boolean act(float delta) {
 							if (isRemoveActor) {
-								removeActor(stage, actor);
+								removeActor(actor);
 								return false;
 							} else {
 
@@ -65,14 +66,14 @@ public class EffectCreator {
 	 * Fade Out (FO)
 	 * */
 	public static void create_FO(Actor actor, float duration,
-			final Stage stage, final boolean isRemoveActor) {
+			final boolean isRemoveActor) {
 		if (actor != null) {
 			actor.addAction(Actions.sequence(Actions.fadeOut(duration),
 					new Action() {
 						@Override
 						public boolean act(float delta) {
 							if (isRemoveActor) {
-								removeActor(stage, actor);
+								removeActor(actor);
 								return false;
 							} else {
 								return true;
@@ -86,8 +87,7 @@ public class EffectCreator {
 	 * Shake effect (SHK)
 	 * */
 	public static void create_SHK(Actor actor, float shakeAngle,
-			float originalAngle, float duration, final Stage stage,
-			final boolean isRemoveActor) {
+			float originalAngle, float duration, final boolean isRemoveActor) {
 		if (actor != null) {
 			actor.addAction(Actions.sequence(
 					Actions.rotateTo(shakeAngle, duration),
@@ -96,7 +96,7 @@ public class EffectCreator {
 						@Override
 						public boolean act(float delta) {
 							if (isRemoveActor) {
-								removeActor(stage, actor);
+								removeActor(actor);
 								return false;
 							} else {
 								return true;
@@ -126,7 +126,7 @@ public class EffectCreator {
 	 * */
 	public static void create_SC_FO(Actor actor, float scaleRatioX,
 			float scaleRatioY, float duration, float delayBeforeFadeOut,
-			final Stage stage, final boolean isRemoveActor) {
+			final boolean isRemoveActor) {
 		if (actor != null) {
 			actor.addAction(Actions.sequence(
 					Actions.scaleTo(scaleRatioX, scaleRatioY, duration),
@@ -135,7 +135,7 @@ public class EffectCreator {
 						@Override
 						public boolean act(float delta) {
 							if (isRemoveActor) {
-								removeActor(stage, actor);
+								removeActor(actor);
 								return false;
 							} else {
 								return true;
@@ -150,7 +150,7 @@ public class EffectCreator {
 	 * */
 	public static void create_SC_SHK(Actor actor, float scaleRatioX,
 			float scaleRatioY, float shakeAngle, float originalAngle,
-			float duration, final Stage stage, final boolean isRemoveActor) {
+			float duration, final boolean isRemoveActor) {
 		if (actor != null) {
 			actor.addAction(Actions.sequence(
 					Actions.scaleTo(scaleRatioX, scaleRatioY, duration),
@@ -160,7 +160,7 @@ public class EffectCreator {
 						@Override
 						public boolean act(float delta) {
 							if (isRemoveActor) {
-								removeActor(stage, actor);
+								removeActor(actor);
 								return false;
 							} else {
 								return true;
@@ -178,7 +178,7 @@ public class EffectCreator {
 	 * */
 	public static void create_SC_BTN_FO(Actor actor, float scaleRatioX,
 			float scaleRatioY, float duration, float delayBeforeFadeOut,
-			final Stage stage, final boolean isRemoveActor) {
+			final boolean isRemoveActor) {
 		if (actor != null) {
 			actor.addAction(Actions.sequence(
 					Actions.scaleTo(scaleRatioX, scaleRatioY, duration),
@@ -188,7 +188,7 @@ public class EffectCreator {
 						@Override
 						public boolean act(float delta) {
 							if (isRemoveActor) {
-								removeActor(stage, actor);
+								removeActor(actor);
 								return false;
 							} else {
 
@@ -204,7 +204,7 @@ public class EffectCreator {
 	 * */
 	public static void create_SC_SHK_BTN(Actor actor, float scaleRatioX,
 			float scaleRatioY, float shakeAngle, float originalAngle,
-			float duration, final Stage stage, final boolean isRemoveActor) {
+			float duration, final boolean isRemoveActor) {
 		if (actor != null) {
 			actor.addAction(Actions.sequence(
 					Actions.scaleTo(scaleRatioX, scaleRatioY, duration),
@@ -215,7 +215,7 @@ public class EffectCreator {
 						@Override
 						public boolean act(float delta) {
 							if (isRemoveActor) {
-								removeActor(stage, actor);
+								removeActor(actor);
 								return false;
 							} else {
 
@@ -226,11 +226,11 @@ public class EffectCreator {
 		}
 	}
 
-	private static void removeActor(Stage stage, Actor actor) {
-		if (stage != null && actor != null) {
+	private static void removeActor(Actor actor) {
+		if (actor != null) {
 			actor.clearActions();
 			String actorName = actor.getName();
-			if (stage.getRoot().removeActor(actor)) {
+			if (Sink.stage.getRoot().removeActor(actor)) {
 				Scene.log("Actor removed! (Name: "+ actorName + ")");
 			} else {
 				Scene.log("Actor not removed! (Name: " + actorName + ")");

@@ -69,8 +69,6 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 					Sink.fireResumeEvent();
  			}
  		});
-		addActor(SceneManager.fpsLabel);
-		addActor(SceneManager.logPane);
 		addActor(pauseBtn);
 		Sink.camera.addHudActor(SceneManager.fpsLabel);
 		Sink.camera.addHudActor(SceneManager.logPane);

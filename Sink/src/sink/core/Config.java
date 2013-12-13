@@ -65,8 +65,8 @@ public final class Config {
 	 *  Then my game works perfectly for SCREEN_WIDTH = 800 SCREEN_HEIGHT = 480
 	 *  and on others screen sizes it is just zoomed/scaled but works fine thats all
 	 */
-	public final static float TARGET_WIDTH = 852;
-	public final static float TARGET_HEIGHT = 480;
+	public static float TARGET_WIDTH = 852;
+	public static float TARGET_HEIGHT = 480;
 	
 	//When exporting your game to jar Conig.isJar must be set so that
 	// all your assets will get loaded automatically within the jar file
@@ -102,7 +102,7 @@ public final class Config {
     static final String DRAGSPEED = "dragspeed";
     static final String KEYBOARD = "keyboard";
 
-    static final Preferences prefs = Gdx.app.getPreferences("Warsong");
+    static final Preferences prefs = Gdx.app.getPreferences(title);
     
     public static boolean isMusic = prefs.getBoolean(MUSIC, true);
     public static boolean isSound = prefs.getBoolean(SOUND, true);

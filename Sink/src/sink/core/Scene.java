@@ -17,6 +17,9 @@
 package sink.core;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -24,8 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
-
-import static sink.core.Asset.$tex;
 
 /** The base class for creating Scenes
  * <p>
@@ -89,4 +90,44 @@ public abstract class Scene extends Group {
 		}
 	}
 	protected abstract void init();
+	
+	
+	public static void $musicPlay(String filename){
+		Asset.$musicPlay(filename);
+	}
+	public static void $soundPlay(String filename){
+		Asset.$soundPlay(filename);
+	}
+	
+	public static void $soundClick(){
+		Asset.$soundClick();
+	}
+	
+	public static void $soundPause(){
+		Asset.$soundPause();
+	}
+	
+	public static void $soundResume(){
+		Asset.$soundResume();
+	}
+	
+	public static void $soundStop(){
+		Asset.$soundStop();
+	}
+	
+	public static void $soundDispose(){
+		Asset.$soundDispose();
+	}
+	
+	public BitmapFont $font(String fontName){
+		return Asset.$font(fontName);
+	}
+	
+	public TextureRegion $tex(String textureregionName){
+		return Asset.$tex(textureregionName);
+	}
+	
+	public Animation $anim(String animationBaseName){
+		return Asset.$anim(animationBaseName);
+	}
 }
