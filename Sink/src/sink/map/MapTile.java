@@ -20,8 +20,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class MapTile extends MapActor{
-	TextureRegion tileImage;
-	int index;
+	protected TextureRegion tileImage;
+	protected int index;
 	
 	public MapTile(TextureRegion region, int x, int y, int in, int tileSize){
 		super(x,y, tileSize);
@@ -39,12 +39,5 @@ public class MapTile extends MapActor{
 		batch.setColor(getColor());		// WARNING THIS IS THE ORIGINAL TILE SIZE DONOT CHANGE
 		if(tileImage != null)
 			batch.draw(tileImage, getX(), getY(), this.tileSize, this.tileSize);
-	}
-	
-	public MapUnit getUnitAt(){
-		for(MapUnit c: Map.$units.values())
-			if(intersects(c))
-				return c;
-		return null;
 	}
 }

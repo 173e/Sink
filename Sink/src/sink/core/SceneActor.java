@@ -18,6 +18,11 @@ public class SceneActor extends Actor {
 	public static void $musicPlay(String filename){
 		Asset.$musicPlay(filename);
 	}
+	
+	public static void $musicStop(){
+		Asset.$musicStop();
+	}
+	
 	public static void $soundPlay(String filename){
 		Asset.$soundPlay(filename);
 	}

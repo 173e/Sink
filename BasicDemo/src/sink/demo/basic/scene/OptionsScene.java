@@ -53,7 +53,7 @@ public class OptionsScene extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setCurrentScene("menu");
+				SceneManager.setScene("menu");
  			}
  		});
 		

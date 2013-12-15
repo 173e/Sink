@@ -50,21 +50,21 @@ public class MenuScene extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setCurrentScene("level");
+				SceneManager.setScene("level");
  			}
  		});
 		btn2.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setCurrentScene("options");
+				SceneManager.setScene("options");
  			}
  		});
 		btn3.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setCurrentScene("credits");
+				SceneManager.setScene("credits");
  			}
  		});
 		btn4.addListener(new ClickListener(){
@@ -78,7 +78,7 @@ public class MenuScene extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setCurrentScene("login");
+				SceneManager.setScene("login");
  			}
  		});
 		addActor(grid);

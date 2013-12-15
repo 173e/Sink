@@ -33,7 +33,7 @@ public final class SceneManager {
 	 * Set the current scene to be displayed
 	 * @param sceneName The registered scene's name
 	 **/
-	public static void setCurrentScene(String sceneName){
+	public static void setScene(String sceneName){
 		if(sceneMap.containsKey(sceneName)){
 			Scene.log("Current Scene :"+sceneName);
 			currentScene = sceneMap.get(sceneName);
@@ -48,7 +48,7 @@ public final class SceneManager {
 	/**
 	 * Returns the current scene being Displayed on stage
 	 **/
-	public static Scene getCurrentScene(){
+	public static Scene getScene(){
 		return currentScene;
 	}
 	
@@ -70,39 +70,11 @@ public final class SceneManager {
 	public static boolean contains(String sceneName){
 		return sceneMap.containsKey(sceneName);
 	}
-
-	/**
-	 * Define the scenePath so that scenes can be automatically switched using
-	 * nextScene() and prevScene()
-	 **/
-	public static void scenePath(){
-		
-	}
-	
-	/**
-	 * Display the next scene in the ScenePath
-	 **/
-	public static void nextScene(){
-		
-	}
-	
-	/**
-	 * Display the previous scene in the ScenePath
-	 * Useful for implementing back functionality
-	 **/
-	public static void prevScene(){
-		
-	}
-	
-	/**
-	 * This update method is called each frame and calls the update method of the current scene
-	 *  so can be used to add some calculations/ game logic to the current scene
-	 *  ex:	check collisions, check game state ..etc
-	 **/
 	
 	private static void clearScene(){
 		Sink.camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
 		Sink.stage.clear();
+		currentScene.clear();
 		currentScene.setPosition(0, 0);
 		currentScene.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
 		currentScene.setBounds(0,0,Config.TARGET_WIDTH,Config.TARGET_HEIGHT);

@@ -46,7 +46,7 @@ public class CreditsScene extends Scene{
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setCurrentScene("menu");
+				SceneManager.setScene("menu");
  			}
 		});
 		grid.add(title).size(200, 75);

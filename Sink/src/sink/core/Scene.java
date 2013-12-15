@@ -45,7 +45,6 @@ public abstract class Scene extends Group {
 	public float xoffset, yoffset; // can be used for manual placing of widgets
 	public float xcenter, ycenter;
 	protected Image imgbg;
-	protected boolean bgSet = false; // mutex
 	
 	public Scene(){}
 	
@@ -66,20 +65,13 @@ public abstract class Scene extends Group {
 			Drawable tBg = new TextureRegionDrawable($tex(texName));
 			imgbg = new Image(tBg, Scaling.stretch);
 			imgbg.setFillParent(true);
-			if(!bgSet){
-				Sink.stage.addActor(imgbg);
-				bgSet = true;
-			}
-			log("SCREEN BG IMAGE SET");
+			Sink.stage.addActor(imgbg);
+			log("SCENE BG IMAGE SET");
 		}
 	}
 	
 	public void removeBackground() {
-		if(bgSet){
-			Sink.stage.getRoot().removeActor(imgbg);
-			bgSet = false;
-		}
-		log("SCREEN BG IMAGE REMOVED");
+		Sink.stage.getRoot().removeActor(imgbg);
 	}
 	
 	public static void log(String log) {
@@ -89,7 +81,7 @@ public abstract class Scene extends Group {
 				SceneManager.logPane.update(log);
 		}
 	}
-	protected abstract void init();
+	public abstract void init();
 	
 	
 	public static void $musicPlay(String filename){

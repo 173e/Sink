@@ -25,6 +25,7 @@ import sink.demo.basic.scene.LoginScene;
 import sink.demo.basic.scene.MenuScene;
 import sink.demo.basic.scene.OptionsScene;
 import sink.demo.basic.scene.SplashScene;
+import sink.event.CreateListener;
 import sink.main.MainDesktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -32,10 +33,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
 		init();
-		new LwjglApplication(new Sink(){
+		Sink.addListener(new CreateListener(){
 			@Override
-			public void create(){
-				super.create();
+			public void onCreate() {
 				SceneManager.registerScene("splash", new SplashScene());
 				SceneManager.registerScene("menu", new MenuScene());
 				SceneManager.registerScene("options", new OptionsScene());
@@ -43,8 +43,9 @@ public class BasicDesktop extends MainDesktop{
 				SceneManager.registerScene("login", new LoginScene());
 				SceneManager.registerScene("level", new LevelScene());
 				SceneManager.registerScene("game", new GameScene());
-				SceneManager.setCurrentScene("splash");
+				SceneManager.setScene("splash");
 			}
-		}, cfg); 
+		});
+		new LwjglApplication(new Sink(), cfg); 
 	}
 }

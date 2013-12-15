@@ -3,6 +3,7 @@ package sink.core;
 import static sink.core.Asset.$musicPause;
 import static sink.core.Asset.$musicResume;
 import static sink.core.Asset.$soundStop;
+import sink.event.CreateListener;
 import sink.event.DisposeListener;
 import sink.event.PauseListener;
 import sink.event.ResumeListener;
@@ -42,13 +43,14 @@ import com.badlogic.gdx.utils.Array;
  * <p>
  * @author pyros2097 */
 
-public class Sink implements ApplicationListener {
+public final class Sink implements ApplicationListener {
 	public static float gameUptime = 0;
 	public static Stage stage;
 	public static SceneCamera camera;
 	
 	private float startTime = System.nanoTime();
 	public static boolean pauseState = false;
+	private static final Array<CreateListener> createListeners = new Array<CreateListener>();
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
@@ -56,6 +58,7 @@ public class Sink implements ApplicationListener {
 	@Override
 	public void create() {
 		Scene.log("Sink: Created");
+		Config.init();
 		stage = new Stage(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.keepAspectRatio);
 		camera = new SceneCamera();
 		camera.setToOrtho(false, Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
@@ -64,6 +67,7 @@ public class Sink implements ApplicationListener {
 		Gdx.input.setCatchBackKey(true);
  		Gdx.input.setCatchMenuKey(true);
  		Gdx.input.setInputProcessor(stage);
+ 		fireCreateEvent();
  		//Scene.$log("TotalTime: "+toScreenTime(Config.readTotalTime()));
  		//Config.writeTotalTime(gameUptime);
 	}
@@ -110,6 +114,10 @@ public class Sink implements ApplicationListener {
 		Gdx.app.exit();
 	}
 	
+	public static void addListener(CreateListener cl){
+		createListeners.add(cl);
+	}
+	
 	public static void addListener(PauseListener pl){
 		pauseListeners.add(pl);
 	}
@@ -120,6 +128,10 @@ public class Sink implements ApplicationListener {
 	
 	public static void addListener(DisposeListener dl){
 		disposeListeners.add(dl);
+	}
+	
+	public static void removeListener(CreateListener cl){
+		createListeners.removeValue(cl, true);
 	}
 	
 	public static void removeListener(PauseListener pl){
@@ -138,6 +150,10 @@ public class Sink implements ApplicationListener {
 		pauseListeners.clear();
 		resumeListeners.clear();
 		disposeListeners.clear();
+	}
+	
+	private static void fireCreateEvent(){
+		for(CreateListener cl: createListeners) cl.onCreate();
 	}
 	
 	/**

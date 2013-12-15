@@ -47,7 +47,7 @@ public class SplashScene extends Scene implements Disposable {
 	LoadingText loadingText;
 
 	@Override
-	protected void init() {
+	public void init() {
 		Asset.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 		isActive = true;
 		bg1 = new Texture("splash/libgdx.png");
@@ -80,7 +80,7 @@ public class SplashScene extends Scene implements Disposable {
 	        	Asset.setUp();
 	        	SceneManager.fpsLabel = new Label("", Asset.skin);
 	        	SceneManager.logPane = new LogPane();
-	        	SceneManager.setCurrentScene("menu");
+	        	SceneManager.setScene("menu");
 	            return true;
 	          }
 	    };

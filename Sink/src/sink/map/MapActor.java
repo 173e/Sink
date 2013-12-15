@@ -16,13 +16,14 @@
 
 package sink.map;
 
+import sink.core.SceneActor;
+
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
-public abstract class MapActor extends Actor {
+public abstract class MapActor extends SceneActor {
 	private int row;
 	private int col;
 	protected int tileSize;

@@ -51,7 +51,7 @@ public class LevelScene extends Scene{
 				public void clicked(InputEvent event, float x, float y) {
 					super.clicked(event, x, y);
 					GameScene.currentLevel = index;
-					SceneManager.setCurrentScene("game");
+					SceneManager.setScene("game");
 	 			}
 	 		});
 		}

@@ -71,7 +71,7 @@ public final class Config {
 	//When exporting your game to jar Conig.isJar must be set so that
 	// all your assets will get loaded automatically within the jar file
 	public static boolean isJar = false;
-	private static String basePath = "assets/";
+	private static String basePath = "";
 	
 	public static boolean fpsVisible = true;
 	public static boolean loggerVisible = false;
@@ -102,21 +102,36 @@ public final class Config {
     static final String DRAGSPEED = "dragspeed";
     static final String KEYBOARD = "keyboard";
 
-    static final Preferences prefs = Gdx.app.getPreferences(title);
+    static Preferences prefs;
     
-    public static boolean isMusic = prefs.getBoolean(MUSIC, true);
-    public static boolean isSound = prefs.getBoolean(SOUND, true);
+    public static boolean isMusic;
+    public static boolean isSound;
    
-    public static float volMusic = prefs.getFloat(VOLUME_MUSIC, 1f);
-    public static float volSound = prefs.getFloat(VOLUME_SOUND, 1f);
+    public static float volMusic;
+    public static float volSound;
     
-    public static boolean usePan = prefs.getBoolean(PANSCROLL, true);
-    public static boolean useDrag = prefs.getBoolean(DRAGSCROLL, true);
-    public static boolean useKeyboard = prefs.getBoolean(KEYBOARD, true);
+    public static boolean usePan;
+    public static boolean useDrag;
+    public static boolean useKeyboard;
     
-    public static float speedPan = prefs.getFloat(PANSPEED, 5f);
-    public static float speedDrag = prefs.getFloat(DRAGSPEED, 5f);
+    public static float speedPan;
+    public static float speedDrag;
     
+    public static void init(){
+       prefs =Gdx.app.getPreferences(title);
+       isMusic = prefs.getBoolean(MUSIC, true);
+       isSound = prefs.getBoolean(SOUND, true);
+       
+       volMusic = prefs.getFloat(VOLUME_MUSIC, 1f);
+       volSound = prefs.getFloat(VOLUME_SOUND, 1f);
+        
+       usePan = prefs.getBoolean(PANSCROLL, true);
+       useDrag = prefs.getBoolean(DRAGSCROLL, true);
+       useKeyboard = prefs.getBoolean(KEYBOARD, true);
+        
+       speedPan = prefs.getFloat(PANSPEED, 5f);
+       speedDrag = prefs.getFloat(DRAGSPEED, 5f);
+    }
    
     
     
