@@ -1,4 +1,4 @@
-Sink v0.70
+Sink v0.75
 ===============
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
@@ -11,7 +11,7 @@ Also a Stage3d is being developed currently to support 3d games.
 Demo
 ====
 There are 3 demos
-1. BasicDemo https://github.com/SkyScript/SkyEngine/releases/tag/0.55  
+1. BasicDemo
 2. TicTacToe
 3. Stage3d
 
@@ -57,26 +57,26 @@ All assets are accessed this way,
 First import what type of asset you wish to use as static,
 
 ```java
-import static sink.core.Asset.$anim;
-import static sink.core.Asset.$tex;
-import static sink.core.Asset.$musicPlay;
-import static sink.core.Asset.$soundPlay;
-import static sink.core.Asset.$font;
+import static sink.core.Asset.anim;
+import static sink.core.Asset.tex;
+import static sink.core.Asset.musicPlay;
+import static sink.core.Asset.soundPlay;
+import static sink.core.Asset.font;
 import sink.core.Scene;
 
 
 //To load TextureRegion
-	TextureRegion cat = $tex("cat");
+	TextureRegion cat = tex("cat");
 	
 //To load Animation
-	Animation catAnim = $anim("cat");
+	Animation catAnim = anim("cat");
 	
 //To load BitmapFont
-	BitmapFont font1 = $font("font1");
+	BitmapFont font1 = font("font1");
 	
 //OfCourse SkyEngine already has inbuilt MusicManager and SoundManager which you can use by invoking:
-	$musicPlay("musicname");
-	$soundPlay("soundname");
+	musicPlay("musicname");
+	soundPlay("soundname");
 		
 //To Log to the Console or the Logger Widget In Game you can use,
 	Scene.log("Some important data");
@@ -99,26 +99,83 @@ Todo
 -----
 1. Make Animations Working
 2. Tutorials
-3. Docs
-4. Hex Map
-4. Make AnimatedActor
+3. Hex Map
+4. Scene Transitions
 
 Credits
 --------
-Thanks to MTX Framework
-https://github.com/moribitotech/MTX  
-http://moribitotechx.blogspot.co.uk/  
-libgdx  
-
-Lwjgl  
-
-opeal  
+Thanks all these awesome frameworks  
+[mtx](http://moribitotechx.blogspot.co.uk)
+[libgdx](libgdx.badlogicgames.com)  
+[lwjgl](lwjgl.org)  ‎
+[openal(kcat.strangesoft.net/openal.html)  
 
 Documentation
 --------------
 #Scene
 
-Use this class to to create screens or menus for your game. Just extend this class and override the
-init method all other things are done automatically like clearing the stage and populating it with the
-actors of this group
+Use this class to to create scenes or menus for your game. Just extend this class and override the
+init() method all other things are done automatically like clearing the stage and populating it with the
+actors of this group. A scene can be set using SceneManager.setCurrentScene("sceneName")
+```java
+public class MenuScene extends Scene{
+	@Override
+	public void init(){
+		musicPlay("title");
+		setBackground("title");
+ 		TextButton btn1 = new TextButton("Start", Asset.skin);
+ 		addActor(btn1, 45, 245);
+ 	}
+ }
+```
 
+#SceneManager
+
+Before you use your scenes use this class to register all your scenes using registerScene("sceneName", new SceneObject())
+and then you can switch you scenes by using setCurrentScene method with the sceneName you registered your 
+scene with
+```java
+#In your static voic main, register your scenes
+Sink.addListener(new CreateListener(){
+			@Override
+			public void onCreate() {
+				SceneManager.registerScene("splash", new SplashScene());
+				SceneManager.registerScene("menu", new MenuScene());
+				SceneManager.registerScene("options", new OptionsScene());
+				SceneManager.registerScene("credits", new CreditsScene());
+				SceneManager.registerScene("login", new LoginScene());
+				SceneManager.registerScene("level", new LevelScene());
+				SceneManager.registerScene("game", new GameScene());
+				SceneManager.setScene("splash");
+			}
+		});
+```
+
+#Sink
+
+The Main Entry Point for the Sink Game is the Sink class
+It consists of a single Stage and SceneCamera which are all initialized based on the Config class.
+They can be accessed in a static way like Sink.stage Sink.camera.
+It also has extra things like gameUptime, pauseState, CreateListenersPauseListeners, ResumeListeners, 
+DisposeListeners
+```java
+public class BasicDesktop extends MainDesktop{
+	public static void main(String[] argc) {
+		init();
+		Sink.addListener(new CreateListener(){
+			@Override
+			public void onCreate() {
+				SceneManager.registerScene("splash", new SplashScene());
+				SceneManager.registerScene("menu", new MenuScene());
+				SceneManager.registerScene("options", new OptionsScene());
+				SceneManager.registerScene("credits", new CreditsScene());
+				SceneManager.registerScene("login", new LoginScene());
+				SceneManager.registerScene("level", new LevelScene());
+				SceneManager.registerScene("game", new GameScene());
+				SceneManager.setScene("splash");
+			}
+		});
+		new LwjglApplication(new Sink(), cfg); 
+	}
+}
+```

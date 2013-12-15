@@ -7,42 +7,58 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 
 public class SceneGroup extends Group{
 	
-	public static void $musicPlay(String filename){
-		Asset.$musicPlay(filename);
+	public static void musicPlay(String filename){
+		Asset.musicPlay(filename);
 	}
-	public static void $soundPlay(String filename){
-		Asset.$soundPlay(filename);
-	}
-	
-	public static void $soundClick(){
-		Asset.$soundClick();
+	public static void musicPause(){
+		Asset.musicPause();
 	}
 	
-	public static void $soundPause(){
-		Asset.$soundPause();
+	public static void musicResume(){
+		Asset.musicResume();
 	}
 	
-	public static void $soundResume(){
-		Asset.$soundResume();
+	public static void musicStop(){
+		Asset.musicStop();
 	}
 	
-	public static void $soundStop(){
-		Asset.$soundStop();
+	public static void musicDispose(){
+		Asset.musicDispose();
 	}
 	
-	public static void $soundDispose(){
-		Asset.$soundDispose();
+	public static void soundPlay(String filename){
+		Asset.soundPlay(filename);
 	}
 	
-	public static BitmapFont $font(String fontName){
-		return Asset.$font(fontName);
+	public static void soundClick(){
+		Asset.soundClick();
 	}
 	
-	public static TextureRegion $tex(String textureregionName){
-		return Asset.$tex(textureregionName);
+	public static void soundPause(){
+		Asset.soundPause();
 	}
 	
-	public static Animation $anim(String animationBaseName){
-		return Asset.$anim(animationBaseName);
+	public static void soundResume(){
+		Asset.soundResume();
+	}
+	
+	public static void soundStop(){
+		Asset.soundStop();
+	}
+	
+	public static void soundDispose(){
+		Asset.soundDispose();
+	}
+	
+	public static BitmapFont font(String fontName){
+		return Asset.font(fontName);
+	}
+	
+	public static TextureRegion tex(String textureregionName){
+		return Asset.tex(textureregionName);
+	}
+	
+	public static Animation anim(String animationBaseName){
+		return Asset.anim(animationBaseName);
 	}
 }

@@ -15,7 +15,6 @@
  ******************************************************************************/
 package sink.demo.basic.scene;
 
-import static sink.core.Asset.$musicPlay;
 import sink.core.Asset;
 import sink.core.Scene;
 import sink.core.SceneManager;
@@ -30,7 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class MenuScene extends Scene{
 	@Override
 	public void init(){
-		$musicPlay("title");
+		musicPlay("title");
 		setBackground("title");
 		grid.setPosition(-999, 0);
  		grid.addAction(Actions.moveTo(0,  0, 0.5f));

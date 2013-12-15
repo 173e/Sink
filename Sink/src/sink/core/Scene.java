@@ -32,7 +32,7 @@ import com.badlogic.gdx.utils.Scaling;
  * <p>
  * Use this class to to create screens or menus for your game. Just extend this class and override the
  * {@link #init} method all other things are done automatically like clearing the stage and populating it with the
- * actors of this group and use {@link #update} method which is called in the main render method for updating your
+ * actors of this group and override act method which is called in the main render method for updating your
  * scene logic such as splash scene, timers, delays etc...
  * It also contains a Table which can be used as a box layout for ui components.
  * A scene can be set using {@link SceneManager.setCurrentScene}
@@ -61,8 +61,8 @@ public abstract class Scene extends Group {
 	}
 	
 	public void setBackground(String texName) {
-		if($tex(texName) != null){
-			Drawable tBg = new TextureRegionDrawable($tex(texName));
+		if(tex(texName) != null){
+			Drawable tBg = new TextureRegionDrawable(tex(texName));
 			imgbg = new Image(tBg, Scaling.stretch);
 			imgbg.setFillParent(true);
 			Sink.stage.addActor(imgbg);
@@ -84,42 +84,59 @@ public abstract class Scene extends Group {
 	public abstract void init();
 	
 	
-	public static void $musicPlay(String filename){
-		Asset.$musicPlay(filename);
-	}
-	public static void $soundPlay(String filename){
-		Asset.$soundPlay(filename);
+	public static void musicPlay(String filename){
+		Asset.musicPlay(filename);
 	}
 	
-	public static void $soundClick(){
-		Asset.$soundClick();
+	public static void musicPause(){
+		Asset.musicPause();
 	}
 	
-	public static void $soundPause(){
-		Asset.$soundPause();
+	public static void musicResume(){
+		Asset.musicResume();
 	}
 	
-	public static void $soundResume(){
-		Asset.$soundResume();
+	public static void musicStop(){
+		Asset.musicStop();
 	}
 	
-	public static void $soundStop(){
-		Asset.$soundStop();
+	public static void musicDispose(){
+		Asset.musicDispose();
+	}
+
+	public static void soundPlay(String filename){
+		Asset.soundPlay(filename);
 	}
 	
-	public static void $soundDispose(){
-		Asset.$soundDispose();
+	public static void soundClick(){
+		Asset.soundClick();
 	}
 	
-	public BitmapFont $font(String fontName){
-		return Asset.$font(fontName);
+	public static void soundPause(){
+		Asset.soundPause();
 	}
 	
-	public TextureRegion $tex(String textureregionName){
-		return Asset.$tex(textureregionName);
+	public static void soundResume(){
+		Asset.soundResume();
 	}
 	
-	public Animation $anim(String animationBaseName){
-		return Asset.$anim(animationBaseName);
+	public static void soundStop(){
+		Asset.soundStop();
+	}
+	
+	public static void soundDispose(){
+		Asset.soundDispose();
+	}
+	
+	public BitmapFont font(String fontName){
+		return Asset.font(fontName);
+	}
+	
+	public TextureRegion tex(String textureregionName){
+		return Asset.tex(textureregionName);
+	}
+	
+	public Animation anim(String animationBaseName){
+		return Asset.anim(animationBaseName);
 	}
 }

@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.ArrayMap;
  * <p>
  *  Use this class to register all your scenes and then you can switch you scenes by using {@link #setCurrentScene}
  *  method with the sceneName you registered your scene with.
- *  You can define a ScenePath and use the {@link #nextScene}, {@link #prevScene} to walk the path.
  * <p>
  * @author pyros2097 */
 

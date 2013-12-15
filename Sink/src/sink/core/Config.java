@@ -19,8 +19,6 @@ package sink.core;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
-import static sink.core.Asset.$musicVolume;
-
 /** The Configuration/Settings for the libGdx Game
  * <p>
  * The Config class contains all the necessary options for all different platforms into one class.
@@ -34,7 +32,7 @@ import static sink.core.Asset.$musicVolume;
 public final class Config {
 	// Desktop Settings
 	public static final String title = "Sink";
-	public static String version = "0.70";
+	public static String version = "0.75";
 	public static final boolean useGL20 = false;
 	public static final boolean diableAudio = false;
 	public static final boolean forceExit = false;
@@ -238,7 +236,7 @@ public final class Config {
         prefs.putFloat(VOLUME_MUSIC, ue);
         prefs.flush();
         volMusic = ue;
-        $musicVolume();
+        Asset.musicVolume();
     }
     
     public static void setSoundVolume(float ue){

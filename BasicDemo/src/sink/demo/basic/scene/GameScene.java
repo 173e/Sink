@@ -17,8 +17,7 @@
 package sink.demo.basic.scene;
 
 
-import static sink.core.Asset.$musicPlay;
-import static sink.core.Asset.$unloadTmx;
+import static sink.core.Asset.unloadTmx;
 import sink.core.Asset;
 import sink.core.Config;
 import sink.core.Scene;
@@ -51,8 +50,8 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 	
 	@Override
 	public void init() {
-		$musicPlay("level1");
-		map = new Map(Asset.$loadTmx(currentLevel+1), 24);
+		musicPlay("level1");
+		map = new Map(Asset.loadTmx(currentLevel+1), 24);
 		map.loadLayer(0);
 		map.loadLayer(1);
 		addActor(map);
@@ -124,7 +123,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 
 	public void back() {
 		Sink.camera.disablePanning();
-		$unloadTmx(currentLevel+1);
+		unloadTmx(currentLevel+1);
 		Sink.removeListener((PauseListener)this);
 		Sink.removeListener((ResumeListener)this);
 		Sink.camera.removeHudActor(SceneManager.fpsLabel);

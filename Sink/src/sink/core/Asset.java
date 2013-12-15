@@ -63,30 +63,29 @@ import com.badlogic.gdx.utils.ArrayMap;
  *	All assets are accessed this way,
  *	First import what type of asset you wish to use as static,
  *
- *	import static sky.engine.core.Asset.$anim;
- *	import static sky.engine.core.Asset.$tex;
- *	import static sky.engine.core.Asset.$musicPlay;
- *	import static sky.engine.core.Asset.$soundPlay;
- *	import static sky.engine.core.Asset.$font;
- *	import static sky.engine.core.Panel.$log;
+ *	import static sink.core.Asset.anim;
+ *	import static sink.core.Asset.tex;
+ *	import static sink.core.Asset.musicPlay;
+ *	import static sink.core.Asset.soundPlay;
+ *	import static sink.core.Asset.font;
  *
  *
  *	To load TextureRegion
- *	TextureRegion cat = $tex("cat");
+ *	TextureRegion cat = tex("cat");
  *	
  *	To load Animation
- *	Animation catAnim = $anim("cat");
+ *	Animation catAnim = anim("cat");
  *	
  *	To load BitmapFont
- *	BitmapFont font1 = $font("font1");
+ *	BitmapFont font1 = font("font1");
  *
  *  OfCourse SkyEngine already has inbuilt MusicManager and SoundManager which you can use by invoking:
- *	$musicPlay("musicname");
- *	$soundPlay("soundname");
+ *	musicPlay("musicname");
+ *	soundPlay("soundname");
  *		
  *  To Log to the Console or the Logger Widget In Game you can use,
  *  This will display to your console and/or the loggerPanel in the engine
- *	$log("Some important data");
+ *	log("Some important data");
  *	
  *
  *  When exporting your game to jar Conig.isJar must be set so that
@@ -239,16 +238,16 @@ public final class Asset {
 	
 	/** Plays the music file which was dynamically loaded if it is present otherwise logs the name
 	 *  @param filename The Music File name only
-	 *  @ex <code>$music("title")</code>
+	 *  @ex <code>music("title")</code>
 	 *  */
-	public static void $musicPlay(String filename){
+	public static void musicPlay(String filename){
 		if(Config.isMusic){
 			if(currentMusic != null)
 				if(currentMusic.isPlaying())
 					if(currentMusicName == filename)
 						return;
 					else
-						$musicStop();
+						musicStop();
 			if(musicMap.containsKey(filename)){
 				Scene.log("Music: playing "+filename);
 				currentMusic = musicMap.get(filename);//Gdx.audio.newMusic(Gdx.files.internal("music/"+filename));
@@ -264,7 +263,7 @@ public final class Asset {
 	}
 	
 	/** Pauses the current music file being played */
-	public static void $musicPause(){
+	public static void musicPause(){
 		if(currentMusic != null)
 			if(currentMusic.isPlaying()){
 				Scene.log("Music: pausing "+currentMusicName);
@@ -273,18 +272,18 @@ public final class Asset {
 	}
 	
 	/** Resumes the current music file being played */
-	public static void $musicResume(){
+	public static void musicResume(){
 		if(currentMusic != null)
 			if(!currentMusic.isPlaying()){
 				Scene.log("Music: resuming "+currentMusicName);
 				currentMusic.play();
 			}
 		else
-			$musicPlay(currentMusicName);
+			musicPlay(currentMusicName);
 	}
 	
 	/** Stops the current music file being played */
-	public static void $musicStop(){
+	public static void musicStop(){
 		if(currentMusic != null){
 			Scene.log("Music: stoping "+currentMusicName);
 			currentMusic.stop();
@@ -293,13 +292,13 @@ public final class Asset {
 	}
 	
 	/** Sets the volume music file being played */
-	public static void $musicVolume(){
+	public static void musicVolume(){
 		if(currentMusic != null);
 			currentMusic.setVolume(Config.volMusic);
 	}
 	
 	/** Disoposes the current music file being played */
-	public static void $musicDispose(){
+	public static void musicDispose(){
 		if(currentMusic != null);
 			currentMusic.dispose();
 	}
@@ -325,9 +324,9 @@ public final class Asset {
 	
 	/** Plays the sound file which was dynamically loaded if it is present otherwise logs the name
 	 *  @param filename The Sound File name only
-	 *  @ex <code>$sound("bamg")</code>
+	 *  @ex <code>soundPlay("bang")</code>
 	 *  */
-	public static void $soundPlay(String filename){
+	public static void soundPlay(String filename){
 		if(Config.isSound){
 			if(soundMap.containsKey(filename)){
 				currentSound = soundMap.get(filename);
@@ -343,7 +342,7 @@ public final class Asset {
 	}
 	
 	/** Plays the sound file "click" */
-	public static void $soundClick(){
+	public static void soundClick(){
 		if(Config.isSound){
 	        currentSound = soundMap.get("click");
 			long id = currentSound.play(Config.volSound);
@@ -354,28 +353,28 @@ public final class Asset {
 	}
 	
 	/** Pauses the current sound file being played */
-	public static void $soundPause(){
+	public static void soundPause(){
 		Scene.log("Sound:"+"Pausing");
 		if(currentSound != null)
 			currentSound.pause();
 	}
 	
 	/** Resumes the current sound file being played */
-	public static void $soundResume(){
+	public static void soundResume(){
 		Scene.log("Sound:"+"Resuming");
 		if(currentSound != null)
 			currentSound.resume();
 	}
 	
 	/** Stops the current sound file being played */
-	public static void $soundStop(){
+	public static void soundStop(){
 		Scene.log("Sound:"+"Stopping");
 		if(currentSound != null)
 			currentSound.stop();
 	}
 	
 	/** Disposes the current sound file being played */
-	public static void $soundDispose(){
+	public static void soundDispose(){
 		Scene.log("Sound:"+"Disposing Sound");
 		if(currentSound != null)
 			currentSound.dispose();
@@ -407,9 +406,9 @@ public final class Asset {
 	 *  else returns null
 	 *  @param fontname The BitmapFont name
 	 *  @return BitmapFont or null
-	 *  @ex $font("font1") or $font("arial")
+	 *  @ex font("font1") or font("arial")
 	 *  */
-	public static BitmapFont $font(String fontname){
+	public static BitmapFont font(String fontname){
 		if(fontMap.containsKey(fontname)){
 			return fontMap.get(fontname);
 		}
@@ -450,7 +449,7 @@ public final class Asset {
 	 *  @param textureregionName The TextureRegion name
 	 *  @return TextureRegion or null
 	 *  */
-	public static TextureRegion $tex(String textureregionName){
+	public static TextureRegion tex(String textureregionName){
 		if(texMap.containsKey(textureregionName)){
 			return texMap.get(textureregionName);
 		}
@@ -468,9 +467,9 @@ public final class Asset {
 	 * 2.TextureRegion Name with "_row" is treated as row animations so don't use _row as filename
 	 *  @param animationBaseName The Animation Base name
 	 *  @return Animation or null
-	 *  @ex	<code>$anim("slug")</code>
+	 *  @ex	<code>anim("slug")</code>
 	 * */
-	public static Animation $anim(String animationBaseName){
+	public static Animation anim(String animationBaseName){
 		if(animMap.containsKey(animationBaseName)){
 			return animMap.get(animationBaseName);
 		}
@@ -506,7 +505,7 @@ public final class Asset {
 							keyFrames.add(texMap.get(baseAnimName+i));
 						}
 						else{
-							//$log("KeyFrames: "+keyFrames.toString());
+							//log("KeyFrames: "+keyFrames.toString());
 							animsLoaded.add(baseAnimName);
 							animMap.put(baseAnimName, new Animation(1/keyFrames.size, keyFrames));
 							keyFrames.clear();
@@ -520,7 +519,7 @@ public final class Asset {
 				Scene.log("Loading Row Animation: "+name);
 				TextureRegion textureRegion = texMap.get(name);
 				String[] sep = name.split("_row");
-				//$log(sep[1]);
+				//log(sep[1]);
 				int noOfFrames = Integer.parseInt(sep[1]);
 				TextureRegion[] rowFrames = new TextureRegion[noOfFrames];
 
@@ -626,13 +625,13 @@ public final class Asset {
 /***********************************************************************************************************
 	* 								TMX MAP Related Functions							   				   *
 ************************************************************************************************************/
-	public static TiledMap $loadTmx(int i){
+	public static TiledMap loadTmx(int i){
 		assetMan.load(Config.getBasePath()+"map/level"+i+".tmx", TiledMap.class);
 		assetMan.finishLoading();
 		return assetMan.get(Config.getBasePath()+"map/level"+i+".tmx", TiledMap.class);
 	}
 	
-	public static void $unloadTmx(int i){
+	public static void unloadTmx(int i){
 		assetMan.unload(Config.getBasePath()+"map/level"+i+".tmx");
 	}
 	

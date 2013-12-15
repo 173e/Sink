@@ -1,8 +1,8 @@
 package sink.core;
 
-import static sink.core.Asset.$musicPause;
-import static sink.core.Asset.$musicResume;
-import static sink.core.Asset.$soundStop;
+import static sink.core.Asset.musicPause;
+import static sink.core.Asset.musicResume;
+import static sink.core.Asset.soundStop;
 import sink.event.CreateListener;
 import sink.event.DisposeListener;
 import sink.event.PauseListener;
@@ -18,10 +18,9 @@ import com.badlogic.gdx.utils.Array;
  * <p>
  * It consists of a single Stage and SceneCamera which are all initialized based on the {@link Config} settings.
  * They can be accessed in a static way like Sink.stage Sink.camera.
- * It also has extra things like gameUptime, pauseState, PauseListeners, ResumeListeners, DisposeListeners.
- * An instance object is usually created and the {@link #create} method overrided to initialize all the
- * scenes for your game  during creation of LWJGLApplication creation. 
- * ex:
+ * It also has extra things like gameUptime, pauseState, CreateListeners,PauseListeners, ResumeListeners, 
+ * DisposeListeners.
+ * @ex
  * <code>
  * public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
@@ -93,15 +92,15 @@ public final class Sink implements ApplicationListener {
 	@Override
 	public final void pause() {
 		Scene.log("Sink: Pause");
-		$musicPause();
-		$soundStop();
+		musicPause();
+		soundStop();
 		firePauseEvent();
 	}
 
 	@Override
 	public final void resume() {
 		Scene.log("Sink: Resume");
-		$musicResume();
+		musicResume();
 		fireResumeEvent();
 	}
 
