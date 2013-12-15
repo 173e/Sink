@@ -23,7 +23,7 @@ ScreenShots
 	
 Project Structure
 -----------------
-(Important) All asset files must be lowercase only.. otherwise it causes problems with android
+><b>Important</b>  All asset files must be lowercase only.. otherwise it causes problems with android
 
 1. All Assets are to be stored in the assets directory
 2. Automatic Asset Loading the directory Structure should be like this
@@ -105,14 +105,13 @@ Todo
 Credits
 --------
 Thanks all these awesome frameworks  
-[mtx](http://moribitotechx.blogspot.co.uk)
+[mtx](http://moribitotechx.blogspot.co.uk)  
 [libgdx](libgdx.badlogicgames.com)  
 [lwjgl](lwjgl.org)  ‎
-[openal(kcat.strangesoft.net/openal.html)  
+[openal](kcat.strangesoft.net/openal.html)  
 
-Documentation
---------------
-#Scene
+#Documentation
+##Scene
 
 Use this class to to create scenes or menus for your game. Just extend this class and override the
 init() method all other things are done automatically like clearing the stage and populating it with the
@@ -129,13 +128,13 @@ public class MenuScene extends Scene{
  }
 ```
 
-#SceneManager
+##SceneManager
 
 Before you use your scenes use this class to register all your scenes using registerScene("sceneName", new SceneObject())
 and then you can switch you scenes by using setCurrentScene method with the sceneName you registered your 
 scene with
 ```java
-#In your static voic main, register your scenes
+//In your static void main, register your scenes
 Sink.addListener(new CreateListener(){
 			@Override
 			public void onCreate() {
@@ -151,12 +150,12 @@ Sink.addListener(new CreateListener(){
 		});
 ```
 
-#Sink
+##Sink
 
 The Main Entry Point for the Sink Game is the Sink class
 It consists of a single Stage and SceneCamera which are all initialized based on the Config class.
 They can be accessed in a static way like Sink.stage Sink.camera.
-It also has extra things like gameUptime, pauseState, CreateListenersPauseListeners, ResumeListeners, 
+It also has extra things like gameUptime, pauseState, CreateListeners, PauseListeners, ResumeListeners, 
 DisposeListeners
 ```java
 public class BasicDesktop extends MainDesktop{
