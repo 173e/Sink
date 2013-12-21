@@ -81,5 +81,6 @@ public class MenuScene extends Scene{
  			}
  		});
 		addActor(grid);
+		//GameUser gu = new GameUser();
 	}
 }

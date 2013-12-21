@@ -16,10 +16,14 @@
 
 package sink.main;
 
+import java.util.Date;
+
+import sink.cloud.Task;
 import sink.core.Config;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.stackmob.sdk.api.StackMob;
 
 public class MainDesktop{
 	public static LwjglApplicationConfiguration cfg;
@@ -38,5 +42,9 @@ public class MainDesktop{
 		cfg.x = Config.SCREEN_X;
 		cfg.y = Config.SCREEN_Y;
 		cfg.addIcon(Config.icon, FileType.Internal);
+		Integer apiVersion = 1;
+		StackMob client = new StackMob(apiVersion, "1b5090a2-970b-4f13-ba19-ce5a06ea72f1");
+		Task myTask = new Task("Learn more about StackMob", new Date());
+		//myTask.save();
 	}
 }

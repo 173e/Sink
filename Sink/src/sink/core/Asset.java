@@ -82,10 +82,6 @@ import com.badlogic.gdx.utils.ArrayMap;
  *  OfCourse SkyEngine already has inbuilt MusicManager and SoundManager which you can use by invoking:
  *	musicPlay("musicname");
  *	soundPlay("soundname");
- *		
- *  To Log to the Console or the Logger Widget In Game you can use,
- *  This will display to your console and/or the loggerPanel in the engine
- *	log("Some important data");
  *	
  *
  *  When exporting your game to jar Conig.isJar must be set so that

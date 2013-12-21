@@ -47,6 +47,7 @@ public final class Config {
 	public static final boolean useCompass = false;
 	public static final boolean hideStatusBar = true;
 	public static final boolean useWakelock = true;
+	public static final boolean useCloud = true;
 	
 	public static final int SCREEN_WIDTH = 852;
 	public static final int SCREEN_HEIGHT = 480;

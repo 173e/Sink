@@ -7,6 +7,10 @@ It consists of Scenes and has a SceneManager to control which scenes are to disp
 Main Idea is about live coding any changes done to the game must be directly shown in the Engine running
 overlay in the Sink IDE.	
 Also a Stage3d is being developed currently to support 3d games.
+Stage3d class can be used to construct a Stage for Actor3d's  
+You can use the Actor3d class to create Actors for the Stage  
+Actor3d has almost identical properties to Actor  
+You can perform actions on these actors using Action3d  
 
 Demo
 ====
@@ -66,32 +70,51 @@ import sink.core.Scene;
 
 
 //To load TextureRegion
-	TextureRegion cat = tex("cat");
+TextureRegion cat = tex("cat");
 	
 //To load Animation
-	Animation catAnim = anim("cat");
+Animation catAnim = anim("cat");
 	
 //To load BitmapFont
-	BitmapFont font1 = font("font1");
+BitmapFont font1 = font("font1");
 	
-//OfCourse SkyEngine already has inbuilt MusicManager and SoundManager which you can use by invoking:
-	musicPlay("musicname");
-	soundPlay("soundname");
+//OfCourse Sink already has inbuilt MusicManager and SoundManager which you can use by invoking:
+musicPlay("musicname");
+soundPlay("soundname");
 		
 //To Log to the Console or the Logger Widget In Game you can use,
-	Scene.log("Some important data");
-//	This will display to your console and/or the loggerPanel in the engine
+Scene.log("Some important data");
+/This will display to your console and/or the loggerPane if enabled by using Config class in the engine
 
-//When exporting your game to jar Conig.isJar must be set so that
-// all your assets will get loaded automatically within the jar file
-	Config.isJar = true;
+When exporting your game to jar Conig.isJar must be set so that
+all your assets will get loaded automatically within the jar file
+Config.isJar = true;
+The asset functions can return null for Font, TextureRegion and Animation if the asset cannot be 
+found so null checking has to be manually done.
 	
 Also There is a great Config class which already has basic things needed in a game,
-	like Config.isMusic to get if music is enabled
+like Config.isMusic to get if music is enabled
 	
 Currently Only Orthogonal Maps are supported
 
 In the BasicDemo only level 1 Works Properly
+
+// This is for Stage3d
+import com.badlogix.gdx.scenes.scene3d.Actor3d;
+import com.badlogix.gdx.scenes.scene3d.Group3d;
+import com.badlogix.gdx.scenes.scene3d.Stage3d;
+import com.badlogix.gdx.scenes.scene3d.actions.Actions;
+
+stage3d = new Stage3d();
+modelBuilder = new ModelBuilder();
+model = modelBuilder.createBox(5f, 5f, 5f, new Material(ColorAttribute.createDiffuse(Color.WHITE)),
+                Usage.Position | Usage.Normal);
+r = new Actor3d(model, 9f, 0f, 0f);
+
+stage3d.addActor3d(r);
+
+r.addAction3d(Actions.moveTo(7f, 0f, 0f, 1f));
+r.addAction3d(Actions.rotateTo(59, 1f));
 	
 ```
 	
