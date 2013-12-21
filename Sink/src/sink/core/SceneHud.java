@@ -15,6 +15,16 @@
  ******************************************************************************/
 package sink.core;
 
+/** The SceneHud Class extends SceneGroup Class so you better add actors to it to make it useful
+ * <p>
+ * If you want to make any elements/actors/group to move along with the camera like HUD's extend 
+ * this class so it will automatically register your element/actor/group to the SceneCamera which
+ * will position them to changes in the camera accordingly.
+ * <p>
+ * @author pyros2097 */
 public class SceneHud extends SceneGroup{
 
+	public SceneHud(){
+		Sink.camera.registerSceneHud(this);
+	}
 }

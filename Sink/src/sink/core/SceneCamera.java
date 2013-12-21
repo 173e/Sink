@@ -69,6 +69,7 @@ public class SceneCamera extends OrthographicCamera {
 	private float deltaCamY = 0;
 	private static Actor followedActor;
 	
+	//private boolean hudPanning = false;
 	private Array<Actor> hudActors = new Array<Actor>();
 	
 	SceneCamera(){
@@ -88,6 +89,17 @@ public class SceneCamera extends OrthographicCamera {
 	public void unregisterSceneHud(Actor actor){
 		hudActors.removeValue(actor, true);
 	}
+	
+	/* If you want to enable Hud elements from moving along with the camera in a particular scene
+	 
+	public void enableHudPanning(){
+		hudPanning = true;
+	}
+	
+	 If you want to disable Hud elements from moving along with the camera in a particular scene
+	public void disableHudPanning(){
+		hudPanning = false;
+	}*/
      
      /** Moves the actor instantly. */
     public void moveBy (float amountX, float amountY) {
@@ -257,12 +269,14 @@ public class SceneCamera extends OrthographicCamera {
 	};
 	
 	private void translateX(float x){
-		for(Actor actor: hudActors) actor.translate(x, 0);
+		//if(hudPanning)
+			for(Actor actor: hudActors) actor.translate(x, 0);
 		translate(x, 0);
 	}
 	
 	private void translateY(float y){
-		for(Actor actor: hudActors) actor.translate(0, y);
+		//if(hudPanning)
+			for(Actor actor: hudActors) actor.translate(0, y);
 		translate(0, y);
 	}
 }
