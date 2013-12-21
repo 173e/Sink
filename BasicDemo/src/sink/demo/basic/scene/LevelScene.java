@@ -28,7 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class LevelScene extends Scene{
 	public final static int maxLevel = 20;
 	@Override
-	public void init(){
+	public void onInit(){
 		grid.setPosition(-999, 0);
 		grid.addAction(Actions.moveTo(0, 0, 0.3f));
 		grid.top().left().pad(10, 10, 10, 10);

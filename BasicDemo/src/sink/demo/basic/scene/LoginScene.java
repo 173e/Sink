@@ -11,7 +11,7 @@ import sink.core.SceneManager;
 public class LoginScene extends Scene{
 
 	@Override
-	public void init() {
+	public void onInit() {
 		TextButton back = new TextButton("Back", Asset.skin);
 		back.setSize(200, 75);
 		back.addListener(new ClickListener(){

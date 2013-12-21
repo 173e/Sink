@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 pyros2097
+ * Copyright 2014 pyros2097
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import java.util.Date;
 
 import sink.cloud.Task;
 import sink.core.Config;
+import sink.core.Sink;
 
 import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.stackmob.sdk.api.StackMob;
 
@@ -46,5 +48,9 @@ public class MainDesktop{
 		StackMob client = new StackMob(apiVersion, "1b5090a2-970b-4f13-ba19-ce5a06ea72f1");
 		Task myTask = new Task("Learn more about StackMob", new Date());
 		//myTask.save();
+	}
+	
+	public static void run(){
+		new LwjglApplication(new Sink(), cfg); 
 	}
 }

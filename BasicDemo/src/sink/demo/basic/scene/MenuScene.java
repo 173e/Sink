@@ -28,7 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class MenuScene extends Scene{
 	@Override
-	public void init(){
+	public void onInit(){
 		musicPlay("title");
 		setBackground("title");
 		grid.setPosition(-999, 0);

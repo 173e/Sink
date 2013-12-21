@@ -47,7 +47,7 @@ public class SplashScene extends Scene implements Disposable {
 	LoadingText loadingText;
 
 	@Override
-	public void init() {
+	public void onInit() {
 		Asset.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 		isActive = true;
 		bg1 = new Texture("splash/libgdx.png");

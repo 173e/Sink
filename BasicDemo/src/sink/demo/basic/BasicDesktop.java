@@ -28,8 +28,6 @@ import sink.demo.basic.scene.SplashScene;
 import sink.event.CreateListener;
 import sink.main.MainDesktop;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-
 public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
 		init();
@@ -46,6 +44,6 @@ public class BasicDesktop extends MainDesktop{
 				SceneManager.setScene("splash");
 			}
 		});
-		new LwjglApplication(new Sink(), cfg); 
+		run();
 	}
 }

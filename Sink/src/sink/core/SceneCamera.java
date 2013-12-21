@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2014 pyros2097
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package sink.core;
 
 import com.badlogic.gdx.Gdx;
@@ -63,14 +78,14 @@ public class SceneCamera extends OrthographicCamera {
 	/* If you want to make any elements/actors to move along with the camera like HUD's add them using
 	 * this method
 	 */
-	public void addHudActor(Actor actor){
+	public void registerSceneHud(Actor actor){
 		hudActors.add(actor);
 	}
 	
 	/* If you want to stop any elements/actors from moving along with the camera like HUD's you can stop them
 	 * by using this method
 	 */
-	public void removeHudActor(Actor actor){
+	public void unregisterSceneHud(Actor actor){
 		hudActors.removeValue(actor, true);
 	}
      
@@ -166,9 +181,6 @@ public class SceneCamera extends OrthographicCamera {
     }
     	
     public void touchPad(float xPercent, float yPercent){
-    	//MapUnit player = Map.$units.get(0);
-    	//player.setX(player.getX() + xPercent*5);
-    	//player.setY(player.getY() + yPercent*5);
     }
     
 	public void followActor(Actor actor){
@@ -245,12 +257,12 @@ public class SceneCamera extends OrthographicCamera {
 	};
 	
 	private void translateX(float x){
-		position.x += x;
 		for(Actor actor: hudActors) actor.translate(x, 0);
+		translate(x, 0);
 	}
 	
 	private void translateY(float y){
-		position.y += y;
 		for(Actor actor: hudActors) actor.translate(0, y);
+		translate(0, y);
 	}
 }

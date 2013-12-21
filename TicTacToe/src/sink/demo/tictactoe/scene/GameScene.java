@@ -2,15 +2,14 @@ package sink.demo.tictactoe.scene;
 
 import java.util.Random;
 
-import sink.core.Asset;
 import sink.core.Scene;
+import sink.core.SceneGroup;
 import sink.core.SceneManager;
 import sink.demo.tictactoe.GameMode;
 import sink.demo.tictactoe.GameState;
 import sink.demo.tictactoe.MarkType;
 import sink.demo.tictactoe.Turn;
 
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -25,12 +24,12 @@ public class GameScene extends Scene{
 	public static Turn currentTurn = Turn.Player;
 	
 	public static void startLevel() {
-		SceneManager.setCurrentScene("game");
+		SceneManager.setScene("game");
 		setState(GameState.GAME_RUNNING);
 	}
 	
 	public static void back() {
-		SceneManager.setCurrentScene("menu");
+		SceneManager.setScene("menu");
 		setState(GameState.GAME_MENU);
 	}
 	
@@ -61,7 +60,7 @@ public class GameScene extends Scene{
 	}
 	
 	@Override
-	public void init(){
+	public void onInit(){
 		boxes = new Box[3][3];
 		for(int i = 0;i < 3;i++){
 			for(int j = 0;j < 3;j++){
@@ -77,7 +76,7 @@ public class GameScene extends Scene{
 		Scene.log("Reset");
 		turnCounter = 0;
 		this.clear();
-		init();
+		onInit();
 	}
 	
 	@Override
@@ -166,11 +165,11 @@ public class GameScene extends Scene{
 
 }
 
-class Box extends Group{
+class Box extends SceneGroup{
 	private final int row, col;
-	private final Image bg = new Image(Asset.$tex("square"));
-	private final Image x = new Image(Asset.$tex("x"));
-	private final Image o = new Image(Asset.$tex("o"));
+	private final Image bg = new Image(tex("square"));
+	private final Image x = new Image(tex("x"));
+	private final Image o = new Image(tex("o"));
 	public boolean isMarked = false;
 	public MarkType type = MarkType.None;
 	

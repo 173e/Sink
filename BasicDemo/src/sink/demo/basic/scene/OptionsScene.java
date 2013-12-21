@@ -30,7 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class OptionsScene extends Scene{
 	@Override
-	public void init(){
+	public void onInit(){
 		setBackground("title");
 		setPosition(0, -999);
 		addAction(Actions.moveTo(0,  0, 0.3f));

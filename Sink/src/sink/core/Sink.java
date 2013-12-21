@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2014 pyros2097
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package sink.core;
 
 import static sink.core.Asset.musicPause;
@@ -25,10 +40,9 @@ import com.badlogic.gdx.utils.Array;
  * public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
 		init();
-		new LwjglApplication(new Sink(){
+		Sink.addListener(new CreateListener(){
 			@Override
-			public void create(){
-				super.create();
+			public void onCreate(){
 				SceneManager.registerScene("splash", new SplashScene());
 				SceneManager.registerScene("menu", new MenuScene());
 				SceneManager.registerScene("options", new OptionsScene());
@@ -36,7 +50,8 @@ import com.badlogic.gdx.utils.Array;
 				SceneManager.registerScene("game", new GameScene());
 				SceneManager.setCurrentScene("splash");
 			}
-		}, cfg); 
+		});
+		run();
 	}
 } </code>
  * <p>

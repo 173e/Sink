@@ -18,25 +18,24 @@ package sink.demo.tictactoe;
 
 import sink.core.SceneManager;
 import sink.core.Sink;
+import sink.event.CreateListener;
 import sink.demo.tictactoe.scene.GameScene;
 import sink.demo.tictactoe.scene.MenuScene;
 import sink.demo.tictactoe.scene.SplashScene;
 import sink.main.MainDesktop;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-
 public class TicTacToeDesktop extends MainDesktop {
 	public static void main(String[] argc) {
 		init();
-		new LwjglApplication(new Sink(){
+		Sink.addListener(new CreateListener(){
 			@Override
-			public void create(){
-				super.create();
+			public void onCreate(){
 				SceneManager.registerScene("splash", new SplashScene());
 				SceneManager.registerScene("menu", new MenuScene());
 				SceneManager.registerScene("game", new GameScene());
-				SceneManager.setCurrentScene("splash");
+				SceneManager.setScene("splash");
 			}
-		}, cfg);
+		});
+		run();
 	}
 }

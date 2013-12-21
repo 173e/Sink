@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 See AUTHORS file.
+ * Copyright 2014 pyros2097
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -31,11 +33,15 @@ import com.badlogic.gdx.utils.Scaling;
 /** The base class for creating Scenes
  * <p>
  * Use this class to to create screens or menus for your game. Just extend this class and override the
- * {@link #init} method all other things are done automatically like clearing the stage and populating it with the
+ * {@link #onInit} method all other things are done automatically like clearing the stage and populating it with the
  * actors of this group and override act method which is called in the main render method for updating your
  * scene logic such as splash scene, timers, delays etc...
  * It also contains a Table which can be used as a box layout for ui components.
- * A scene can be set using {@link SceneManager.setCurrentScene}
+ * A scene can be set using {@link SceneManager.setScene}
+ * 
+ * Scene also supports transitions. You can start a scene transition by calling the method at he beginning of
+ * the init method ex: transitionRightToLeft(); will transit the scene from right to left when 
+ * it is shown.
  * <p>
  * @author pyros2097 */
 
@@ -81,8 +87,6 @@ public abstract class Scene extends Group {
 				SceneManager.logPane.update(log);
 		}
 	}
-	public abstract void init();
-	
 	
 	public static void musicPlay(String filename){
 		Asset.musicPlay(filename);
@@ -139,4 +143,86 @@ public abstract class Scene extends Group {
 	public Animation anim(String animationBaseName){
 		return Asset.anim(animationBaseName);
 	}
+	
+	public void transitionLeftToRight(){
+		setPosition(-999, 0);
+ 		addAction(Actions.moveTo(0,  0, 0.5f));
+	}
+	
+	public void transitionLeftToRight(float duration){
+		setPosition(-999, 0);
+ 		addAction(Actions.moveTo(0, 0, duration));
+	}
+	
+	public void transitionLeftToRight(Interpolation inter){
+		setPosition(-999, 0);
+ 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	}
+	
+	public void transitionLeftToRight(float duration, Interpolation inter){
+		setPosition(-999, 0);
+ 		addAction(Actions.moveTo(0, 0, duration, inter));
+	}
+	
+	public void transitionRightToLeft(){
+		setPosition(999, 0);
+ 		addAction(Actions.moveTo(0,  0, 0.5f));
+	}
+	
+	public void transitionRightToLeft(float duration){
+		setPosition(999, 0);
+ 		addAction(Actions.moveTo(0, 0, duration));
+	}
+	
+	public void transitionRightToLeft(Interpolation inter){
+		setPosition(999, 0);
+ 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	}
+	
+	public void transitionRightToLeft(float duration, Interpolation inter){
+		setPosition(999, 0);
+ 		addAction(Actions.moveTo(0, 0, duration, inter));
+	}
+	
+	public void transitionUpToDown(){
+		setPosition(0, 999);
+ 		addAction(Actions.moveTo(0,  0, 0.5f));
+	}
+	
+	public void transitionUpToDown(float duration){
+		setPosition(0, 999);
+ 		addAction(Actions.moveTo(0, 0, duration));
+	}
+	
+	public void transitionUpToDown(Interpolation inter){
+		setPosition(0, 999);
+ 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	}
+	
+	public void transitionUpToDown(float duration, Interpolation inter){
+		setPosition(0, 999);
+ 		addAction(Actions.moveTo(0, 0, duration, inter));
+	}
+	
+	public void transitionDownToUp(){
+		setPosition(0, -999);
+ 		addAction(Actions.moveTo(0,  0, 0.5f));
+	}
+	
+	public void transitionDownToUp(float duration){
+		setPosition(0, -999);
+ 		addAction(Actions.moveTo(0, 0, duration));
+	}
+	
+	public void transitionDownToUp(Interpolation inter){
+		setPosition(0, -999);
+ 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	}
+	
+	public void transitionDownToUp(float duration, Interpolation inter){
+		setPosition(0, -999);
+ 		addAction(Actions.moveTo(0, 0, duration, inter));
+	}
+	
+	public abstract void onInit();
 }

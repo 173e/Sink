@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package sink.event;
+package sink.core;
 
-public interface DisposeListener {
-	void onDispose();
+public class SceneHud extends SceneGroup{
+
 }

@@ -4,9 +4,11 @@ Sink is a Game Framework built on top of libGDX with all the batteries included.
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
 writing error free setup code etc.
 It consists of Scenes and has a SceneManager to control which scenes are to displayed when.
-Main Idea is about live coding any changes done to the game must be directly shown in the Engine running
-overlay in the Sink IDE.	
-Also a Stage3d is being developed currently to support 3d games.
+It also has Scene, SceneGroup, SceneActor classes which make it easier to add resources without many 
+manual importing.  
+
+##Stage3d
+Also a Stage3d is being developed currently to support 3d games  
 Stage3d class can be used to construct a Stage for Actor3d's  
 You can use the Actor3d class to create Actors for the Stage  
 Actor3d has almost identical properties to Actor  
@@ -68,7 +70,7 @@ import static sink.core.Asset.soundPlay;
 import static sink.core.Asset.font;
 import sink.core.Scene;
 
-
+// these methods are directly built into Scene, SceneGroup, SceneActor so you need not import it from Asset class
 //To load TextureRegion
 TextureRegion cat = tex("cat");
 	
@@ -135,21 +137,28 @@ Thanks all these awesome frameworks
 
 #Documentation
 ##Scene
-
 Use this class to to create scenes or menus for your game. Just extend this class and override the
-init() method all other things are done automatically like clearing the stage and populating it with the
-actors of this group. A scene can be set using SceneManager.setCurrentScene("sceneName")
+onInit() method all other things are done automatically like clearing the stage and populating it with the
+actors of this group. A scene can be set using SceneManager.setScene("sceneName")
+All the Asset methods are directly built into it
 ```java
 public class MenuScene extends Scene{
 	@Override
-	public void init(){
-		musicPlay("title");
+	public void onInit(){
+		musicPlay("title"); 
+		
 		setBackground("title");
  		TextButton btn1 = new TextButton("Start", Asset.skin);
  		addActor(btn1, 45, 245);
  	}
  }
 ```
+
+##SceneActor
+This extends the Actor class and all the Asset methods are directly built into it
+
+##SceneGroup
+This extends the Group class and all the Asset methods are directly built into it
 
 ##SceneManager
 
@@ -172,6 +181,12 @@ Sink.addListener(new CreateListener(){
 			}
 		});
 ```
+
+##SceneCamera
+
+The Camera class with all batteries included like panning, following, smoothing
+This is a singleton class which can be used for panning the camera using mouse, keyboard, drag.. etc.
+It can also automatically follow a actor by using followActor(Actor actor)
 
 ##Sink
 
@@ -197,7 +212,7 @@ public class BasicDesktop extends MainDesktop{
 				SceneManager.setScene("splash");
 			}
 		});
-		new LwjglApplication(new Sink(), cfg); 
+		run();
 	}
 }
 ```

@@ -20,13 +20,13 @@ import sink.core.Asset;
 import sink.core.Config;
 import sink.core.LogPane;
 import sink.core.Scene;
+import sink.core.SceneGroup;
 import sink.core.SceneManager;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -47,7 +47,7 @@ public class SplashScene extends Scene implements Disposable {
 	LoadingText loadingText;
 
 	@Override
-	protected void init() {
+	public void onInit() {
 		Asset.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 		isActive = true;
 		bg1 = new Texture("splash/libgdx.png");
@@ -80,7 +80,7 @@ public class SplashScene extends Scene implements Disposable {
 	        	Asset.setUp();
 	        	SceneManager.fpsLabel = new Label("", Asset.skin);
 	        	SceneManager.logPane = new LogPane();
-			 	SceneManager.setCurrentScene("menu");
+			 	SceneManager.setScene("menu");
 	            return true;
 	          }
 	    };
@@ -102,7 +102,7 @@ public class SplashScene extends Scene implements Disposable {
 	}
 }
 
-class LoadingText extends Group {
+class LoadingText extends SceneGroup {
 	String text;
 	Label loading;
     float stateTime;

@@ -49,7 +49,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 	Map map;
 	
 	@Override
-	public void init() {
+	public void onInit() {
 		musicPlay("level1");
 		map = new Map(Asset.loadTmx(currentLevel+1), 24);
 		map.loadLayer(0);
@@ -69,9 +69,9 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
  			}
  		});
 		addActor(pauseBtn);
-		Sink.camera.addHudActor(SceneManager.fpsLabel);
-		Sink.camera.addHudActor(SceneManager.logPane);
-		Sink.camera.addHudActor(pauseBtn);
+		Sink.camera.registerSceneHud(SceneManager.fpsLabel);
+		Sink.camera.registerSceneHud(SceneManager.logPane);
+		Sink.camera.registerSceneHud(pauseBtn);
 		Sink.addListener((PauseListener)this);
 		Sink.addListener((ResumeListener)this);
 		Sink.camera.enablePanning();
@@ -126,9 +126,9 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		unloadTmx(currentLevel+1);
 		Sink.removeListener((PauseListener)this);
 		Sink.removeListener((ResumeListener)this);
-		Sink.camera.removeHudActor(SceneManager.fpsLabel);
-		Sink.camera.removeHudActor(SceneManager.logPane);
-		Sink.camera.removeHudActor(pauseBtn);
+		Sink.camera.unregisterSceneHud(SceneManager.fpsLabel);
+		Sink.camera.unregisterSceneHud(SceneManager.logPane);
+		Sink.camera.unregisterSceneHud(pauseBtn);
 	}
 	
 	public void setState(GameState ss){

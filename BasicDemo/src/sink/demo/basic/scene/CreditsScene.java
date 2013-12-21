@@ -27,7 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class CreditsScene extends Scene{
 
 	@Override
-	public void init(){
+	public void onInit(){
 		setBackground("title");
 		grid.setPosition(0, -250);
  		grid.addAction(Actions.moveTo(0,  110, 2.0f));
