@@ -57,8 +57,6 @@ public abstract class Scene extends Group {
 	@Override
 	public void act(float delta){
 		super.act(delta);
-		if (SceneManager.fpsLabel != null && Config.fpsVisible)
-			SceneManager.fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
 	}
 	
 	protected void addActor(Actor a, float x, float y){
@@ -72,20 +70,12 @@ public abstract class Scene extends Group {
 			imgbg = new Image(tBg, Scaling.stretch);
 			imgbg.setFillParent(true);
 			Sink.stage.addActor(imgbg);
-			log("SCENE BG IMAGE SET");
+			Sink.log("SCENE BG IMAGE SET");
 		}
 	}
 	
 	public void removeBackground() {
 		Sink.stage.getRoot().removeActor(imgbg);
-	}
-	
-	public static void log(String log) {
-		if(Config.loggingEnabled){
-			Gdx.app.log("", log);
-			if(SceneManager.logPane != null && Config.loggerVisible)
-				SceneManager.logPane.update(log);
-		}
 	}
 	
 	public static void musicPlay(String filename){

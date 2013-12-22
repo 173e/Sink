@@ -116,7 +116,7 @@ public final class Config {
     public static float speedPan;
     public static float speedDrag;
     
-    public static void init(){
+    public static void setup(){
        prefs =Gdx.app.getPreferences(title);
        isMusic = prefs.getBoolean(MUSIC, true);
        isSound = prefs.getBoolean(SOUND, true);

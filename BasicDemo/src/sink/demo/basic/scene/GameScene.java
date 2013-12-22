@@ -21,7 +21,6 @@ import static sink.core.Asset.unloadTmx;
 import sink.core.Asset;
 import sink.core.Config;
 import sink.core.Scene;
-import sink.core.SceneManager;
 import sink.core.Sink;
 
 import sink.event.PauseListener;
@@ -69,8 +68,6 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
  			}
  		});
 		addActor(pauseBtn);
-		Sink.camera.registerSceneHud(SceneManager.fpsLabel);
-		Sink.camera.registerSceneHud(SceneManager.logPane);
 		Sink.camera.registerSceneHud(pauseBtn);
 		Sink.addListener((PauseListener)this);
 		Sink.addListener((ResumeListener)this);
@@ -111,14 +108,14 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		//byte[] bb = Tea.encrypt("zzd", "aa");
 		//Config.writeSaveData(bb.toString());//.writeBytes(bb, false);
 		Config.writeSaveData(Base64Coder.encodeString("faa"));
-		Scene.log("Save: "+Config.readSaveData());
+		Sink.log("Save: "+Config.readSaveData());
 	}
 	
 	public void load(){
 		String data = Config.readSaveData();
 		//FileHandle file = Gdx.files.internal("data/savedata.bin");
 		//byte[] bytes = Tea.decrypt(data, "aa");
-		Scene.log("Load: "+Base64Coder.decodeString(data));
+		Sink.log("Load: "+Base64Coder.decodeString(data));
 	}
 
 	public void back() {
@@ -126,14 +123,12 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		unloadTmx(currentLevel+1);
 		Sink.removeListener((PauseListener)this);
 		Sink.removeListener((ResumeListener)this);
-		Sink.camera.unregisterSceneHud(SceneManager.fpsLabel);
-		Sink.camera.unregisterSceneHud(SceneManager.logPane);
 		Sink.camera.unregisterSceneHud(pauseBtn);
 	}
 	
 	public void setState(GameState ss){
 		gameState = ss;
-		Scene.log("Game State: " + gameState.toString());
+		Sink.log("Game State: " + gameState.toString());
 	}
 }
 

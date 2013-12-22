@@ -123,26 +123,26 @@ public final class Asset {
 	
 	public static void loadData(){
 		if (Gdx.app.getType() == ApplicationType.Android){
-			Scene.log("Loading Music Files");
+			Sink.log("Loading Music Files");
 			musicFiles = Gdx.files.internal("music").list(); //adroid works
-			Scene.log("Loading Sound Files");
+			Sink.log("Loading Sound Files");
 			soundFiles = Gdx.files.internal("sound").list();
-			Scene.log("Loading Font Files");
+			Sink.log("Loading Font Files");
 			fontFiles = Gdx.files.internal("font").list();
-			Scene.log("Loading Atlas Files");
+			Sink.log("Loading Atlas Files");
 			atlasFiles = Gdx.files.internal("atlas").list();
 		}
 		else if(Gdx.app.getType() == ApplicationType.Desktop){
 			if(Config.isJar)
 				loadFromJar();
 			else{
-				Scene.log("Loading Music Files");
+				Sink.log("Loading Music Files");
 				musicFiles = Gdx.files.internal("./bin/music").list();
-				Scene.log("Loading Sound Files");
+				Sink.log("Loading Sound Files");
 				soundFiles = Gdx.files.internal("./bin/sound").list();
-				Scene.log("Loading Font Files");
+				Sink.log("Loading Font Files");
 				fontFiles = Gdx.files.internal("./bin/font").list();
-				Scene.log("Loading Atlas Files");
+				Sink.log("Loading Atlas Files");
 				atlasFiles = Gdx.files.internal("./bin/atlas").list();
 				for(FileHandle f: musicFiles)
 					assetMan.load("music/"+f.name(), Music.class);
@@ -174,19 +174,19 @@ public final class Asset {
 		          String entryName = ze.getName();
 				  if(entryName.startsWith("music") &&  entryName.endsWith(".mp3")) {
 					  musicJarFiles.add(entryName);
-					  Scene.log(ze.getName());
+					  Sink.log(ze.getName());
 				  }
 				  else if(entryName.startsWith("sound") &&  entryName.endsWith(".mp3")){
 					  soundJarFiles.add(entryName);
-					  Scene.log(ze.getName());
+					  Sink.log(ze.getName());
 				  }
 				  else if(entryName.startsWith("font") &&  entryName.endsWith(".fnt")){
 					  fontJarFiles.add(entryName);
-					  Scene.log(ze.getName());
+					  Sink.log(ze.getName());
 				  }
 				  else if(entryName.startsWith("atlas") &&  entryName.endsWith(".atlas")){
 					  atlasJarFiles.add(entryName);
-					  Scene.log(ze.getName());
+					  Sink.log(ze.getName());
 				  }
 		     }
 		     zf.close();
@@ -202,7 +202,7 @@ public final class Asset {
 			assetMan.load(f, TextureAtlas.class);
 	}
 
-	public static void setUp(){
+	public static void setup(){
 		assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		loadTextureRegions();
 		//loadAnimations();
@@ -245,7 +245,7 @@ public final class Asset {
 					else
 						musicStop();
 			if(musicMap.containsKey(filename)){
-				Scene.log("Music: playing "+filename);
+				Sink.log("Music: playing "+filename);
 				currentMusic = musicMap.get(filename);//Gdx.audio.newMusic(Gdx.files.internal("music/"+filename));
 				currentMusic.setVolume(Config.volMusic);
 				currentMusic.setLooping(true);
@@ -253,7 +253,7 @@ public final class Asset {
 				currentMusicName = filename;
 			}
 			else{
-				Scene.log("Music File Not Found: "+filename);
+				Sink.log("Music File Not Found: "+filename);
 			}
 		}
 	}
@@ -262,7 +262,7 @@ public final class Asset {
 	public static void musicPause(){
 		if(currentMusic != null)
 			if(currentMusic.isPlaying()){
-				Scene.log("Music: pausing "+currentMusicName);
+				Sink.log("Music: pausing "+currentMusicName);
 				currentMusic.pause();
 			}
 	}
@@ -271,7 +271,7 @@ public final class Asset {
 	public static void musicResume(){
 		if(currentMusic != null)
 			if(!currentMusic.isPlaying()){
-				Scene.log("Music: resuming "+currentMusicName);
+				Sink.log("Music: resuming "+currentMusicName);
 				currentMusic.play();
 			}
 		else
@@ -281,7 +281,7 @@ public final class Asset {
 	/** Stops the current music file being played */
 	public static void musicStop(){
 		if(currentMusic != null){
-			Scene.log("Music: stoping "+currentMusicName);
+			Sink.log("Music: stoping "+currentMusicName);
 			currentMusic.stop();
 			currentMusic = null;
 		}
@@ -329,10 +329,10 @@ public final class Asset {
 				long id = currentSound.play(Config.volSound);
 				currentSound.setLooping(id, false);
 				currentSound.setPriority(id, 99);
-				Scene.log("Sound:"+"Play "+ filename);
+				Sink.log("Sound:"+"Play "+ filename);
 			}
 			else{
-				Scene.log("Music File Not Found: "+filename);
+				Sink.log("Music File Not Found: "+filename);
 			}
 		}
 	}
@@ -344,34 +344,34 @@ public final class Asset {
 			long id = currentSound.play(Config.volSound);
 			currentSound.setLooping(id, false);
 			currentSound.setPriority(id, 99);
-			Scene.log("Sound:"+"Play "+ "click");
+			Sink.log("Sound:"+"Play "+ "click");
 		}
 	}
 	
 	/** Pauses the current sound file being played */
 	public static void soundPause(){
-		Scene.log("Sound:"+"Pausing");
+		Sink.log("Sound:"+"Pausing");
 		if(currentSound != null)
 			currentSound.pause();
 	}
 	
 	/** Resumes the current sound file being played */
 	public static void soundResume(){
-		Scene.log("Sound:"+"Resuming");
+		Sink.log("Sound:"+"Resuming");
 		if(currentSound != null)
 			currentSound.resume();
 	}
 	
 	/** Stops the current sound file being played */
 	public static void soundStop(){
-		Scene.log("Sound:"+"Stopping");
+		Sink.log("Sound:"+"Stopping");
 		if(currentSound != null)
 			currentSound.stop();
 	}
 	
 	/** Disposes the current sound file being played */
 	public static void soundDispose(){
-		Scene.log("Sound:"+"Disposing Sound");
+		Sink.log("Sound:"+"Disposing Sound");
 		if(currentSound != null)
 			currentSound.dispose();
 	}
@@ -409,7 +409,7 @@ public final class Asset {
 			return fontMap.get(fontname);
 		}
 		else{
-			Scene.log("Font File Not Found: "+fontname);
+			Sink.log("Font File Not Found: "+fontname);
 			return null;
 		}
 	}
@@ -450,7 +450,7 @@ public final class Asset {
 			return texMap.get(textureregionName);
 		}
 		else{
-			Scene.log("TextureRegion Not Found: "+textureregionName);
+			Sink.log("TextureRegion Not Found: "+textureregionName);
 			return null;
 		}
 	}
@@ -470,7 +470,7 @@ public final class Asset {
 			return animMap.get(animationBaseName);
 		}
 		else{
-			Scene.log("Animation Not Found: "+animationBaseName);
+			Sink.log("Animation Not Found: "+animationBaseName);
 			return null;
 		}
 	}
@@ -489,15 +489,15 @@ public final class Asset {
 		for(String name: texRegionsName) {
 			if(name.matches(".*\\d.*") && !name.contains("_row")){
 				baseAnimName = name.replaceAll("[0-9]","");
-				Scene.log(baseAnimName);
+				Sink.log(baseAnimName);
 				if(!animsLoaded.contains(baseAnimName, false)){
 					for(int i=0; i < 100; i++){
 						if(i<10 && texRegionsName.contains(baseAnimName+"0"+i, false)){
-							Scene.log("Contains: "+baseAnimName+"0"+i);
+							Sink.log("Contains: "+baseAnimName+"0"+i);
 							keyFrames.add(texMap.get(baseAnimName+"0"+i));
 						}
 						else if(texRegionsName.contains(baseAnimName+i, false)){
-							Scene.log("Contains: "+baseAnimName+"0"+i);
+							Sink.log("Contains: "+baseAnimName+"0"+i);
 							keyFrames.add(texMap.get(baseAnimName+i));
 						}
 						else{
@@ -512,7 +512,7 @@ public final class Asset {
 			}
 			// Row Single Png Image Texture Animations
 			else if(name.contains("_row")){
-				Scene.log("Loading Row Animation: "+name);
+				Sink.log("Loading Row Animation: "+name);
 				TextureRegion textureRegion = texMap.get(name);
 				String[] sep = name.split("_row");
 				//log(sep[1]);
@@ -643,38 +643,38 @@ public final class Asset {
 	}
 	
 	public static void logTextures(){
-		Scene.log("BEGIN logging Textures------------------");
+		Sink.log("BEGIN logging Textures------------------");
 		for(String na: texMap.keys)
-			Scene.log(na);
-		Scene.log("END logging Textures------------------");
+			Sink.log(na);
+		Sink.log("END logging Textures------------------");
 	}
 	
 	public static void logAnimations(){
-		Scene.log("BEGIN logging Animations------------------");
+		Sink.log("BEGIN logging Animations------------------");
 		for(String na: animMap.keys)
-			Scene.log(na);
-		Scene.log("END logging Animations------------------");
+			Sink.log(na);
+		Sink.log("END logging Animations------------------");
 	}
 	
 	public static void logFonts(){
-		Scene.log("BEGIN logging Fonts------------------");
+		Sink.log("BEGIN logging Fonts------------------");
 		for(String na: fontMap.keys)
-			Scene.log(na);
-		Scene.log("END logging Fonts------------------");
+			Sink.log(na);
+		Sink.log("END logging Fonts------------------");
 	}
 	
 	public static void logSounds(){
-		Scene.log("BEGIN logging Sounds------------------");
+		Sink.log("BEGIN logging Sounds------------------");
 		for(String na: soundMap.keys)
-			Scene.log(na);
-		Scene.log("END logging Sounds------------------");
+			Sink.log(na);
+		Sink.log("END logging Sounds------------------");
 	}
 	
 	public static void logMusics(){
-		Scene.log("BEGIN logging Musics------------------");
+		Sink.log("BEGIN logging Musics------------------");
 		for(String na: musicMap.keys)
-			Scene.log(na);
-		Scene.log("END logging Musics------------------");
+			Sink.log(na);
+		Sink.log("END logging Musics------------------");
 	}
 	
 	public static void unloadAll(){

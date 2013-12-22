@@ -4,7 +4,7 @@ import java.util.Random;
 
 import sink.core.Scene;
 import sink.core.SceneGroup;
-import sink.core.SceneManager;
+import sink.core.Sink;
 import sink.demo.tictactoe.GameMode;
 import sink.demo.tictactoe.GameState;
 import sink.demo.tictactoe.MarkType;
@@ -24,12 +24,12 @@ public class GameScene extends Scene{
 	public static Turn currentTurn = Turn.Player;
 	
 	public static void startLevel() {
-		SceneManager.setScene("game");
+		Sink.setScene("game");
 		setState(GameState.GAME_RUNNING);
 	}
 	
 	public static void back() {
-		SceneManager.setScene("menu");
+		Sink.setScene("menu");
 		setState(GameState.GAME_MENU);
 	}
 	
@@ -43,7 +43,7 @@ public class GameScene extends Scene{
 	
 	public static void setMode(GameMode gm){
 		gameMode = gm;
-		Scene.log("Game State: " + gameState.toString());
+		Sink.log("Game State: " + gameState.toString());
 	}
 	
 	/* Check if state is current return true */
@@ -56,7 +56,7 @@ public class GameScene extends Scene{
 	
 	public static void setState(GameState ss){
 		gameState = ss;
-		Scene.log("Game State: " + gameState.toString());
+		Sink.log("Game State: " + gameState.toString());
 	}
 	
 	@Override
@@ -73,7 +73,7 @@ public class GameScene extends Scene{
 	}
 	
 	public void reset(){
-		Scene.log("Reset");
+		Sink.log("Reset");
 		turnCounter = 0;
 		this.clear();
 		onInit();
@@ -93,7 +93,7 @@ public class GameScene extends Scene{
 			checkForDiagonal();
 		}
 		else{
-			Scene.log("Draw Match");
+			Sink.log("Draw Match");
 			reset();
 		}
 	}
@@ -104,7 +104,7 @@ public class GameScene extends Scene{
 	void AI(){
 		if(mode(GameMode.SINGLE_PLAYER_VS_COMPUTER)){
 			if(currentTurn == Turn.Computer){
-				Scene.log("AI");
+				Sink.log("AI");
 				random1 = rand.nextInt(3);
 				random2 = rand.nextInt(3);
 				if(!boxes[random1][random2].isMarked){
@@ -117,12 +117,12 @@ public class GameScene extends Scene{
 	
 	
 	public void playerWin(){
-		Scene.log("Player Win");
+		Sink.log("Player Win");
 		reset();
 	}
 	
 	public void computerWin(){
-		Scene.log("Computer Win");
+		Sink.log("Computer Win");
 		reset();
 	}
 	
@@ -193,7 +193,7 @@ class Box extends SceneGroup{
 					else if(GameScene.mode(GameMode.SINGLE_PLAYER_VS_COMPUTER))
 						if(GameScene.currentTurn == Turn.Player)
 							markByPlayer();
-					Scene.log("Box Clicked "+Box.this.row+Box.this.col);
+					Sink.log("Box Clicked "+Box.this.row+Box.this.col);
 				}
  			}
 		});

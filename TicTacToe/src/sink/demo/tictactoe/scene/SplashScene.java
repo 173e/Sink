@@ -18,10 +18,9 @@ package sink.demo.tictactoe.scene;
 
 import sink.core.Asset;
 import sink.core.Config;
-import sink.core.LogPane;
 import sink.core.Scene;
 import sink.core.SceneGroup;
-import sink.core.SceneManager;
+import sink.core.Sink;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -77,10 +76,9 @@ public class SplashScene extends Scene implements Disposable {
 	          public boolean act(final float it) {
 	        	isActive = false;
 	        	dispose();
-	        	Asset.setUp();
-	        	SceneManager.fpsLabel = new Label("", Asset.skin);
-	        	SceneManager.logPane = new LogPane();
-			 	SceneManager.setScene("menu");
+	        	Asset.setup();
+	        	Sink.setup();
+			 	Sink.setScene("menu");
 	            return true;
 	          }
 	    };

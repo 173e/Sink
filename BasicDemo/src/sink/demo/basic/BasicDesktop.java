@@ -16,7 +16,6 @@
 
 package sink.demo.basic;
 
-import sink.core.SceneManager;
 import sink.core.Sink;
 import sink.demo.basic.scene.CreditsScene;
 import sink.demo.basic.scene.GameScene;
@@ -34,14 +33,14 @@ public class BasicDesktop extends MainDesktop{
 		Sink.addListener(new CreateListener(){
 			@Override
 			public void onCreate() {
-				SceneManager.registerScene("splash", new SplashScene());
-				SceneManager.registerScene("menu", new MenuScene());
-				SceneManager.registerScene("options", new OptionsScene());
-				SceneManager.registerScene("credits", new CreditsScene());
-				SceneManager.registerScene("login", new LoginScene());
-				SceneManager.registerScene("level", new LevelScene());
-				SceneManager.registerScene("game", new GameScene());
-				SceneManager.setScene("splash");
+				Sink.registerScene("splash", new SplashScene());
+				Sink.registerScene("menu", new MenuScene());
+				Sink.registerScene("options", new OptionsScene());
+				Sink.registerScene("credits", new CreditsScene());
+				Sink.registerScene("login", new LoginScene());
+				Sink.registerScene("level", new LevelScene());
+				Sink.registerScene("game", new GameScene());
+				Sink.setScene("splash");
 			}
 		});
 		run();

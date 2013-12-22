@@ -132,7 +132,7 @@ Credits
 Thanks all these awesome frameworks  
 [mtx](http://moribitotechx.blogspot.co.uk)  
 [libgdx](libgdx.badlogicgames.com)  
-[lwjgl](lwjgl.org)  ‎
+[lwjgl](lwjgl.org)
 [openal](kcat.strangesoft.net/openal.html)  
 
 #Documentation
@@ -160,28 +160,6 @@ This extends the Actor class and all the Asset methods are directly built into i
 ##SceneGroup
 This extends the Group class and all the Asset methods are directly built into it
 
-##SceneManager
-
-Before you use your scenes use this class to register all your scenes using registerScene("sceneName", new SceneObject())
-and then you can switch you scenes by using setCurrentScene method with the sceneName you registered your 
-scene with
-```java
-//In your static void main, register your scenes
-Sink.addListener(new CreateListener(){
-			@Override
-			public void onCreate() {
-				SceneManager.registerScene("splash", new SplashScene());
-				SceneManager.registerScene("menu", new MenuScene());
-				SceneManager.registerScene("options", new OptionsScene());
-				SceneManager.registerScene("credits", new CreditsScene());
-				SceneManager.registerScene("login", new LoginScene());
-				SceneManager.registerScene("level", new LevelScene());
-				SceneManager.registerScene("game", new GameScene());
-				SceneManager.setScene("splash");
-			}
-		});
-```
-
 ##SceneCamera
 
 The Camera class with all batteries included like panning, following, smoothing
@@ -195,6 +173,8 @@ It consists of a single Stage and SceneCamera which are all initialized based on
 They can be accessed in a static way like Sink.stage Sink.camera.
 It also has extra things like gameUptime, pauseState, CreateListeners, PauseListeners, ResumeListeners, 
 DisposeListeners
+Before you use your scenes use this class to register all your scenes using registerScene("sceneName", new SceneObject())
+and then you can switch you scenes by using setScene method with the sceneName you registered your scene with
 ```java
 public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
@@ -202,17 +182,43 @@ public class BasicDesktop extends MainDesktop{
 		Sink.addListener(new CreateListener(){
 			@Override
 			public void onCreate() {
-				SceneManager.registerScene("splash", new SplashScene());
-				SceneManager.registerScene("menu", new MenuScene());
-				SceneManager.registerScene("options", new OptionsScene());
-				SceneManager.registerScene("credits", new CreditsScene());
-				SceneManager.registerScene("login", new LoginScene());
-				SceneManager.registerScene("level", new LevelScene());
-				SceneManager.registerScene("game", new GameScene());
-				SceneManager.setScene("splash");
+				Sink.registerScene("splash", new SplashScene());
+				Sink.registerScene("menu", new MenuScene());
+				Sink.registerScene("options", new OptionsScene());
+				Sink.registerScene("credits", new CreditsScene());
+				Sink.registerScene("login", new LoginScene());
+				Sink.registerScene("level", new LevelScene());
+				Sink.registerScene("game", new GameScene());
+				Sink.setScene("splash");
 			}
 		});
 		run();
 	}
 }
 ```
+##Map
+
+The Map is a SceneGroup which automatically loads all the tiles and arranges them accordingly it is
+highly recommended that you override the loadLayer method and customize the map
+```java
+map = new Map(Asset.loadTmx(currentLevel+1), 24);
+map.loadLayer(0); // used to load layer 0 and fill the scene group with static tiles
+map.loadLayer(1); // used to load layer 1 and fill the scene group with static tiles
+addActor(map); // add actor to scene to display map
+```
+
+##MapActor
+The MapActor is a SceneActor that can be used as a static tile, animated tile, animated actor or as a plain  
+actor.  
+1.For using it as a Static Tile use:  
+	```java MapActor(TextureRegion region, int row, int col, int id, int tileSize) ```
+2.For using it as a Animated Tile/Actor use:  
+	```java MapActor(Animation a, int row, int col, int id, int tileSize)  ```
+3.For using it as a plain Actor use:  
+	```java MapActor(int row, int col, int tileSize)  ```
+It has many important methods like moveTo, moveBy, collides, intersects, getCenterX, getCenterY  
+
+#Faq
+
+##1. Performance?
+##2. Feature Requests?

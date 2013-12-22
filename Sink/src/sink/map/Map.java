@@ -16,22 +16,23 @@
 
 package sink.map;
 
-import sink.core.Scene;
 import sink.core.SceneGroup;
 import sink.core.Sink;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileSets;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 
 /** The Map Class
  * <p>
- * The Map is a Group which automatically loads all the tiles and arranges them accordingly
+ * The Map is a SceneGroup which automatically loads all the tiles and arranges them accordingly it is
+ * highly recommended that you override the loadLayer method and customize the map
  * <p>
  * @author pyros2097 */
 public class Map extends SceneGroup{
@@ -46,36 +47,36 @@ public class Map extends SceneGroup{
 	protected float mapWidth;
 	protected float mapHeight;
 	
-	Image select;
-
-	private Array<MapTile[][]> tiles = new Array<MapTile[][]>();
+	public static TiledMapTileSets tileSets;
+	private Array<MapActor[][]> tiles = new Array<MapActor[][]>();
 	
 	public Map(TiledMap map, int tileSize){
 		setPosition(0, 0);
 		setOrigin(0, 0);
 		this.tileSize = tileSize;
 		mlayers  = map.getLayers();
+		tileSets = map.getTileSets();
 	}
 	
 	public void loadLayer(int layerNo){
-		Scene.log("Tiles Layer no: "+layerNo);
+		Sink.log("Tiles Layer no: "+layerNo);
 		TiledMapTileLayer layer = (TiledMapTileLayer)mlayers.get(layerNo);
 		NoOfColumns =layer.getWidth();
-		Scene.log("MapColumns: "+NoOfColumns);
+		Sink.log("MapColumns: "+NoOfColumns);
 		NoOfRows = layer.getHeight();
-		Scene.log("MapRows: "+NoOfRows);
-		tiles .add(new MapTile[NoOfRows][NoOfColumns]);
+		Sink.log("MapRows: "+NoOfRows);
+		tiles .add(new MapActor[NoOfRows][NoOfColumns]);
 		for(int i=0; i<NoOfRows; i++)
 			for(int j=0; j<NoOfColumns; j++){
 				Cell c = layer.getCell(j, i);
 				if(c != null){
-					tiles.get(layerNo)[i][j] = new MapTile(c.getTile().getTextureRegion(),
+					tiles.get(layerNo)[i][j] = new MapActor(c.getTile().getTextureRegion(),
 							j, i, c.getTile().getId(), tileSize);
-					addTile(tiles.get(layerNo)[i][j]);
+					addActor(tiles.get(layerNo)[i][j]);
 				}
 				else{
-					tiles.get(layerNo)[i][j] = new MapTile(null,j, i, 0, tileSize);
-					addTile(tiles.get(layerNo)[i][j]);
+					tiles.get(layerNo)[i][j] = new MapActor((TextureRegion)null,j, i, 0, tileSize);
+					addActor(tiles.get(layerNo)[i][j]);
 				}
 		}
 		mapWidth = tileSize * NoOfColumns;
@@ -85,7 +86,7 @@ public class Map extends SceneGroup{
 	}
 	
 	public void loadObjects(int no){
-		Scene.log("Objects Layer no: "+no);
+		Sink.log("Objects Layer no: "+no);
 		MapLayer layer1 = mlayers.get(no);
 		mobjects = layer1.getObjects();
 	}
@@ -112,9 +113,5 @@ public class Map extends SceneGroup{
 	
 	public MapLayers getMapLayers(){
 		return mlayers;
-	}
-	
-	public void addTile(MapTile mapTile){
-		addActor(mapTile);
 	}
 }

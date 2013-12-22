@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import sink.core.Asset;
 import sink.core.Scene;
-import sink.core.SceneManager;
+import sink.core.Sink;
 
 public class LoginScene extends Scene{
 
@@ -18,7 +18,7 @@ public class LoginScene extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setScene("menu");
+				Sink.setScene("menu");
  			}
  		});
 		addActor(back);

@@ -27,7 +27,11 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 
 /** The Main Entry Point for the Sink Game is the Sink class
  * <p>
@@ -35,6 +39,10 @@ import com.badlogic.gdx.utils.Array;
  * They can be accessed in a static way like Sink.stage Sink.camera.
  * It also has extra things like gameUptime, pauseState, CreateListeners,PauseListeners, ResumeListeners, 
  * DisposeListeners.
+ * Use this class to register all your scenes and then you can switch you scenes by using {@link #setScene}
+ * method with the sceneName you registered your scene with.
+ * You Must setup the Sink framework in your splash/menu or first scene after you have loaded all your
+ * assets if you want the logPane and fps to display.
  * @ex
  * <code>
  * public class BasicDesktop extends MainDesktop{
@@ -43,12 +51,12 @@ import com.badlogic.gdx.utils.Array;
 		Sink.addListener(new CreateListener(){
 			@Override
 			public void onCreate(){
-				SceneManager.registerScene("splash", new SplashScene());
-				SceneManager.registerScene("menu", new MenuScene());
-				SceneManager.registerScene("options", new OptionsScene());
-				SceneManager.registerScene("credits", new CreditsScene());
-				SceneManager.registerScene("game", new GameScene());
-				SceneManager.setCurrentScene("splash");
+				Sink.registerScene("splash", new SplashScene());
+				Sink.registerScene("menu", new MenuScene());
+				Sink.registerScene("options", new OptionsScene());
+				Sink.registerScene("credits", new CreditsScene());
+				Sink.registerScene("game", new GameScene());
+				Sink.setScene("splash");
 			}
 		});
 		run();
@@ -63,16 +71,29 @@ public final class Sink implements ApplicationListener {
 	public static SceneCamera camera;
 	
 	private float startTime = System.nanoTime();
+	private static LogPane logPane;
+	private static Label fpsLabel;
+	static Scene currentScene = null;
+	static final ArrayMap<String , Scene> sceneMap = new ArrayMap<String, Scene>();
 	public static boolean pauseState = false;
 	private static final Array<CreateListener> createListeners = new Array<CreateListener>();
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
 	
+	/**
+	 * You Must setup the Sink framework in your splash/menu or first scene after you have loaded all your
+	 * assets if you want the logPane and fps to display.
+	 * */
+	public static void setup(){
+		fpsLabel = new Label("", Asset.skin);
+		logPane = new LogPane();
+	}
+	
 	@Override
 	public void create() {
-		Scene.log("Sink: Created");
-		Config.init();
+		Sink.log("Sink: Created");
+		Config.setup();
 		stage = new Stage(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.keepAspectRatio);
 		camera = new SceneCamera();
 		camera.setToOrtho(false, Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
@@ -96,17 +117,19 @@ public final class Sink implements ApplicationListener {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
+		if (fpsLabel != null && Config.fpsVisible)
+			fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
  	}
 
 	@Override
 	public final void resize(int width, int height) {
-		Scene.log("Sink: Resize");
+		Sink.log("Sink: Resize");
 		stage.setViewport(Config.TARGET_WIDTH, Config.TARGET_HEIGHT, Config.keepAspectRatio);
 	}
 
 	@Override
 	public final void pause() {
-		Scene.log("Sink: Pause");
+		Sink.log("Sink: Pause");
 		musicPause();
 		soundStop();
 		firePauseEvent();
@@ -114,20 +137,28 @@ public final class Sink implements ApplicationListener {
 
 	@Override
 	public final void resume() {
-		Scene.log("Sink: Resume");
+		Sink.log("Sink: Resume");
 		musicResume();
 		fireResumeEvent();
 	}
 
 	@Override
 	public final void dispose() {
-		Scene.log("Sink: Disposing");
+		Sink.log("Sink: Disposing");
 		fireDisposeEvent();
 		stage.dispose();
 		Asset.unloadAll();
 		Gdx.app.exit();
 	}
-	
+
+	public static void log(String log) {
+		if(Config.loggingEnabled){
+			Gdx.app.log("", log);
+			if(logPane != null && Config.loggerVisible)
+				logPane.update(log);
+		}
+	}
+
 	public static void addListener(CreateListener cl){
 		createListeners.add(cl);
 	}
@@ -208,5 +239,101 @@ public final class Sink implements ApplicationListener {
 		else
 			str = "" + value;
 		return str;
+	}
+	
+	
+	/**
+	 * You Must Register the scene with a sceneName so that it can be cached and change scenes
+	 * using sceneName's
+	 * @param sceneName The name/key to be associated with the scene
+	 * @param scene The Scene for caching and easy switching
+	 * */
+	public static void registerScene(String sceneName, Scene scene){
+		sceneMap.put(sceneName, scene);
+	}
+
+	/**
+	 * Set the current scene to be displayed
+	 * @param sceneName The registered scene's name
+	 **/
+	public static void setScene(String sceneName){
+		if(sceneMap.containsKey(sceneName)){
+			Sink.log("Current Scene :"+sceneName);
+			currentScene = sceneMap.get(sceneName);
+			Sink.clearScene();
+			currentScene.onInit();
+			Sink.showScene();
+		}
+		else
+			Sink.log(sceneName+": Scene Does not Exist");
+	}
+	
+	/**
+	 * Returns the current scene being Displayed on stage
+	 **/
+	public static Scene getScene(){
+		return currentScene;
+	}
+	
+	/**
+	 * Returns whether scene if it is registered in the SceneManager
+	 * else null
+	 * @param sceneName The registered scene's name
+	 **/
+	public static Scene getScene(String sceneName){
+		if(sceneMap.containsKey(sceneName))
+			return sceneMap.get(sceneName);
+		return null;
+	}
+	
+	private static void showScene(){
+		stage.addActor(currentScene);
+		if (fpsLabel != null && Config.fpsVisible){
+			fpsLabel.setPosition(Config.TARGET_WIDTH - 80, Config.TARGET_HEIGHT - 20);
+			stage.addActor(fpsLabel);
+			camera.registerSceneHud(fpsLabel);
+		}
+		if (logPane != null && Config.loggerVisible){
+			logPane.setPosition(0, 0);
+			stage.addActor(logPane);
+			camera.registerSceneHud(logPane);
+		}
+	}
+
+	private static void clearScene(){
+		camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
+		stage.clear();
+		currentScene.clear();
+		currentScene.setPosition(0, 0);
+		currentScene.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
+		currentScene.setBounds(0,0,Config.TARGET_WIDTH,Config.TARGET_HEIGHT);
+		currentScene.grid = new Table();
+		currentScene.grid.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
+		currentScene.grid.setFillParent(true);
+		currentScene.grid.setPosition(0, 0);
+		currentScene.grid.top().left();
+		currentScene.xcenter = currentScene.getWidth()/2;
+		currentScene.ycenter = currentScene.getHeight()/2;
+		camera.clearSceneHud();
+	}
+}
+
+class LogPane extends SceneGroup{
+	Label logLabel;
+	ScrollPane scroll;
+	
+	public LogPane(){
+		setSize(300, 100);
+		logLabel = new Label("", Asset.skin);
+		scroll = new ScrollPane(logLabel);
+		scroll.setPosition(0,0);
+		scroll.setSize(300, 100);
+		scroll.setBounds(0, 0, 300, 100);
+		addActor(scroll);
+	}
+	
+	public void update(String text){
+		logLabel.setText(logLabel.getText() + "\n" +text);
+		scroll.setScrollPercentY(100);
 	}
 }

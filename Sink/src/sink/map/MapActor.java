@@ -28,10 +28,27 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
-public abstract class MapActor extends SceneActor {
+/** The MapActor Class
+ * <p>
+ * The MapActor is a SceneActor that can be used as a static tile, animated tile, animated actor or as a plain
+ * actor.
+ * 1.For using it as a Static Tile use:
+ *  	MapActor(TextureRegion region, int row, int col, int id, int tileSize)
+ * 2.For using it as a Animated Tile/Actor use:
+ * 	 	MapActor(Animation a, int row, int col, int id, int tileSize)
+ * 3.For using it as a plain Actor use:
+ * 	 	MapActor(int row, int col, int tileSize)
+ * 
+ * It has many important methods like moveTo, moveBy, collides, intersects, getCenterX, getCenterY
+ * <p>
+ * @author pyros2097 */
+public class MapActor extends SceneActor {
 	private int row;
 	private int col;
-	protected int tileSize;
+	private int tileSize;
+	
+	public TextureRegion tileImage;
+	public int index;
 	
   	protected Animation animation;
   	protected boolean isAnimationActive = false;
@@ -48,46 +65,55 @@ public abstract class MapActor extends SceneActor {
 	// Animation timer
 	protected float stateTime = 0;
 	protected float startTime = System.nanoTime();
-	protected float secondsTime = 0;
 
 	// When tiles coords row and column are directly specified
 	public MapActor(int row, int col, int tileSize){
-		this.row = row;
-		this.col = col;
-		this.tileSize = tileSize;
+		setTileSize(tileSize);
+		setPositionRC(row, col);
 		setSize(tileSize, tileSize); // All map units are 24x24
-		super.setPosition(row*tileSize, col*tileSize);
+	}
+	
+	public MapActor(TextureRegion region, int row, int col, int id, int tileSize){
+		this(row, col, tileSize);
+		index = id;
+		if(region != null)
+			tileImage = region;
 	}
 	
 	
-	public MapActor(Animation a, int tileSize) {
-		this(0, 0, tileSize);
-		animation = a;
+	public MapActor(Animation a, int row, int col, int id, int tileSize) {
+		this(row, col, tileSize);
+		index = id;
+		if(a != null){
+			animation = a;
+			isAnimationActive = true;
+		}
+		
 	}
 	
 	@Override
 	public void act(float delta) {
 		super.act(delta);
 		stateTime += delta;
-		if (System.nanoTime() - startTime >= 1000000000) {
-			secondsTime++;
+		if (System.nanoTime() - startTime >= 1000000000)
 			startTime = System.nanoTime();
-		}
 	}
 	
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 		batch.setColor(getColor());
+		if(tileImage != null)
+			batch.draw(tileImage, getX(), getY(), tileSize, tileSize);
+		//font("normal").draw(batch, ""+index, getX(), getY()+tileSize);
 		if (isAnimationActive && animation != null) {
 			keyFrame = animation.getKeyFrame(stateTime, isAnimationLooping);
-			batch.draw(keyFrame, getX(), getY(), getWidth(), getHeight());
+			batch.draw(keyFrame, getX(), getY(), tileSize, tileSize);
 		}
 		drawParticleEffect(batch);
 	}
 	
-	
-	void drawParticleEffect(Batch batch){
+	public void drawParticleEffect(Batch batch){
 		if (isParticleEffectActive) {
 			particleEffect.draw(batch, Gdx.graphics.getDeltaTime());
 			particleEffect.setPosition(getX() + particlePosX, getY()+ particlePosY);
@@ -126,17 +152,12 @@ public abstract class MapActor extends SceneActor {
 	}
 	
 	
-	public void setPosition(int row, int col){
-		this.row = row;
-		this.col = col;
-		super.setPosition(row*tileSize, col*tileSize);
+	public void setTileSize(int tsize){
+		tileSize = tsize;
 	}
 	
-	@Override
-	public void setPosition(float x, float y){
-		this.row = (int)x/tileSize;
-		this.col =(int)y/tileSize;
-		super.setPosition(x, y);
+	public int getTileSize(){
+		return tileSize;
 	}
 	
 	public int getRow(){
@@ -145,6 +166,18 @@ public abstract class MapActor extends SceneActor {
 	
 	public int getCol(){
 		return col;
+	}
+	
+	public void setPositionRC(int row, int col){
+		this.row = row;
+		this.col = col;
+		setPosition(row*tileSize, col*tileSize);
+	}
+	
+	public void setPositionXY(float x, float y){
+		setPosition(x, y);
+		this.row = (int)x/tileSize;
+		this.col =(int)y/tileSize;
 	}
 	
 	public void actionMoveTo(float x, float y, float duration) {

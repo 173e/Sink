@@ -89,17 +89,10 @@ public class SceneCamera extends OrthographicCamera {
 	public void unregisterSceneHud(Actor actor){
 		hudActors.removeValue(actor, true);
 	}
-	
-	/* If you want to enable Hud elements from moving along with the camera in a particular scene
 	 
-	public void enableHudPanning(){
-		hudPanning = true;
+	public void clearSceneHud(){
+		hudActors.clear();
 	}
-	
-	 If you want to disable Hud elements from moving along with the camera in a particular scene
-	public void disableHudPanning(){
-		hudPanning = false;
-	}*/
      
      /** Moves the actor instantly. */
     public void moveBy (float amountX, float amountY) {

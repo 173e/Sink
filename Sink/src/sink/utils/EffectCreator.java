@@ -16,7 +16,6 @@
 
 package sink.utils;
 
-import sink.core.Scene;
 import sink.core.Sink;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -231,9 +230,9 @@ public class EffectCreator {
 			actor.clearActions();
 			String actorName = actor.getName();
 			if (Sink.stage.getRoot().removeActor(actor)) {
-				Scene.log("Actor removed! (Name: "+ actorName + ")");
+				Sink.log("Actor removed! (Name: "+ actorName + ")");
 			} else {
-				Scene.log("Actor not removed! (Name: " + actorName + ")");
+				Sink.log("Actor not removed! (Name: " + actorName + ")");
 			}
 		}
 	}

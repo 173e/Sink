@@ -17,7 +17,7 @@ package sink.demo.basic.scene;
 
 import sink.core.Asset;
 import sink.core.Scene;
-import sink.core.SceneManager;
+import sink.core.Sink;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -49,21 +49,21 @@ public class MenuScene extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setScene("level");
+				Sink.setScene("level");
  			}
  		});
 		btn2.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setScene("options");
+				Sink.setScene("options");
  			}
  		});
 		btn3.addListener(new ClickListener(){
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setScene("credits");
+				Sink.setScene("credits");
  			}
  		});
 		btn4.addListener(new ClickListener(){
@@ -77,7 +77,7 @@ public class MenuScene extends Scene{
  			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				SceneManager.setScene("login");
+				Sink.setScene("login");
  			}
  		});
 		addActor(grid);
