@@ -17,9 +17,9 @@ You can perform actions on these actors using Action3d
 Demo
 ====
 There are 3 demos
-1. BasicDemo
-2. TicTacToe
-3. Stage3d
+1. BasicDemo  
+2. TicTacToe  
+3. Stage3d  
 
 ScreenShots
 ============
@@ -122,17 +122,15 @@ r.addAction3d(Actions.rotateTo(59, 1f));
 	
 Todo
 -----
-1. Make Animations Working
-2. Tutorials
-3. Hex Map
-4. Scene Transitions
+1. Automatic animation loading
+2. Hex Map
 
 Credits
 --------
 Thanks all these awesome frameworks  
 [mtx](http://moribitotechx.blogspot.co.uk)  
 [libgdx](libgdx.badlogicgames.com)  
-[lwjgl](lwjgl.org)
+[lwjgl](lwjgl.org)  
 [openal](kcat.strangesoft.net/openal.html)  
 
 #Documentation
@@ -145,8 +143,8 @@ All the Asset methods are directly built into it
 public class MenuScene extends Scene{
 	@Override
 	public void onInit(){
+		transitionLeftToRight();
 		musicPlay("title"); 
-		
 		setBackground("title");
  		TextButton btn1 = new TextButton("Start", Asset.skin);
  		addActor(btn1, 45, 245);
@@ -211,14 +209,13 @@ addActor(map); // add actor to scene to display map
 The MapActor is a SceneActor that can be used as a static tile, animated tile, animated actor or as a plain  
 actor.  
 1.For using it as a Static Tile use:  
-	```java MapActor(TextureRegion region, int row, int col, int id, int tileSize) ```
+	```java MapActor(TextureRegion region, int row, int col, int id, int tileSize) ```  
 2.For using it as a Animated Tile/Actor use:  
-	```java MapActor(Animation a, int row, int col, int id, int tileSize)  ```
+	```java MapActor(Animation a, int row, int col, int id, int tileSize)  ```  
 3.For using it as a plain Actor use:  
-	```java MapActor(int row, int col, int tileSize)  ```
+	```java MapActor(int row, int col, int tileSize)  ```  
 It has many important methods like moveTo, moveBy, collides, intersects, getCenterX, getCenterY  
 
 #Faq
-
-##1. Performance?
-##2. Feature Requests?
+1. Performance?  
+2. Feature Requests?  

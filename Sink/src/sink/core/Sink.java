@@ -26,6 +26,7 @@ import sink.event.ResumeListener;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -75,6 +76,7 @@ public final class Sink implements ApplicationListener {
 	private static Label fpsLabel;
 	static Scene currentScene = null;
 	static final ArrayMap<String , Scene> sceneMap = new ArrayMap<String, Scene>();
+	public static Array<Actor> hudActors = new Array<Actor>();
 	public static boolean pauseState = false;
 	private static final Array<CreateListener> createListeners = new Array<CreateListener>();
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
@@ -82,7 +84,7 @@ public final class Sink implements ApplicationListener {
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
 	
 	/**
-	 * You Must setup the Sink framework in your splash/menu or first scene after you have loaded all your
+	 * You Must setup the Sink framework in your splash/menu scene after you have loaded all your
 	 * assets if you want the logPane and fps to display.
 	 * */
 	public static void setup(){
@@ -91,7 +93,7 @@ public final class Sink implements ApplicationListener {
 	}
 	
 	@Override
-	public void create() {
+	public final void create() {
 		Sink.log("Sink: Created");
 		Config.setup();
 		stage = new Stage(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.keepAspectRatio);
@@ -289,14 +291,14 @@ public final class Sink implements ApplicationListener {
 	private static void showScene(){
 		stage.addActor(currentScene);
 		if (fpsLabel != null && Config.fpsVisible){
+			registerSceneHud(fpsLabel);
 			fpsLabel.setPosition(Config.TARGET_WIDTH - 80, Config.TARGET_HEIGHT - 20);
 			stage.addActor(fpsLabel);
-			camera.registerSceneHud(fpsLabel);
 		}
 		if (logPane != null && Config.loggerVisible){
+			registerSceneHud(logPane);
 			logPane.setPosition(0, 0);
 			stage.addActor(logPane);
-			camera.registerSceneHud(logPane);
 		}
 	}
 
@@ -314,7 +316,25 @@ public final class Sink implements ApplicationListener {
 		currentScene.grid.top().left();
 		currentScene.xcenter = currentScene.getWidth()/2;
 		currentScene.ycenter = currentScene.getHeight()/2;
-		camera.clearSceneHud();
+		clearSceneHud();
+	}
+	
+	/* If you want to make any elements/actors to move along with the camera like HUD's add them using
+	 * this method
+	 */
+	public static void registerSceneHud(Actor actor){
+		hudActors.add(actor);
+	}
+	
+	/* If you want to stop any elements/actors from moving along with the camera like HUD's you can stop them
+	 * by using this method
+	 */
+	public static void unregisterSceneHud(Actor actor){
+		hudActors.removeValue(actor, true);
+	}
+	 
+	public static void clearSceneHud(){
+		hudActors.clear();
 	}
 }
 

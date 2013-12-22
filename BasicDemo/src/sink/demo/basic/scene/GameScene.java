@@ -68,7 +68,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
  			}
  		});
 		addActor(pauseBtn);
-		Sink.camera.registerSceneHud(pauseBtn);
+		Sink.registerSceneHud(pauseBtn);
 		Sink.addListener((PauseListener)this);
 		Sink.addListener((ResumeListener)this);
 		Sink.camera.enablePanning();
@@ -123,7 +123,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		unloadTmx(currentLevel+1);
 		Sink.removeListener((PauseListener)this);
 		Sink.removeListener((ResumeListener)this);
-		Sink.camera.unregisterSceneHud(pauseBtn);
+		Sink.unregisterSceneHud(pauseBtn);
 	}
 	
 	public void setState(GameState ss){

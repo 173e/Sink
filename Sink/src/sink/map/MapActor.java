@@ -60,11 +60,9 @@ public class MapActor extends SceneActor {
 	public float particlePosX = 0.0f;
 	public float particlePosY = 0.0f;
 	public boolean isParticleEffectActive;
-	
-	
+		
 	// Animation timer
 	protected float stateTime = 0;
-	protected float startTime = System.nanoTime();
 
 	// When tiles coords row and column are directly specified
 	public MapActor(int row, int col, int tileSize){
@@ -95,8 +93,6 @@ public class MapActor extends SceneActor {
 	public void act(float delta) {
 		super.act(delta);
 		stateTime += delta;
-		if (System.nanoTime() - startTime >= 1000000000)
-			startTime = System.nanoTime();
 	}
 	
 	@Override

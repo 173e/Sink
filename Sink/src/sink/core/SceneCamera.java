@@ -23,7 +23,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.utils.Array;
 
 /** The Camera class with all batteries included like panning, following, smoothing
  * <p>
@@ -36,62 +35,29 @@ public class SceneCamera extends OrthographicCamera {
 	private float duration, time;
 	private Interpolation interpolation;
     private boolean complete;
-    
     /* MoveBy variables */
     private float lastPercent;
     private float panSpeedX, panSpeedY;
-    private Actor actor;
-    
-    public float followSpeed = 3; 
-    public float followTopOffset = 60;
-    public float followLeftOffset = 10;
-    public float followBotOffset = 70;
-    public float followRightOffset = 10;
-    
     private final Vector3 mousePos = new Vector3();
-    public float panSpeed = 5f;
-    private final float panXLeftOffset = 100;
-	private final float panXRightOffset = Config.SCREEN_WIDTH - 100;
-	private final float panYUpOffset = 70;
-	private final float panYDownOffset = Config.SCREEN_HEIGHT - 70;
 	
-	public final float camOffsetX = 160f;
-	public final float camOffsetYTop = 110f;
-	public final float camOffsetYBot = 65f;
-	public float mapOffsetX = 0;
-	public float mapOffsetY = 0;
-	
-	private final Vector3 curr = new Vector3();
-	private final Vector3 last = new Vector3(-1, -1, -1);
-	private final Vector3 delta = new Vector3();
-	
-	private float deltaCamX = 0;
-	private float deltaCamY = 0;
-	private static Actor followedActor;
-	
-	//private boolean hudPanning = false;
-	private Array<Actor> hudActors = new Array<Actor>();
+	float stateTime = 0;
 	
 	SceneCamera(){
 		Sink.stage.addListener(touchInput);
 	}
 	
-	/* If you want to make any elements/actors to move along with the camera like HUD's add them using
-	 * this method
-	 */
-	public void registerSceneHud(Actor actor){
-		hudActors.add(actor);
+	public void moveTo(Actor actor) {
+		position.x = actor.getX();
+		position.y = actor.getY();
+		for(Actor hudactor: Sink.hudActors) 
+			hudactor.setPosition(position.x + hudactor.getWidth()/12 - Config.TARGET_WIDTH/2, 
+					position.y + hudactor.getHeight()/2 - Config.TARGET_HEIGHT/2);
 	}
 	
-	/* If you want to stop any elements/actors from moving along with the camera like HUD's you can stop them
-	 * by using this method
-	 */
-	public void unregisterSceneHud(Actor actor){
-		hudActors.removeValue(actor, true);
-	}
-	 
-	public void clearSceneHud(){
-		hudActors.clear();
+	public void moveTo(float x, float y) {
+		position.x = x;
+		position.y = y;
+		for(Actor hudactor: Sink.hudActors) hudactor.setPosition(x- Config.TARGET_WIDTH/2, y - Config.TARGET_HEIGHT/2);
 	}
      
      /** Moves the actor instantly. */
@@ -119,8 +85,8 @@ public class SceneCamera extends OrthographicCamera {
     	if(!complete)
     		moveByAction(delta);
     	if(hasControl){
-			if(Config.usePan) Sink.camera.panCameraWithMouse();
-			if(Config.useKeyboard) Sink.camera.panCameraWithKeyboard();
+			if(Config.usePan) panCameraWithMouse();
+			if(Config.useKeyboard) panCameraWithKeyboard();
 		}
 		if(followedActor != null)
 			follow();
@@ -146,8 +112,8 @@ public class SceneCamera extends OrthographicCamera {
     }
 
     void updateRelativeMoveBy (float percentDelta){
-    	this.translate(panSpeedX * percentDelta, panSpeedY * percentDelta, 0);
-    	if(actor != null) actor.translate(panSpeedX * percentDelta, panSpeedY * percentDelta);
+    	translate(panSpeedX * percentDelta, panSpeedY * percentDelta, 0);
+    	for(Actor actor: Sink.hudActors) actor.translate(panSpeedX * percentDelta, panSpeedY * percentDelta);
     }
     
     /** Skips to the end of the transition. */
@@ -174,18 +140,33 @@ public class SceneCamera extends OrthographicCamera {
     boolean hasControl = false;
     	
     public void enablePanning(){
-    	if(hasControl)
-    		return;
     	hasControl = true;
     }
     	
     public void disablePanning(){
-    	if(!hasControl)
-    		return;
     	hasControl = false;
     }
     	
     public void touchPad(float xPercent, float yPercent){
+    }
+    
+    
+	private Actor followedActor;
+	private float followSpeed = 3; 
+	private float followTopOffset = 60;
+	private float followLeftOffset = 10;
+	private float followBotOffset = 70;
+	private float followRightOffset = 10;
+	
+    public void setFollowActorOffset(float top, float left, float bot, float right){
+    	followTopOffset = top;
+    	followLeftOffset = left;
+    	followBotOffset = bot;
+    	followRightOffset = right;
+    }
+    
+    public void setFollowSpeed(float speed){
+    	followSpeed = speed;
     }
     
 	public void followActor(Actor actor){
@@ -193,37 +174,71 @@ public class SceneCamera extends OrthographicCamera {
 	}
     
     private void follow(){
-    	if(position.x < followedActor.getX() - followLeftOffset) translateX(followSpeed);
-		else if(position.x > followedActor.getX() + followRightOffset) translateX(-followSpeed);
-		else if(position.y < followedActor.getY() - followBotOffset) translateY(followSpeed);
-		else if(position.y > followedActor.getY() - followTopOffset) translateY(-followSpeed);
-		//else actor = null;
+    	if(position.x < followedActor.getX() - followLeftOffset) moveBy(followSpeed, 0);
+		else if(position.x > followedActor.getX() + followRightOffset) moveBy(-followSpeed, 0);
+		else if(position.y < followedActor.getY() - followBotOffset) moveBy(0, followSpeed);
+		else if(position.y > followedActor.getY() - followTopOffset) moveBy(0, -followSpeed);
+		else followedActor = null;
+    }
+    
+    private float panSpeed = 5f;
+    private float panXLeftOffset = 100;
+	private float panXRightOffset = Config.SCREEN_WIDTH - 100;
+	private float panYUpOffset = 70;
+	private float panYDownOffset = Config.SCREEN_HEIGHT - 70;
+	public float camOffsetX = 160f;
+	public float camOffsetYTop = 110f;
+	public float camOffsetYBot = 65f;
+	public float mapOffsetX = 0;
+	public float mapOffsetY = 0;
+	
+	public void setPanSpeed(float speed){
+		panSpeed = speed;
+	}
+	
+    public void setPanOffset(float xLeft, float xRight, float yUp, float dDown){
+    	panXLeftOffset = xLeft;
+    	panXRightOffset = xRight;
+    	panYUpOffset = yUp;
+    	panYDownOffset = dDown;
+    }
+    
+    public void setCamOffset(float xOffset, float yOffsetTop, float yOffsetBot){
+    	camOffsetX = xOffset;
+    	camOffsetYTop = yOffsetTop;
+    	camOffsetYBot = yOffsetBot;
     }
     
     public void panCameraWithMouse(){
     	mousePos.x = Gdx.input.getX();
     	mousePos.y = Gdx.input.getY();
-    	if(mousePos.x > panXRightOffset && position.x < mapOffsetX - 5) translateX(panSpeed);
-    	else if(mousePos.x < panXLeftOffset && position.x > camOffsetX +5)  translateX(-panSpeed);
-    	else if(mousePos.y < panYUpOffset && position.y < mapOffsetY -5) translateY(panSpeed);
-    	else if(mousePos.y > panYDownOffset && position.y > camOffsetYBot +5) translateY(-panSpeed);
+    	if(mousePos.x > panXRightOffset && position.x < mapOffsetX - 5) moveBy(panSpeed, 0);
+    	else if(mousePos.x < panXLeftOffset && position.x > camOffsetX +5)  moveBy(-panSpeed, 0);
+    	else if(mousePos.y < panYUpOffset && position.y < mapOffsetY -5) moveBy(0, panSpeed);
+    	else if(mousePos.y > panYDownOffset && position.y > camOffsetYBot +5) moveBy(0, -panSpeed);
     }
     	
     public void panCameraWithKeyboard(){
     	if(Gdx.input.isKeyPressed(Keys.LEFT))
-    		if(position.x > camOffsetX +5)
-    			translateX(-panSpeed);
+    		//if(position.x > camOffsetX +5)
+    			moveBy(-panSpeed, 0);
     	else if(Gdx.input.isKeyPressed(Keys.RIGHT))
-    		if(position.x < mapOffsetX - 5)
-    			translateX(panSpeed);
+    		//if(position.x < mapOffsetX - 5)
+    			moveBy(panSpeed, 0);
     	else if(Gdx.input.isKeyPressed(Keys.UP))
-    		if(position.y < mapOffsetY -5)
-    			translateY(panSpeed);
+    		//if(position.y < mapOffsetY -5)
+    			moveBy(0, panSpeed);
     	else if(Gdx.input.isKeyPressed(Keys.DOWN))
-    		if(position.y > camOffsetYBot +5)
-    			translateY(-panSpeed);
+    		//if(position.y > camOffsetYBot +5)
+    			moveBy(0, -panSpeed);
     }
     	
+	private final Vector3 curr = new Vector3();
+	private final Vector3 last = new Vector3(-1, -1, -1);
+	private final Vector3 delta = new Vector3();
+	private float deltaCamX = 0;
+	private float deltaCamY = 0;
+	
     public void dragCam(int x, int y){
     	unproject(curr.set(x, y, 0));
     	if (!(last.x == -1 && last.y == -1 && last.z == -1)) {
@@ -232,9 +247,9 @@ public class SceneCamera extends OrthographicCamera {
     		deltaCamX = delta.x + position.x;
     		deltaCamY = delta.y + position.y;
     		if(deltaCamX > camOffsetX && deltaCamX < mapOffsetX)
-    			translateX(delta.x);
+    			moveBy(delta.x, 0);
     		if(deltaCamY > camOffsetYBot && deltaCamY < mapOffsetY)
-    			translateY(delta.y);		
+    			moveBy(0, delta.y);		
     	}
     	last.set(x, y, 0);
     }
@@ -260,16 +275,4 @@ public class SceneCamera extends OrthographicCamera {
 				last.set(-1, -1, -1);
 		}
 	};
-	
-	private void translateX(float x){
-		//if(hudPanning)
-			for(Actor actor: hudActors) actor.translate(x, 0);
-		translate(x, 0);
-	}
-	
-	private void translateY(float y){
-		//if(hudPanning)
-			for(Actor actor: hudActors) actor.translate(0, y);
-		translate(0, y);
-	}
 }

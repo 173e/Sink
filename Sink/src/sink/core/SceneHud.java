@@ -25,6 +25,6 @@ package sink.core;
 public class SceneHud extends SceneGroup{
 
 	public SceneHud(){
-		Sink.camera.registerSceneHud(this);
+		Sink.registerSceneHud(this);
 	}
 }
