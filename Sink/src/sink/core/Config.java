@@ -32,7 +32,7 @@ import com.badlogic.gdx.Preferences;
 public final class Config {
 	// Desktop Settings
 	public static final String title = "Sink";
-	public static String version = "0.75";
+	public static String version = "0.76";
 	public static final boolean useGL20 = false;
 	public static final boolean diableAudio = false;
 	public static final boolean forceExit = false;

@@ -81,8 +81,8 @@ public class Map extends SceneGroup{
 		}
 		mapWidth = tileSize * NoOfColumns;
 		mapHeight = tileSize * NoOfRows;
-		Sink.camera.mapOffsetX = mapWidth - Sink.camera.camOffsetX;
-		Sink.camera.mapOffsetY = mapHeight - Sink.camera.camOffsetYTop;
+		Sink.mapOffsetX = mapWidth - Sink.camOffsetX;
+		Sink.mapOffsetY = mapHeight - Sink.camOffsetYTop;
 	}
 	
 	public void loadObjects(int no){

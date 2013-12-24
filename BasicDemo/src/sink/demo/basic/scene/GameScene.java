@@ -71,7 +71,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		Sink.registerSceneHud(pauseBtn);
 		Sink.addListener((PauseListener)this);
 		Sink.addListener((ResumeListener)this);
-		Sink.camera.enablePanning();
+		Sink.enablePanning();
 	}
 
 	@Override
@@ -81,10 +81,10 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		pauseImage.setTouchable(Touchable.disabled);
 		pauseImage.setColor(1, 1, 1, 0);
 		pauseImage.addAction(Actions.alpha(0.6f, 0.7f, Interpolation.linear));
-		pauseImage.setPosition(Sink.camera.position.x - Config.TARGET_WIDTH/2,
-				Sink.camera.position.y - Config.TARGET_HEIGHT/2);
+		pauseImage.setPosition(Sink.getCameraX() - Config.TARGET_WIDTH/2,
+				Sink.getCameraY() - Config.TARGET_HEIGHT/2);
 		addActor(pauseImage);
-		Sink.camera.disablePanning();
+		Sink.disablePanning();
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		};
 		SequenceAction sequence = Actions.sequence(hideAction, over);
 		pauseImage.addAction(sequence);
-		Sink.camera.enablePanning();
+		Sink.enablePanning();
 	}
 	
 	public void save() {
@@ -119,7 +119,7 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 	}
 
 	public void back() {
-		Sink.camera.disablePanning();
+		Sink.disablePanning();
 		unloadTmx(currentLevel+1);
 		Sink.removeListener((PauseListener)this);
 		Sink.removeListener((ResumeListener)this);

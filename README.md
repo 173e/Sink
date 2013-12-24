@@ -1,4 +1,4 @@
-Sink v0.75
+Sink v0.76
 ===============
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
@@ -158,12 +158,6 @@ This extends the Actor class and all the Asset methods are directly built into i
 ##SceneGroup
 This extends the Group class and all the Asset methods are directly built into it
 
-##SceneCamera
-
-The Camera class with all batteries included like panning, following, smoothing
-This is a singleton class which can be used for panning the camera using mouse, keyboard, drag.. etc.
-It can also automatically follow a actor by using followActor(Actor actor)
-
 ##Sink
 
 The Main Entry Point for the Sink Game is the Sink class
@@ -171,12 +165,15 @@ It consists of a single Stage and SceneCamera which are all initialized based on
 They can be accessed in a static way like Sink.stage Sink.camera.
 It also has extra things like gameUptime, pauseState, CreateListeners, PauseListeners, ResumeListeners, 
 DisposeListeners
+It also has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
+It can also automatically follow a actor by using followActor(Actor actor)
 Before you use your scenes use this class to register all your scenes using registerScene("sceneName", new SceneObject())
 and then you can switch you scenes by using setScene method with the sceneName you registered your scene with
 ```java
 public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
 		init();
+		Config.isJar = false;
 		Sink.addListener(new CreateListener(){
 			@Override
 			public void onCreate() {

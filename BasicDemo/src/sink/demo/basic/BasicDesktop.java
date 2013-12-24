@@ -16,6 +16,7 @@
 
 package sink.demo.basic;
 
+import sink.core.Config;
 import sink.core.Sink;
 import sink.demo.basic.scene.CreditsScene;
 import sink.demo.basic.scene.GameScene;
@@ -30,6 +31,7 @@ import sink.main.MainDesktop;
 public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
 		init();
+		Config.isJar = false;
 		Sink.addListener(new CreateListener(){
 			@Override
 			public void onCreate() {
