@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 pyros2097
+ * Copyright 2013 pyros2097
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,28 +31,35 @@ import com.badlogic.gdx.Preferences;
 
 public final class Config {
 	// Desktop Settings
-	public static final String title = "Sink";
-	public static String version = "0.76";
-	public static final boolean useGL20 = false;
-	public static final boolean diableAudio = false;
-	public static final boolean forceExit = false;
-	public static final boolean fullscreen = false;
-	public static final boolean keepAspectRatio = false; // makes look good
-	public static final boolean resizable = true;
-	public static final boolean vSyncEnabled = false;
-	public static final String icon = "icon/icon_32.png";
+	public static String title = "Sink";
+	public static String version = "0.77";
+	public static boolean useGL20 = false;
+	public static boolean diableAudio = false;
+	public static boolean forceExit = false;
+	public static boolean fullscreen = false;
+	public static boolean keepAspectRatio = false; // makes look good
+	public static boolean resizable = true;
+	public static boolean vSyncEnabled = false;
+	
+	/* Whether or not to show the icon on the window. Use this if you are going to give a
+	 * specific icon by specifying its iconLocation */
+	public static boolean showIcon = false;
+	/* The location of the icon file
+	 * Set this to change the default icon
+	 * */
+	public static String iconLocation = "icon/icon_32.png";
 	
 	// Android Settings
-	public static final boolean useAccelerometer = false;
-	public static final boolean useCompass = false;
-	public static final boolean hideStatusBar = true;
-	public static final boolean useWakelock = true;
-	public static final boolean useCloud = true;
+	public static boolean useAccelerometer = false;
+	public static boolean useCompass = false;
+	public static boolean hideStatusBar = true;
+	public static boolean useWakelock = true;
+	public static boolean useCloud = true;
 	
-	public static final int SCREEN_WIDTH = 852;
-	public static final int SCREEN_HEIGHT = 480;
-	public static final int SCREEN_X = SCREEN_WIDTH/3;
-	public static final int SCREEN_Y = SCREEN_HEIGHT/3;
+	public static int SCREEN_WIDTH = 852;
+	public static int SCREEN_HEIGHT = 480;
+	public static int SCREEN_X = SCREEN_WIDTH/3;
+	public static int SCREEN_Y = SCREEN_HEIGHT/3;
 	
 	/*Important:
 	 *  The Target Width  and Target Height refer to the nominal width and height of the game for the

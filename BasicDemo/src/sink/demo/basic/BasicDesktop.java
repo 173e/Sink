@@ -30,8 +30,12 @@ import sink.main.MainDesktop;
 
 public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
-		init();
-		Config.isJar = false;
+		Config.isJar = false; // set to true when exporting to jar
+		Config.title = "BasicDemo"; // your game title name
+		Config.showIcon = true; // whether you want to use an icon for your game
+		Config.iconLocation = "icon/icon_32.png"; // specify the location of your icon
+		Config.TARGET_WIDTH = 800; // your game's target width it will automatically scale to other sizes
+		Config.TARGET_HEIGHT = 480; // your game's target height it will automatically scale to other sizes
 		Sink.addListener(new CreateListener(){
 			@Override
 			public void onCreate() {
@@ -45,6 +49,7 @@ public class BasicDesktop extends MainDesktop{
 				Sink.setScene("splash");
 			}
 		});
+		init();
 		run();
 	}
 }

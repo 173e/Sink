@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 pyros2097
+ * Copyright 2013 pyros2097
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -35,29 +36,36 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 
 /** The Main Entry Point for the Sink Game is the Sink class
  * <p>
- * It consists of a single Stage and SceneCamera which are all initialized based on the {@link Config} settings.
- * They can be accessed in a static way like Sink.stage Sink.camera.
- * It also has extra things like gameUptime, pauseState, CreateListeners,PauseListeners, ResumeListeners, 
+ * It consists of a single Stage and Camera which are all initialized based on the {@link Config} settings.
+ * The stage can be accessed in a static way like Sink.stage and methods related to camera like moveTo, moveBy,
+ * are also accessed the same way.
+ * It also has extra things like gameUptime, pauseState, CreateListeners, PauseListeners, ResumeListeners, 
  * DisposeListeners.
  * It also has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
- *It can also automatically follow a actor by using followActor(Actor actor)
+ * It can also automatically follow a actor by using followActor(Actor actor)
  * Use this class to register all your scenes and then you can switch you scenes by using {@link #setScene}
  * method with the sceneName you registered your scene with.
  * You Must setup the Sink framework in your splash/menu or first scene after you have loaded all your
- * assets if you want the logPane and fps to display.
+ * assets if you want the logPane and fps to display by calling {@link #setup()}
  * @ex
  * <code>
  * public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
-		init();
-		Config.isJar = false;
+		Config.isJar = false; // set to true when exporting to jar
+		Config.title = "Sink"; // your game title name
+		Config.showIcon = true; // whether you want to use an icon for your game
+		Config.iconLocation = "icon/myicon.png"; // specify the location of your icon
+		Config.TARGET_WIDTH = 800; // your game's target width it will automatically scale to other sizes
+		Config.TARGET_HEIGHT = 480; // your game's target height it will automatically scale to other sizes
 		Sink.addListener(new CreateListener(){
 			@Override
 			public void onCreate(){
@@ -66,21 +74,22 @@ import com.badlogic.gdx.utils.ArrayMap;
 				Sink.registerScene("options", new OptionsScene());
 				Sink.registerScene("credits", new CreditsScene());
 				Sink.registerScene("game", new GameScene());
-				Sink.setScene("splash");
+				Sink.setScene("splash"); // In splash load your assets and setup Sink
 			}
 		});
-		run();
+		init(); // this will set the configuration
+		run(); // this will create the lwjgl application
 	}
 } </code>
  * <p>
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {
+	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
+	
 	public static Stage stage;
 	private static OrthographicCamera camera;
-	
-	private float startTime = System.nanoTime();
 	private static LogPane logPane;
 	private static Label fpsLabel;
 	static Scene currentScene = null;
@@ -95,10 +104,29 @@ public final class Sink implements ApplicationListener {
 	/**
 	 * You Must call setup the Sink framework in your splash/menu scene after you have loaded all your
 	 * assets if you want the logPane and fps to display.
+	 * This loads the fonts for fps and logPane from the skin file. You can use Asset.skin
+	 * @param font - The Skin to set the Fps and logPane text font.
 	 * */
-	public static void setup(){
-		fpsLabel = new Label("", Asset.skin);
-		logPane = new LogPane();
+	public static void setup(Skin skin){
+		if(skin != null){
+			fpsLabel = new Label("", skin);
+			logPane = new LogPane(skin);
+		}
+	}
+	
+	/**
+	 * You Must call setup the Sink framework in your splash/menu scene after you have loaded all your
+	 * assets if you want the logPane and fps to display.
+	 * This loads the fonts for fps and logPane from the specified BitmapFont font;
+	 * @param font - The BitmapFont to set the Fps and logPane text font.
+	 * */
+	public static void setup(BitmapFont font){
+		if(font != null){
+			LabelStyle ls = new LabelStyle();
+			ls.font = font;
+			fpsLabel = new Label("", ls);
+			logPane = new LogPane(font);
+		}
 	}
 	
 	@Override
@@ -115,8 +143,7 @@ public final class Sink implements ApplicationListener {
  		Gdx.input.setInputProcessor(stage);
  		Sink.stage.addListener(touchInput);
  		fireCreateEvent();
- 		//Scene.$log("TotalTime: "+toScreenTime(Config.readTotalTime()));
- 		//Config.writeTotalTime(gameUptime);
+ 		log("TotalTime: "+toScreenTime(Config.readTotalTime()));
 	}
 	
 	@Override
@@ -161,6 +188,7 @@ public final class Sink implements ApplicationListener {
 		fireDisposeEvent();
 		stage.dispose();
 		Asset.unloadAll();
+		Config.writeTotalTime(gameUptime);
 		Gdx.app.exit();
 	}
 
@@ -361,8 +389,8 @@ public final class Sink implements ApplicationListener {
     private float lastPercent;
     private float panSpeedX, panSpeedY;
     private final Vector3 mousePos = new Vector3();
-    //private float stateTime = 0;
 	
+    // try to re-implement this with statetime
     private void updateController(){
     	float delta = Gdx.graphics.getDeltaTime();
     	if(!complete)
@@ -444,6 +472,14 @@ public final class Sink implements ApplicationListener {
     
     private void end () {
     	reset();
+    }
+    
+    public static float getCameraWidth(){
+    	return camera.viewportWidth;
+    }
+    
+    public static float getCameraHeight(){
+    	return camera.viewportHeight;
     }
     
     public static float getCameraX(){
@@ -600,9 +636,21 @@ class LogPane extends SceneGroup{
 	Label logLabel;
 	ScrollPane scroll;
 	
-	public LogPane(){
+	public LogPane(Skin skin){
 		setSize(300, 100);
-		logLabel = new Label("", Asset.skin);
+		logLabel = new Label("", skin);
+		scroll = new ScrollPane(logLabel);
+		scroll.setPosition(0,0);
+		scroll.setSize(300, 100);
+		scroll.setBounds(0, 0, 300, 100);
+		addActor(scroll);
+	}
+	
+	public LogPane(BitmapFont font){
+		setSize(300, 100);
+		LabelStyle ls = new LabelStyle();
+		ls.font = font;
+		logLabel = new Label("", ls);
 		scroll = new ScrollPane(logLabel);
 		scroll.setPosition(0,0);
 		scroll.setSize(300, 100);

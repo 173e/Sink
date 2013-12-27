@@ -14,9 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-package sink.event;
+package sink.net;
  
-public interface IBluetooth {
+public interface BlueMan {
     public void enableBluetooth();
     public void enableDiscoveribility();
     public void discoverDevices();

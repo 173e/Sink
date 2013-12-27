@@ -77,7 +77,7 @@ public class SplashScene extends Scene implements Disposable {
 	        	isActive = false;
 	        	dispose();
 	        	Asset.setup();
-	        	Sink.setup();
+	        	Sink.setup(Asset.skin);
 	        	Sink.setScene("menu");
 	            return true;
 	          }

@@ -1,4 +1,4 @@
-Sink v0.76
+Sink v0.77
 ===============
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
@@ -23,10 +23,14 @@ There are 3 demos
 
 ScreenShots
 ============
-<img src = "https://f.cloud.github.com/assets/1687946/1458794/a2b7de78-4399-11e3-8110-f2372f230ba8.PNG" width="480" height="320">  
-<img src = "https://f.cloud.github.com/assets/1687946/1458798/a304382c-4399-11e3-9c9e-72f8b86e967d.PNG" width="480" height="320">  
-<img src = "https://f.cloud.github.com/assets/1687946/1458797/a2fa3188-4399-11e3-9912-fae9745b8a1d.PNG" width="480" height="320">  
-	
+<img src = "https://f.cloud.github.com/assets/1687946/1814935/cd0ea04a-6f08-11e3-80b6-c7c1af54fa0d.png" width="480" height="320">  
+<img src = "https://f.cloud.github.com/assets/1687946/1814936/cd133326-6f08-11e3-8851-13cec6ee471f.png" width="480" height="320">  
+<img src = "https://f.cloud.github.com/assets/1687946/1814937/cd1d8416-6f08-11e3-8763-d5c377236d36.png" width="480" height="320">
+<img src = "https://f.cloud.github.com/assets/1687946/1814938/cf039586-6f08-11e3-9c5d-95651046f89d.png" width="480" height="320">  
+
+<img src = "https://f.cloud.github.com/assets/1687946/1814960/7f7d1fea-6f09-11e3-80fa-882c67f57ac8.png" width="480" height="320">
+<img src = "https://f.cloud.github.com/assets/1687946/1814961/83e96854-6f09-11e3-81fc-d3b8eb52eb7d.png" width="480" height="320">
+<img src = "https://f.cloud.github.com/assets/1687946/1814977/1cc0408e-6f0a-11e3-87ea-9d1f61f5c07f.png" width="480" height="320">  
 Project Structure
 -----------------
 ><b>Important</b>  All asset files must be lowercase only.. otherwise it causes problems with android
@@ -172,22 +176,25 @@ and then you can switch you scenes by using setScene method with the sceneName y
 ```java
 public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
-		init();
-		Config.isJar = false;
+		Config.isJar = false; // set to true when exporting to jar
+		Config.title = "Sink"; // your game title name
+		Config.showIcon = true; // whether you want to use an icon for your game
+		Config.iconLocation = "icon/myicon.png"; // specify the location of your icon
+		Config.TARGET_WIDTH = 800; // your game's target width it will automatically scale to other sizes
+		Config.TARGET_HEIGHT = 480; // your game's target height it will automatically scale to other sizes
 		Sink.addListener(new CreateListener(){
 			@Override
-			public void onCreate() {
+			public void onCreate(){
 				Sink.registerScene("splash", new SplashScene());
 				Sink.registerScene("menu", new MenuScene());
 				Sink.registerScene("options", new OptionsScene());
 				Sink.registerScene("credits", new CreditsScene());
-				Sink.registerScene("login", new LoginScene());
-				Sink.registerScene("level", new LevelScene());
 				Sink.registerScene("game", new GameScene());
-				Sink.setScene("splash");
+				Sink.setScene("splash");// In splash load your assets and setup Sink
 			}
 		});
-		run();
+		init(); // this will set the configuration
+		run(); // this will create the lwjgl application
 	}
 }
 ```
