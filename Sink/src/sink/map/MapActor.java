@@ -31,16 +31,15 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 /** The MapActor Class
  * <p>
  * The MapActor is a SceneActor that can be used as a static tile, animated tile, animated actor or as a plain
- * actor.
- * 1.For using it as a Static Tile use:
- *  	MapActor(TextureRegion region, int row, int col, int id, int tileSize)
- * 2.For using it as a Animated Tile/Actor use:
- * 	 	MapActor(Animation a, int row, int col, int id, int tileSize)
- * 3.For using it as a plain Actor use:
- * 	 	MapActor(int row, int col, int tileSize)
+ * actor.<br>
+ * 1.For using it as a Static Tile use:<br>
+ *  	MapActor(TextureRegion region, int row, int col, int id, int tileSize)<br>
+ * 2.For using it as a Animated Tile/Actor use:<br>
+ * 	 	MapActor(Animation a, int row, int col, int id, int tileSize)<br>
+ * 3.For using it as a plain Actor use:<br>
+ * 	 	MapActor(int row, int col, int tileSize)<br>
  * 
  * It has many important methods like moveTo, moveBy, collides, intersects, getCenterX, getCenterY
- * <p>
  * @author pyros2097 */
 public class MapActor extends SceneActor {
 	private int row;

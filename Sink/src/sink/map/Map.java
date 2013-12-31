@@ -33,7 +33,7 @@ import com.badlogic.gdx.utils.Array;
  * <p>
  * The Map is a SceneGroup which automatically loads all the tiles and arranges them accordingly it is
  * highly recommended that you override the loadLayer method and customize the map
- * <p>
+ * </p>
  * @author pyros2097 */
 public class Map extends SceneGroup{
 	protected final int tileSize;

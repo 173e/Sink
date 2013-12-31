@@ -32,16 +32,17 @@ import com.badlogic.gdx.utils.Scaling;
 /** The base class for creating Scenes
  * <p>
  * Use this class to to create screens or menus for your game. Just extend this class and override the
- * {@link #onInit} method all other things are done automatically like clearing the stage and populating it with the
- * actors of this group and override act method which is called in the main render method for updating your
- * scene logic such as splash scene, timers, delays etc...
+ * {@link #onInit} method all other things are done automatically like clearing the stage and populating it 
+ * with the actors of this group and override {@link #act} method which is called in the main render method for 
+ * updating your scene logic such as splash scene, timers, delays etc...
+ * <p>
  * It also contains a Table which can be used as a box layout for ui components.
- * A scene can be set using {@link SceneManager.setScene}
+ * A scene can be set using {@link Sink.setScene}
  * 
+ * <p>
  * Scene also supports transitions. You can start a scene transition by calling the method at he beginning of
  * the init method ex: transitionRightToLeft(); will transit the scene from right to left when 
  * it is shown.
- * <p>
  * @author pyros2097 */
 
 

@@ -47,16 +47,22 @@ import com.badlogic.gdx.utils.ArrayMap;
  * <p>
  * It consists of a single Stage and Camera which are all initialized based on the {@link Config} settings.
  * The stage can be accessed in a static way like Sink.stage and methods related to camera like moveTo, moveBy,
- * are also accessed the same way.
- * It also has extra things like gameUptime, pauseState, CreateListeners, PauseListeners, ResumeListeners, 
- * DisposeListeners.
- * It also has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
- * It can also automatically follow a actor by using followActor(Actor actor)
+ * are also accessed the same way.<br>
+ * It has extra things like gameUptime, pauseState, CreateListeners, PauseListeners, ResumeListeners, 
+ * DisposeListeners.<br>
+ * 
+ * It has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
+ * It can also automatically follow a actor by using followActor(Actor actor)<br>
+ * 
  * Use this class to register all your scenes and then you can switch you scenes by using {@link #setScene}
- * method with the sceneName you registered your scene with.
+ * method with the sceneName you registered your scene with.<br>
+ * 
  * You Must setup the Sink framework in your splash/menu or first scene after you have loaded all your
- * assets if you want the logPane and fps to display by calling {@link #setup()}
+ * assets if you want the logPane and fps to display by calling {@link #setup()}<br>
+ * 
+ * <p>
  * @ex
+ * <pre>
  * <code>
  * public class BasicDesktop extends MainDesktop{
 	public static void main(String[] argc) {
@@ -81,7 +87,7 @@ import com.badlogic.gdx.utils.ArrayMap;
 		run(); // this will create the lwjgl application
 	}
 } </code>
- * <p>
+ </pre>
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {

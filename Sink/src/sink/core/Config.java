@@ -23,10 +23,9 @@ import com.badlogic.gdx.Preferences;
  * <p>
  * The Config class contains all the necessary options for all different platforms into one class.
  * Here you can save all the data of the game that is required to be persistent. The Screen 
- * Width/Height and the Target Width/Height are all declared here.
+ * Width/Height and the Target Width/Height are all declared here.<br>
  * 
- * You don't need to use Custom configuration for each platform all is declared here.
- * <p>
+ * You don't need to use Custom configuration for each platform all is declared here.<br>
  * @author pyros2097 */
 
 public final class Config {

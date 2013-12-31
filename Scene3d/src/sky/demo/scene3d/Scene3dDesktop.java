@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 See AUTHORS file.
+ * Copyright 2013 pyros2097
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class Scene3dDesktop implements ApplicationListener {
     public void create () {
     	//2d stuff
     	stage2d = new Stage();
-    	skin = new Skin(Gdx.files.internal("assets/skin/uiskin.json"));
+    	skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
     	fpsText = new Label("ff", skin);
     	fpsText.setPosition(Gdx.graphics.getWidth() - 80, Gdx.graphics.getHeight()-40);
     	stage2d.addActor(fpsText);

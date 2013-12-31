@@ -16,10 +16,10 @@ You can perform actions on these actors using Action3d
 
 Demo
 ====
-There are 3 demos
-1. BasicDemo  
-2. TicTacToe  
-3. Stage3d  
+There are 3 demos  
+1. [BasicDemo](https://github.com/pyros2097/Sink/releases/download/v0.77/BasicDemo.jar)  
+2. [TicTacToe](https://github.com/pyros2097/Sink/releases/download/v0.77/TicTacToe.jar)
+3. [Stage3d](https://github.com/pyros2097/Sink/releases/download/v0.77/Stage3d.jar)
 
 ScreenShots
 ============
@@ -136,6 +136,10 @@ Thanks all these awesome frameworks
 [libgdx](libgdx.badlogicgames.com)  
 [lwjgl](lwjgl.org)  
 [openal](kcat.strangesoft.net/openal.html)  
+
+Download
+--------
+[Sink Framework](https://github.com/pyros2097/Sink/releases/download/v0.77/sink.jar)
 
 #Documentation
 ##Scene

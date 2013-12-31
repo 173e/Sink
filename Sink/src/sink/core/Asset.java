@@ -41,28 +41,33 @@ import com.badlogic.gdx.utils.ArrayMap;
 /** Automatic Assets Loading for the Sink Game
  * <p>
  *  This class automatically loads all the assets in the prescribed folders into the appropriate 
- *  class types. All This can be accessed using an neat api
+ *  class types. All This can be accessed using an neat api.
  * 
- *	#Important 
- *	All asset files must be lowercase only.. otherwise it causes problems with android
+ * <p>
+ *	<b>#Important </b> <br>
+ *	All asset files must be lowercase only.. otherwise it causes problems with android <br> 
+ *	1. All Assets are to be stored in the assets directory <br>
+ *	2. Automatic Asset Loading the directory Structure should be like this <br>
  *
- *	1. All Assets are to be stored in the assets directory
- *	2. Automatic Asset Loading the directory Structure should be like this
- *	
- *	assets/atlas/  --- all your Texture Atlas files .atlas and .png go here  
- *	assets/font/  --- all your BitmapFont files .fnt and .png go here  
- *	assets/music/  --- all your Music files .mp3 go here  
- *	assets/sound/  --- all your Music files .mp3 go here  
- *	assets/particle/  --- all your Particle files .part go here  
- *	assets/icon/  --- all your Game related icon files go here  
- *	assets/map/  --- all your TMX map files go here  
- *	assets/pack/  --- all your image files which are to be packed are to be stored here so
+ *  <p>
+ *	assets/atlas/  --- all your Texture Atlas files .atlas and .png go here<br>
+ *	assets/font/  --- all your BitmapFont files .fnt and .png go here<br>
+ *	assets/music/  --- all your Music files .mp3 go here<br>
+ *	assets/sound/  --- all your Music files .mp3 go here<br>
+ *	assets/particle/  --- all your Particle files .part go here<br>
+ *	assets/icon/  --- all your Game related icon files go here<br>
+ *	assets/map/  --- all your TMX map files go here<br>
+ *	assets/pack/  --- all your image files which are to be packed are to be stored here<br>
  *					  so that they are automatically packed by the texture packer and stored in
  *					  the atlas folder
- *	  	    	  					  	  
- *	All assets are accessed this way,
- *	First import what type of asset you wish to use as static,
+ *	
+ * <p>   	  					  	  
+ *	All assets are accessed this way,<br>
+ *	First import what type of asset you wish to use as static, <br>
+ *  <b>Note:</b> The  Scene, SceneActor, SceneGroup classes have these methods inbuilt for easier accessing<br>
  *
+ * <pre>
+ * <code>
  *	import static sink.core.Asset.anim;
  *	import static sink.core.Asset.tex;
  *	import static sink.core.Asset.musicPlay;
@@ -70,27 +75,28 @@ import com.badlogic.gdx.utils.ArrayMap;
  *	import static sink.core.Asset.font;
  *
  *
- *	To load TextureRegion
+ *	//To load TextureRegion
  *	TextureRegion cat = tex("cat");
  *	
- *	To load Animation
+ *	//To load Animation
  *	Animation catAnim = anim("cat");
  *	
- *	To load BitmapFont
+ *	//To load BitmapFont
  *	BitmapFont font1 = font("font1");
  *
- *  OfCourse SkyEngine already has inbuilt MusicManager and SoundManager which you can use by invoking:
+ *	//The music and sound files are automatically cached and can be played by invoking:
  *	musicPlay("musicname");
  *	soundPlay("soundname");
  *	
  *
- *  When exporting your game to jar Conig.isJar must be set so that
- *  all your assets will get loaded automatically within the jar file
+ *  //When exporting your game to jar Conig.isJar must be set so that
+ *  //all your assets will get loaded automatically within the jar file
  *	Config.isJar = true;
  *	
- *  The asset functions can return null for Font, TextureRegion and Animation if the asset cannot be found
- * 
- * <p>
+ *  //The asset functions will return null for Font, TextureRegion and Animation if the asset cannot be found
+ * </code>
+  </pre>
+ * </p>
  * @author pyros2097 */
 
 public final class Asset {
