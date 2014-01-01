@@ -372,7 +372,8 @@ public final class Sink implements ApplicationListener {
 	 * this method
 	 */
 	public static void registerSceneHud(Actor actor){
-		hudActors.add(actor);
+		if(!hudActors.contains(actor, true))
+			hudActors.add(actor);
 	}
 	
 	/* If you want to stop any elements/actors from moving along with the camera like HUD's you can stop them
