@@ -223,6 +223,8 @@ actor.
 3.For using it as a plain Actor use:  
 	```java MapActor(int row, int col, int tileSize)  ```  
 It has many important methods like moveTo, moveBy, collides, intersects, getCenterX, getCenterY  
+><b>Note:</b> Only Use setPositionXY and SetPositionRC on this actor do not use the Actor's setPosition method  
+as it causes problems  
 
 #Faq
 1. Performance?  

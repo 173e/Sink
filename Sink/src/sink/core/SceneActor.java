@@ -21,8 +21,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class SceneActor extends Actor {
+	public float stateTime = 0;
 	
 	public SceneActor(){}
+	
+	@Override
+	public void act(float delta){
+		super.act(delta);
+		stateTime += delta;
+	}
 	
 	public SceneActor(float x, float y, float width, float height){
 		setPosition(x,y);

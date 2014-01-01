@@ -25,6 +25,8 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
@@ -40,6 +42,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
  * 	 	MapActor(int row, int col, int tileSize)<br>
  * 
  * It has many important methods like moveTo, moveBy, collides, intersects, getCenterX, getCenterY
+ * 
+ * <b>Note:</b> Only Use setPositionXY and SetPositionRC on this actor do not use the Actor's setPosition method
+ * as it causes problems
  * @author pyros2097 */
 public class MapActor extends SceneActor {
 	private int row;
@@ -59,9 +64,6 @@ public class MapActor extends SceneActor {
 	public float particlePosX = 0.0f;
 	public float particlePosY = 0.0f;
 	public boolean isParticleEffectActive;
-		
-	// Animation timer
-	protected float stateTime = 0;
 
 	// When tiles coords row and column are directly specified
 	public MapActor(int row, int col, int tileSize){
@@ -86,12 +88,6 @@ public class MapActor extends SceneActor {
 			isAnimationActive = true;
 		}
 		
-	}
-	
-	@Override
-	public void act(float delta) {
-		super.act(delta);
-		stateTime += delta;
 	}
 	
 	@Override
@@ -177,22 +173,36 @@ public class MapActor extends SceneActor {
 	
 	public void actionMoveTo(float x, float y, float duration) {
 		// Move to a specific position by time
-		MoveToAction action = new MoveToAction();
-		action.setPosition(x, y);
+		MoveToAction move = new MoveToAction();
+		move.setPosition(x, y);
 		if (duration > 0.0f) {
-			action.setDuration(duration);
+			move.setDuration(duration);
 		}
-		addAction(action);
+		Action over = new Action() {
+			@Override
+	          public boolean act(final float it) {
+				setPositionXY(this.getActor().getX(), this.getActor().getY());
+	            return true;
+	          }
+	    };
+	    addAction(Actions.sequence(move, over));
 	}
 
 	public void actionMoveBy(float x, float y, float duration) {
 		// Move towards a direction during given time (NON-STOP)
-		MoveByAction action = new MoveByAction();
-		action.setAmount(x, y);
+		MoveByAction move = new MoveByAction();
+		move.setAmount(x, y);
 		if (duration > 0.0f) {
-			action.setDuration(duration);
+			move.setDuration(duration);
 		}
-		addAction(action);
+		Action over = new Action() {
+			@Override
+	          public boolean act(final float it) {
+				setPositionXY(this.getActor().getX(), this.getActor().getY());
+	            return true;
+	          }
+	    };
+	    addAction(Actions.sequence(move, over));
 	}
 	
 	/**
@@ -207,7 +217,7 @@ public class MapActor extends SceneActor {
 	 *            the delta time for accurate speed
 	 * */
 	public void translateWithoutAcc(float speedX, float speedY, float delta) {
-		setPosition(getX() + (speedX * delta), getY() + (speedY * delta));
+		setPositionXY(getX() + (speedX * delta), getY() + (speedY * delta));
 	}
 	
 	/**
