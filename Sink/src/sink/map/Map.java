@@ -71,11 +71,11 @@ public class Map extends SceneGroup{
 				Cell c = layer.getCell(j, i);
 				if(c != null){
 					tiles.get(layerNo)[i][j] = new MapActor(c.getTile().getTextureRegion(),
-							j, i, c.getTile().getId(), tileSize);
+							i, j, c.getTile().getId(), tileSize);
 					addActor(tiles.get(layerNo)[i][j]);
 				}
 				else{
-					tiles.get(layerNo)[i][j] = new MapActor((TextureRegion)null,j, i, 0, tileSize);
+					tiles.get(layerNo)[i][j] = new MapActor((TextureRegion)null,i, j, 0, tileSize);
 					addActor(tiles.get(layerNo)[i][j]);
 				}
 		}

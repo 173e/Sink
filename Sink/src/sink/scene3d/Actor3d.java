@@ -16,6 +16,8 @@
 
 package sink.scene3d;
 
+import sink.core.Sink;
+
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.collision.BoundingBox;

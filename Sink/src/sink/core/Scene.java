@@ -134,6 +134,10 @@ public abstract class Scene extends Group {
 		return Asset.anim(animationBaseName);
 	}
 	
+	public static void log(String log){
+		Sink.log(log);
+	}
+	
 	public void transitionLeftToRight(){
 		setPosition(-999, 0);
  		addAction(Actions.moveTo(0,  0, 0.5f));

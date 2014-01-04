@@ -76,4 +76,8 @@ public class SceneGroup extends Group{
 	public static Animation anim(String animationBaseName){
 		return Asset.anim(animationBaseName);
 	}
+	
+	public static void log(String log){
+		Sink.log(log);
+	}
 }

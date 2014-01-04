@@ -151,24 +151,35 @@ public class MapActor extends SceneActor {
 		return tileSize;
 	}
 	
-	public int getRow(){
-		return row;
-	}
-	
 	public int getCol(){
 		return col;
 	}
 	
-	public void setPositionRC(int row, int col){
-		this.row = row;
-		this.col = col;
-		setPosition(row*tileSize, col*tileSize);
+	public int getRow(){
+		return row;
 	}
 	
-	public void setPositionXY(float x, float y){
-		setPosition(x, y);
-		this.row = (int)x/tileSize;
-		this.col =(int)y/tileSize;
+	/*@Override
+	public void setPosition(float x, float y){
+		
+	}*/
+	
+	/*
+	 * Col is always x-axis and Row is y-axis
+	 */
+	public void setPositionRC(int row, int col){
+		setPosition(col*tileSize, row*tileSize);
+	}
+	
+	/*
+	 * The setPosition calls the super Actor's setPosition method and also updates the row and col
+	 * position of the tile
+	 */
+	@Override
+	public void setPosition(float x, float y){
+		super.setPosition(x, y);
+		this.row =(int)this.getY()/tileSize;
+		this.col = (int)this.getX()/tileSize;
 	}
 	
 	public void actionMoveTo(float x, float y, float duration) {
@@ -181,7 +192,7 @@ public class MapActor extends SceneActor {
 		Action over = new Action() {
 			@Override
 	          public boolean act(final float it) {
-				setPositionXY(this.getActor().getX(), this.getActor().getY());
+				setPosition(this.getActor().getX(), this.getActor().getY());
 	            return true;
 	          }
 	    };
@@ -198,7 +209,7 @@ public class MapActor extends SceneActor {
 		Action over = new Action() {
 			@Override
 	          public boolean act(final float it) {
-				setPositionXY(this.getActor().getX(), this.getActor().getY());
+				setPosition(this.getActor().getX(), this.getActor().getY());
 	            return true;
 	          }
 	    };
@@ -217,7 +228,7 @@ public class MapActor extends SceneActor {
 	 *            the delta time for accurate speed
 	 * */
 	public void translateWithoutAcc(float speedX, float speedY, float delta) {
-		setPositionXY(getX() + (speedX * delta), getY() + (speedY * delta));
+		setPosition(getX() + (speedX * delta), getY() + (speedY * delta));
 	}
 	
 	/**
@@ -241,8 +252,8 @@ public class MapActor extends SceneActor {
 	}
 	
 	public boolean intersects(MapActor other){
-		//$log(""+row+" : "+other.getRow());
-		if(row == other.getRow() && col == other.getCol())
+		//Sink.log(""+row+" : "+other.getRow());
+		if(col == other.getCol() && row == other.getRow())
 			return true;
 		return false;
 	}
