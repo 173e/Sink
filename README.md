@@ -111,11 +111,22 @@ r.addAction3d(Actions.moveTo(7f, 0f, 0f, 1f));
 r.addAction3d(Actions.rotateTo(59, 1f));
 	
 ```
-	
+
+Download
+--------
+[Sink Framework](https://github.com/pyros2097/Sink/releases/download/v0.90/sink.jar)
+
+Running
+--------
+Include the sink.jar in your game it contains all the libgdx files also so you dont need to include them.      
+Run the Desktop Game by using MainDesktop class as it contains the static main declaration.  
+Specify the first scene in your config.json file and register all your other scenes in it.  
+
 Todo
 -----
-1. Automatic animation loading
-2. Hex Map
+1. Automatic animation loading still not done
+2. Hexagonal Map
+3. Isometric Map
   
 Credits
 --------
@@ -125,14 +136,6 @@ Thanks all these awesome frameworks
 [lwjgl](lwjgl.org)  
 [openal](kcat.strangesoft.net/openal.html)  
 
-Download
---------
-[Sink Framework](https://github.com/pyros2097/Sink/releases/download/v0.90/sink.jar)
-
-#Using
-Include the sink.jar in your game it contains all the libgdx files also so you dont need to include them.      
-Run the Desktop Game by using MainDesktop class as it contains the static main declaration.  
-Specify the first scene in your config.json file and register all your other scenes in it.  
 
 #Documentation
 ##config.json
@@ -173,6 +176,7 @@ Create a config.json file in your src folder and add these lines to it
 }
 ```
 where  
+```
 	title -> your game title name  
 	showIcon -> whether you want to use an icon for your game  
 	iconLocation -> specify the location of your icon  
@@ -184,13 +188,14 @@ where
 	y -> y position of your game window  
 	resize -> wheter you can resize the window  
 	isJar -> When exporting your game to jar isJar must be set true so that all your assets will get loaded automatically within the jar file  
-	  
+	
 	showFps -> Whether you want to display the fps on the game screen  
 	showLogger -> Whether you want to display the logging pane on the game screen  
-	loggingEnabled -> To disable logging and improve performance  
-	  
+	loggingEnabled -> To disable logging and improve performance
+	
 	firstScene -> the main entry point scene for your game all other scenes must be registered in this  
 	firstSceneClassName -> The class name for your first scene so that it is automatically loaded  
+```
 	
 
 ##Scene
@@ -219,7 +224,7 @@ This extends the Group class and all the Asset methods are directly built into i
 
 ##Sink
 The Main Entry Point for the Sink Game is the Sink class
-It consists of a single Stage and Camera which are all initialized based on the {@link Config} settings.
+It consists of a single Stage and Camera which are all initialized based on the Config settings.
 The stage can be accessed in a static way like Sink.stage and methods related to camera like moveTo, moveBy,
 are also accessed the same way.<br>
 It has extra things like gameUptime, pauseState, PauseListeners, ResumeListeners, 
@@ -227,11 +232,11 @@ DisposeListeners.<br>
 It has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
 It can also automatically follow a actor by using followActor(Actor actor)<br>
 
-Use this class to register all your scenes and then you can switch you scenes by using {@link #setScene}
+Use this class to register all your scenes and then you can switch you scenes by using Sink.setScene()
 method with the sceneName you registered your scene with.<br>
 You Must setup the Sink framework in your splash/menu or first scene and register all your other scenes in it
 and after you have loaded all your assets if you want to  show the logPane and fps then set it up<br>
-by calling {@link #setup()}<br> 
+by calling Sink.setup()<br> 
 ```java
 public class  SplashScene extends Scene{
     
@@ -269,8 +274,6 @@ actor.
 3.For using it as a plain Actor use:  
 	```java MapActor(int row, int col, int tileSize)  ```  
 It has many important methods like moveTo, moveBy, collides, intersects, getCenterX, getCenterY  
-><b>Note:</b> Only Use setPositionXY and SetPositionRC on this actor do not use the Actor's setPosition method  
-as it causes problems  
 
 #Faq
 1. Performance?  
