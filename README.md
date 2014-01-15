@@ -187,7 +187,8 @@ where
 	x -> x position of your game window  
 	y -> y position of your game window  
 	resize -> wheter you can resize the window  
-	isJar -> When exporting your game to jar isJar must be set true so that all your assets will get loaded automatically within the jar file  
+	isJar -> When exporting your game to jar isJar must be set true so that all your assets
+			 will get loaded automatically within the jar file  
 	
 	showFps -> Whether you want to display the fps on the game screen  
 	showLogger -> Whether you want to display the logging pane on the game screen  
