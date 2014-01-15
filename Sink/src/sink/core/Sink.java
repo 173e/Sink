@@ -18,10 +18,10 @@ package sink.core;
 import static sink.core.Asset.musicPause;
 import static sink.core.Asset.musicResume;
 import static sink.core.Asset.soundStop;
-import sink.event.CreateListener;
 import sink.event.DisposeListener;
 import sink.event.PauseListener;
 import sink.event.ResumeListener;
+import sink.main.MainDesktop;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -48,7 +48,7 @@ import com.badlogic.gdx.utils.ArrayMap;
  * It consists of a single Stage and Camera which are all initialized based on the {@link Config} settings.
  * The stage can be accessed in a static way like Sink.stage and methods related to camera like moveTo, moveBy,
  * are also accessed the same way.<br>
- * It has extra things like gameUptime, pauseState, CreateListeners, PauseListeners, ResumeListeners, 
+ * It has extra things like gameUptime, pauseState, PauseListeners, ResumeListeners, 
  * DisposeListeners.<br>
  * 
  * It has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
@@ -57,40 +57,36 @@ import com.badlogic.gdx.utils.ArrayMap;
  * Use this class to register all your scenes and then you can switch you scenes by using {@link #setScene}
  * method with the sceneName you registered your scene with.<br>
  * 
- * You Must setup the Sink framework in your splash/menu or first scene after you have loaded all your
- * assets if you want the logPane and fps to display by calling {@link #setup()}<br>
+ * You Must setup the Sink framework in your splash/menu or first scene and register all your other scenes in it
+ * and after you have loaded all your assets if you want to  show the logPane and fps then set it up<br>
+ * by calling {@link #setup()}<br>
+ * 
+ * Run the Desktop Game by using MainDesktop class as it contains the static main declaration.<br>
+ * Specify the first scene in your config.json file and register all your other scenes in it.<br>
  * 
  * <p>
  * @ex
  * <pre>
  * <code>
- * public class BasicDesktop extends MainDesktop{
-	public static void main(String[] argc) {
-		Config.isJar = false; // set to true when exporting to jar
-		Config.title = "Sink"; // your game title name
-		Config.showIcon = true; // whether you want to use an icon for your game
-		Config.iconLocation = "icon/myicon.png"; // specify the location of your icon
-		Config.TARGET_WIDTH = 800; // your game's target width it will automatically scale to other sizes
-		Config.TARGET_HEIGHT = 480; // your game's target height it will automatically scale to other sizes
-		Sink.addListener(new CreateListener(){
-			@Override
-			public void onCreate(){
-				Sink.registerScene("splash", new SplashScene());
-				Sink.registerScene("menu", new MenuScene());
-				Sink.registerScene("options", new OptionsScene());
-				Sink.registerScene("credits", new CreditsScene());
-				Sink.registerScene("game", new GameScene());
-				Sink.setScene("splash"); // In splash load your assets and setup Sink
-			}
-		});
-		init(); // this will set the configuration
-		run(); // this will create the lwjgl application
-	}
-} </code>
+    public class  SplashScene extends Scene{
+    
+	    public SplashScene(){
+			Sink.registerScene("menu", new MenuScene());
+			Sink.registerScene("options", new OptionsScene());
+			Sink.registerScene("credits", new CreditsScene());
+			Sink.registerScene("login", new LoginScene());
+		}
+		
+		@Override
+		public void onInit() {
+	    } 
+   }
+ </code>
  </pre>
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {
+	public static String version = "0.90";
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
 	
@@ -102,7 +98,6 @@ public final class Sink implements ApplicationListener {
 	static final ArrayMap<String , Scene> sceneMap = new ArrayMap<String, Scene>();
 	public static Array<Actor> hudActors = new Array<Actor>();
 	public static boolean pauseState = false;
-	private static final Array<CreateListener> createListeners = new Array<CreateListener>();
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
@@ -111,7 +106,7 @@ public final class Sink implements ApplicationListener {
 	 * You Must call setup the Sink framework in your splash/menu scene after you have loaded all your
 	 * assets if you want the logPane and fps to display.
 	 * This loads the fonts for fps and logPane from the skin file. You can use Asset.skin
-	 * @param font - The Skin to set the Fps and logPane text font.
+	 * @param skin - The Skin to set the Fps and logPane text font.
 	 * */
 	public static void setup(Skin skin){
 		if(skin != null){
@@ -123,7 +118,7 @@ public final class Sink implements ApplicationListener {
 	/**
 	 * You Must call setup the Sink framework in your splash/menu scene after you have loaded all your
 	 * assets if you want the logPane and fps to display.
-	 * This loads the fonts for fps and logPane from the specified BitmapFont font;
+	 * This loads the fonts for fps and logPane from the specified BitmapFont font
 	 * @param font - The BitmapFont to set the Fps and logPane text font.
 	 * */
 	public static void setup(BitmapFont font){
@@ -139,7 +134,7 @@ public final class Sink implements ApplicationListener {
 	public final void create() {
 		Sink.log("Sink: Created");
 		Config.setup();
-		stage = new Stage(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.keepAspectRatio);
+		stage = new Stage(MainDesktop.cfg.width, MainDesktop.cfg.height, Config.keepAspectRatio);
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
 		camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
@@ -148,8 +143,20 @@ public final class Sink implements ApplicationListener {
  		Gdx.input.setCatchMenuKey(true);
  		Gdx.input.setInputProcessor(stage);
  		Sink.stage.addListener(touchInput);
- 		fireCreateEvent();
  		log("TotalTime: "+toScreenTime(Config.readTotalTime()));
+ 		if(!Config.firstSceneClassName.isEmpty() && !Config.firstScene.isEmpty()){
+			try {
+				Class<Scene> clazz = (Class<Scene>) Class.forName(Config.firstSceneClassName);
+				Sink.registerScene(Config.firstScene, clazz.newInstance());
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			setScene(Config.firstScene);
+ 		}
 	}
 	
 	@Override
@@ -159,11 +166,11 @@ public final class Sink implements ApplicationListener {
 			startTime = System.nanoTime();
 		}
 		Gdx.gl.glClearColor(0, 0, 0, 0);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT |GL20.GL_DEPTH_BUFFER_BIT);
 		stage.act(Gdx.graphics.getDeltaTime());
 		updateController();
 		stage.draw();
-		if (fpsLabel != null && Config.fpsVisible)
+		if (fpsLabel != null && Config.showFps)
 			fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
  	}
 
@@ -201,13 +208,9 @@ public final class Sink implements ApplicationListener {
 	public static void log(String log) {
 		if(Config.loggingEnabled){
 			Gdx.app.log("", log);
-			if(logPane != null && Config.loggerVisible)
+			if(logPane != null && Config.showLogger)
 				logPane.update(log);
 		}
-	}
-
-	public static void addListener(CreateListener cl){
-		createListeners.add(cl);
 	}
 	
 	public static void addListener(PauseListener pl){
@@ -220,10 +223,6 @@ public final class Sink implements ApplicationListener {
 	
 	public static void addListener(DisposeListener dl){
 		disposeListeners.add(dl);
-	}
-	
-	public static void removeListener(CreateListener cl){
-		createListeners.removeValue(cl, true);
 	}
 	
 	public static void removeListener(PauseListener pl){
@@ -242,10 +241,6 @@ public final class Sink implements ApplicationListener {
 		pauseListeners.clear();
 		resumeListeners.clear();
 		disposeListeners.clear();
-	}
-	
-	private static void fireCreateEvent(){
-		for(CreateListener cl: createListeners) cl.onCreate();
 	}
 	
 	/**
@@ -339,12 +334,12 @@ public final class Sink implements ApplicationListener {
 	
 	private static void showScene(){
 		stage.addActor(currentScene);
-		if (fpsLabel != null && Config.fpsVisible){
+		if (fpsLabel != null && Config.showFps){
 			registerSceneHud(fpsLabel);
 			fpsLabel.setPosition(Config.TARGET_WIDTH - 80, Config.TARGET_HEIGHT - 20);
 			stage.addActor(fpsLabel);
 		}
-		if (logPane != null && Config.loggerVisible){
+		if (logPane != null && Config.showLogger){
 			registerSceneHud(logPane);
 			logPane.setPosition(0, 0);
 			stage.addActor(logPane);
@@ -542,9 +537,9 @@ public final class Sink implements ApplicationListener {
     
     private float panSpeed = 5f;
     private float panXLeftOffset = 100;
-	private float panXRightOffset = Config.SCREEN_WIDTH - 100;
+	private float panXRightOffset = MainDesktop.cfg.width - 100;
 	private float panYUpOffset = 70;
-	private float panYDownOffset = Config.SCREEN_HEIGHT - 70;
+	private float panYDownOffset = MainDesktop.cfg.height - 70;
 	public static float camOffsetX = 160f;
 	public static float camOffsetYTop = 110f;
 	public static float camOffsetYBot = 65f;

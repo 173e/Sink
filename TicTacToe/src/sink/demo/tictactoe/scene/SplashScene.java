@@ -44,6 +44,11 @@ public class SplashScene extends Scene implements Disposable {
 	boolean isActive;
 	Texture bg1, bg2;
 	LoadingText loadingText;
+	
+	public SplashScene(){
+		Sink.registerScene("menu", new MenuScene());
+		Sink.registerScene("game", new GameScene());
+	}
 
 	@Override
 	public void onInit() {

@@ -2,15 +2,12 @@ package sink.cloud;
 
 import java.util.Date;
 
-import com.stackmob.sdk.model.StackMobModel;
-
-public class Task extends StackMobModel {
+public class Task  {
 	  
     private String name;
     private Date dueDate;
   
     public Task(String name, Date dueDate) {
-        super(Task.class);
         this.name = name;
         this.dueDate = dueDate;
     }

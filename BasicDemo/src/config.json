@@ -1,0 +1,33 @@
+{
+   "title": "BasicDemo",
+   "showIcon": true,
+   "iconLocation": "icon/icon_32.png",
+   "targetWidth": 800,
+   "targetHeight": 480,
+   "screenWidth": 800,
+   "screenHeight": 480,
+   "x": 280,
+   "y": 100,
+   "resize": false,
+   "forceExit": false,
+   "fullScreen": false,
+   "useGL20": false,
+   "vSync": false,
+   "disableAudio": false,
+   "audioBufferCount": 20,
+   "isJar": true,
+   "keepAspectRatio": false,
+   
+   "useAccelerometer": false,
+   "useCompass": false,
+   "hideStatusBar": true,
+   "useWakelock": true,
+   "useCloud": true,
+   
+   "showFps": true,
+   "showLogger": false,
+   "loggingEnabled": true,
+   
+   "firstScene": "splash",
+   "firstSceneClassName": "sink.demo.basic.scene.SplashScene"
+}

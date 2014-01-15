@@ -25,40 +25,20 @@ import com.badlogic.gdx.Preferences;
  * Here you can save all the data of the game that is required to be persistent. The Screen 
  * Width/Height and the Target Width/Height are all declared here.<br>
  * 
+ * All the Configuration is loaded from the config.json file present within the project or jar <br>
  * You don't need to use Custom configuration for each platform all is declared here.<br>
  * @author pyros2097 */
 
 public final class Config {
-	// Desktop Settings
 	public static String title = "Sink";
-	public static String version = "0.77";
-	public static boolean useGL20 = false;
-	public static boolean diableAudio = false;
-	public static boolean forceExit = false;
-	public static boolean fullscreen = false;
-	public static boolean keepAspectRatio = false; // makes look good
-	public static boolean resizable = true;
-	public static boolean vSyncEnabled = false;
-	
-	/* Whether or not to show the icon on the window. Use this if you are going to give a
-	 * specific icon by specifying its iconLocation */
-	public static boolean showIcon = false;
-	/* The location of the icon file
-	 * Set this to change the default icon
-	 * */
-	public static String iconLocation = "icon/icon_32.png";
-	
-	// Android Settings
-	public static boolean useAccelerometer = false;
-	public static boolean useCompass = false;
-	public static boolean hideStatusBar = true;
-	public static boolean useWakelock = true;
-	public static boolean useCloud = true;
-	
-	public static int SCREEN_WIDTH = 852;
-	public static int SCREEN_HEIGHT = 480;
-	public static int SCREEN_X = SCREEN_WIDTH/3;
-	public static int SCREEN_Y = SCREEN_HEIGHT/3;
+	public static boolean keepAspectRatio = false;
+	public static boolean showFps = true;
+	public static boolean showLogger = false;
+	public static boolean loggingEnabled= true;
+	/*When exporting your game to jar Conif.isJar must be set so that
+	* all your assets will get loaded automatically within the jar file
+	*/
+	public static boolean isJar = false;
 	
 	/*Important:
 	 *  The Target Width  and Target Height refer to the nominal width and height of the game for the
@@ -70,18 +50,13 @@ public final class Config {
 	 *  Then my game works perfectly for SCREEN_WIDTH = 800 SCREEN_HEIGHT = 480
 	 *  and on others screen sizes it is just zoomed/scaled but works fine thats all
 	 */
-	public static float TARGET_WIDTH = 852;
-	public static float TARGET_HEIGHT = 480;
+	public static float TARGET_WIDTH = 0;
+	public static float TARGET_HEIGHT = 0;
 	
-	//When exporting your game to jar Conig.isJar must be set so that
-	// all your assets will get loaded automatically within the jar file
-	public static boolean isJar = false;
+	public static String firstScene = "";
+	public static String firstSceneClassName = "";
+
 	private static String basePath = "";
-	
-	public static boolean fpsVisible = true;
-	public static boolean loggerVisible = false;
-	public static boolean loggingEnabled= true;
-	
 	public static String getBasePath(){
 		if(!Config.isJar) 
 			return basePath;
@@ -106,6 +81,7 @@ public final class Config {
     static final String PANSPEED = "panspeed";
     static final String DRAGSPEED = "dragspeed";
     static final String KEYBOARD = "keyboard";
+    static final String SCORE = "score";
 
     static Preferences prefs;
     
@@ -122,7 +98,9 @@ public final class Config {
     public static float speedPan;
     public static float speedDrag;
     
-    public static void setup(){
+    private static int score;
+    
+    static void setup(){
        prefs =Gdx.app.getPreferences(title);
        isMusic = prefs.getBoolean(MUSIC, true);
        isSound = prefs.getBoolean(SOUND, true);
@@ -136,6 +114,8 @@ public final class Config {
         
        speedPan = prefs.getFloat(PANSPEED, 5f);
        speedDrag = prefs.getFloat(DRAGSPEED, 5f);
+       
+       score = prefs.getInteger(SCORE, 0);
     }
    
     
@@ -250,6 +230,16 @@ public final class Config {
         prefs.putFloat(VOLUME_SOUND, ue);
         prefs.flush();
         volSound = ue;
+    }
+    
+    public static void setScore(int value){
+        prefs.putInteger(SCORE, value);
+        prefs.flush();
+        score = value;
+    }
+    
+    public static int getScore(){
+        return score;
     }
     
     public static void setVibration(boolean ue){

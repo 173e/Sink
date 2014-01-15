@@ -290,4 +290,8 @@ public class MapActor extends SceneActor {
 			return false;
 		}
 	}
+	
+	public Animation getAnimation(){
+		return animation;
+	}
 }

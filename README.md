@@ -1,4 +1,4 @@
-Sink v0.77
+Sink v0.90
 ===============
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
@@ -13,13 +13,6 @@ Stage3d class can be used to construct a Stage for Actor3d's
 You can use the Actor3d class to create Actors for the Stage  
 Actor3d has almost identical properties to Actor  
 You can perform actions on these actors using Action3d  
-
-Demo
-====
-There are 3 demos  
-1. [BasicDemo](https://github.com/pyros2097/Sink/releases/download/v0.77/BasicDemo.jar)  
-2. [TicTacToe](https://github.com/pyros2097/Sink/releases/download/v0.77/TicTacToe.jar)
-3. [Stage3d](https://github.com/pyros2097/Sink/releases/download/v0.77/Stage3d.jar)
 
 ScreenShots
 ============
@@ -89,12 +82,9 @@ musicPlay("musicname");
 soundPlay("soundname");
 		
 //To Log to the Console or the Logger Widget In Game you can use,
-Scene.log("Some important data");
+Sink.log("Some important data");
 /This will display to your console and/or the loggerPane if enabled by using Config class in the engine
 
-When exporting your game to jar Conig.isJar must be set so that
-all your assets will get loaded automatically within the jar file
-Config.isJar = true;
 The asset functions can return null for Font, TextureRegion and Animation if the asset cannot be 
 found so null checking has to be manually done.
 	
@@ -102,8 +92,6 @@ Also There is a great Config class which already has basic things needed in a ga
 like Config.isMusic to get if music is enabled
 	
 Currently Only Orthogonal Maps are supported
-
-In the BasicDemo only level 1 Works Properly
 
 // This is for Stage3d
 import com.badlogix.gdx.scenes.scene3d.Actor3d;
@@ -128,7 +116,7 @@ Todo
 -----
 1. Automatic animation loading
 2. Hex Map
-
+  
 Credits
 --------
 Thanks all these awesome frameworks  
@@ -139,9 +127,72 @@ Thanks all these awesome frameworks
 
 Download
 --------
-[Sink Framework](https://github.com/pyros2097/Sink/releases/download/v0.77/sink.jar)
+[Sink Framework](https://github.com/pyros2097/Sink/releases/download/v0.90/sink.jar)
+
+#Using
+Include the sink.jar in your game it contains all the libgdx files also so you dont need to include them.      
+Run the Desktop Game by using MainDesktop class as it contains the static main declaration.  
+Specify the first scene in your config.json file and register all your other scenes in it.  
 
 #Documentation
+##config.json
+Create a config.json file in your src folder and add these lines to it
+```json
+{
+   "title": "Sink",
+   "showIcon": true,
+   "iconLocation": "icon/icon_32.png",
+   "targetWidth": 320,
+   "targetHeight": 224,
+   "screenWidth": 800,
+   "screenHeight": 480,
+   "x": 280,
+   "y": 100,
+   "resize": false,
+   "forceExit": false,
+   "fullScreen": false,
+   "useGL20": false,
+   "vSync": false,
+   "disableAudio": false,
+   "audioBufferCount": 20,
+   "isJar": false,
+   "keepAspectRatio": false,
+   
+   "useAccelerometer": false,
+   "useCompass": false,
+   "hideStatusBar": true,
+   "useWakelock": true,
+   "useCloud": true,
+   
+   "showFps": true,
+   "showLogger": false,
+   "loggingEnabled": true,
+   
+   "firstScene": "splash",
+   "firstSceneClassName": "sky.warsong.scene.SplashScene"
+}
+```
+where  
+	title -> your game title name  
+	showIcon -> whether you want to use an icon for your game  
+	iconLocation -> specify the location of your icon  
+	targetWidth -> your game's target width it will automatically scale to other sizes  
+	targetHeight -> your game's target height it will automatically scale to other sizes  
+	screenWidth -> your game's screen size  
+	screenHeight -> your game's screen size  
+	x -> x position of your game window  
+	y -> y position of your game window  
+	resize -> wheter you can resize the window  
+	isJar -> When exporting your game to jar isJar must be set true so that all your assets will get loaded automatically within the jar file  
+	  
+	showFps -> Whether you want to display the fps on the game screen  
+	showLogger -> Whether you want to display the logging pane on the game screen  
+	loggingEnabled -> To disable logging and improve performance  
+	  
+	firstScene -> the main entry point scene for your game all other scenes must be registered in this  
+	firstSceneClassName -> The class name for your first scene so that it is automatically loaded  
+	
+
 ##Scene
 Use this class to to create scenes or menus for your game. Just extend this class and override the
 onInit() method all other things are done automatically like clearing the stage and populating it with the
@@ -167,41 +218,36 @@ This extends the Actor class and all the Asset methods are directly built into i
 This extends the Group class and all the Asset methods are directly built into it
 
 ##Sink
-
 The Main Entry Point for the Sink Game is the Sink class
-It consists of a single Stage and SceneCamera which are all initialized based on the Config class.
-They can be accessed in a static way like Sink.stage Sink.camera.
-It also has extra things like gameUptime, pauseState, CreateListeners, PauseListeners, ResumeListeners, 
-DisposeListeners
-It also has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
-It can also automatically follow a actor by using followActor(Actor actor)
-Before you use your scenes use this class to register all your scenes using registerScene("sceneName", new SceneObject())
-and then you can switch you scenes by using setScene method with the sceneName you registered your scene with
+It consists of a single Stage and Camera which are all initialized based on the {@link Config} settings.
+The stage can be accessed in a static way like Sink.stage and methods related to camera like moveTo, moveBy,
+are also accessed the same way.<br>
+It has extra things like gameUptime, pauseState, PauseListeners, ResumeListeners, 
+DisposeListeners.<br>
+It has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
+It can also automatically follow a actor by using followActor(Actor actor)<br>
+
+Use this class to register all your scenes and then you can switch you scenes by using {@link #setScene}
+method with the sceneName you registered your scene with.<br>
+You Must setup the Sink framework in your splash/menu or first scene and register all your other scenes in it
+and after you have loaded all your assets if you want to  show the logPane and fps then set it up<br>
+by calling {@link #setup()}<br> 
 ```java
-public class BasicDesktop extends MainDesktop{
-	public static void main(String[] argc) {
-		Config.isJar = false; // set to true when exporting to jar
-		Config.title = "Sink"; // your game title name
-		Config.showIcon = true; // whether you want to use an icon for your game
-		Config.iconLocation = "icon/myicon.png"; // specify the location of your icon
-		Config.TARGET_WIDTH = 800; // your game's target width it will automatically scale to other sizes
-		Config.TARGET_HEIGHT = 480; // your game's target height it will automatically scale to other sizes
-		Sink.addListener(new CreateListener(){
-			@Override
-			public void onCreate(){
-				Sink.registerScene("splash", new SplashScene());
-				Sink.registerScene("menu", new MenuScene());
-				Sink.registerScene("options", new OptionsScene());
-				Sink.registerScene("credits", new CreditsScene());
-				Sink.registerScene("game", new GameScene());
-				Sink.setScene("splash");// In splash load your assets and setup Sink
-			}
-		});
-		init(); // this will set the configuration
-		run(); // this will create the lwjgl application
-	}
+public class  SplashScene extends Scene{
+    
+	    public SplashScene(){
+			Sink.registerScene("menu", new MenuScene());
+			Sink.registerScene("options", new OptionsScene());
+			Sink.registerScene("credits", new CreditsScene());
+			Sink.registerScene("login", new LoginScene());
+		}
+		
+		@Override
+		public void onInit() {
+	    } 
 }
 ```
+
 ##Map
 
 The Map is a SceneGroup which automatically loads all the tiles and arranges them accordingly it is
