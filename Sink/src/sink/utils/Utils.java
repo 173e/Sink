@@ -82,7 +82,7 @@ public class Utils {
 	 * 	
 	 * */
 	public static float getWorldSizeRatio() {
-		return Gdx.graphics.getHeight() / Config.TARGET_HEIGHT;
+		return Gdx.graphics.getHeight() / Config.targetHeight;
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class Utils {
 	 * @return 
 	 * */
 	public static float xRatio() {
-		return Gdx.graphics.getWidth() / Config.TARGET_WIDTH;
+		return Gdx.graphics.getWidth() / Config.targetHeight;
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class Utils {
 	 * @return 
 	 * */
 	public static float yRatio() {
-		return Gdx.graphics.getHeight() / Config.TARGET_HEIGHT;
+		return Gdx.graphics.getHeight() / Config.targetHeight;
 	}
 	
 	/*

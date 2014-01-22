@@ -29,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.utils.Array;
 
 /** The MapActor Class
  * <p>
@@ -64,6 +65,8 @@ public class MapActor extends SceneActor {
 	public float particlePosX = 0.0f;
 	public float particlePosY = 0.0f;
 	public boolean isParticleEffectActive;
+	
+  	private Array<MovedListener> movedListeners = new Array<MovedListener>();
 
 	// When tiles coords row and column are directly specified
 	public MapActor(int row, int col, int tileSize){
@@ -159,11 +162,6 @@ public class MapActor extends SceneActor {
 		return row;
 	}
 	
-	/*@Override
-	public void setPosition(float x, float y){
-		
-	}*/
-	
 	/*
 	 * Col is always x-axis and Row is y-axis
 	 */
@@ -182,7 +180,7 @@ public class MapActor extends SceneActor {
 		this.col = (int)this.getX()/tileSize;
 	}
 	
-	public void actionMoveTo(float x, float y, float duration) {
+	public void moveTo(float x, float y, float duration) {
 		// Move to a specific position by time
 		MoveToAction move = new MoveToAction();
 		move.setPosition(x, y);
@@ -193,13 +191,14 @@ public class MapActor extends SceneActor {
 			@Override
 	          public boolean act(final float it) {
 				setPosition(this.getActor().getX(), this.getActor().getY());
+				fireMovedEvent();
 	            return true;
 	          }
 	    };
 	    addAction(Actions.sequence(move, over));
 	}
 
-	public void actionMoveBy(float x, float y, float duration) {
+	public void moveBy(float x, float y, float duration) {
 		// Move towards a direction during given time (NON-STOP)
 		MoveByAction move = new MoveByAction();
 		move.setAmount(x, y);
@@ -210,6 +209,7 @@ public class MapActor extends SceneActor {
 			@Override
 	          public boolean act(final float it) {
 				setPosition(this.getActor().getX(), this.getActor().getY());
+				fireMovedEvent();
 	            return true;
 	          }
 	    };
@@ -293,5 +293,14 @@ public class MapActor extends SceneActor {
 	
 	public Animation getAnimation(){
 		return animation;
+	}
+	
+	public void addListener(MovedListener ml){
+		movedListeners.add(ml);
+	}
+	
+	public void fireMovedEvent(){
+		for(MovedListener ml: movedListeners)
+			ml.onMoved();
 	}
 }

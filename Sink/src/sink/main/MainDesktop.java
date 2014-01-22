@@ -60,8 +60,8 @@ public final class MainDesktop {
 			cfg.title = Config.title;
 			if(jv.get("showIcon").asBoolean())
 				cfg.addIcon(jv.get("iconLocation").asString(), FileType.Internal);
-			Config.TARGET_WIDTH = jv.get("targetWidth").asInt();
-			Config.TARGET_HEIGHT = jv.get("targetHeight").asInt();
+			Config.targetWidth = jv.get("targetWidth").asInt();
+			Config.targetHeight = jv.get("targetHeight").asInt();
 			cfg.width = jv.get("screenWidth").asInt();
 			cfg.height = jv.get("screenHeight").asInt();
 			cfg.x = jv.get("x").asInt();

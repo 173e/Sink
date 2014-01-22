@@ -46,12 +46,12 @@ public final class Config {
 	 *  graphics for all screen width and height. Therefore your game will work on all screen sizes 
 	 *  but maybe blurred on some.
 	 *  ex:
-	 *  My Game TARGET_WIDTH = 800 TARGET_HEIGHT = 480
+	 *  My Game targetWidth = 800 targetHeight = 480
 	 *  Then my game works perfectly for SCREEN_WIDTH = 800 SCREEN_HEIGHT = 480
 	 *  and on others screen sizes it is just zoomed/scaled but works fine thats all
 	 */
-	public static float TARGET_WIDTH = 0;
-	public static float TARGET_HEIGHT = 0;
+	public static float targetWidth = 0;
+	public static float targetHeight  = 0;
 	
 	public static String firstScene = "";
 	public static String firstSceneClassName = "";

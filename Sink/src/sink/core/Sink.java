@@ -136,8 +136,8 @@ public final class Sink implements ApplicationListener {
 		Config.setup();
 		stage = new Stage(MainDesktop.cfg.width, MainDesktop.cfg.height, Config.keepAspectRatio);
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
-		camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
+		camera.setToOrtho(false, Config.targetWidth, Config.targetHeight);
+		camera.position.set(Config.targetWidth/2, Config.targetHeight/2, 0);
 		stage.setCamera(camera);
 		Gdx.input.setCatchBackKey(true);
  		Gdx.input.setCatchMenuKey(true);
@@ -177,7 +177,7 @@ public final class Sink implements ApplicationListener {
 	@Override
 	public final void resize(int width, int height) {
 		Sink.log("Sink: Resize");
-		stage.setViewport(Config.TARGET_WIDTH, Config.TARGET_HEIGHT, Config.keepAspectRatio);
+		stage.setViewport(Config.targetWidth, Config.targetHeight, Config.keepAspectRatio);
 	}
 
 	@Override
@@ -336,7 +336,7 @@ public final class Sink implements ApplicationListener {
 		stage.addActor(currentScene);
 		if (fpsLabel != null && Config.showFps){
 			registerSceneHud(fpsLabel);
-			fpsLabel.setPosition(Config.TARGET_WIDTH - 80, Config.TARGET_HEIGHT - 20);
+			fpsLabel.setPosition(Config.targetWidth - 80, Config.targetHeight - 20);
 			stage.addActor(fpsLabel);
 		}
 		if (logPane != null && Config.showLogger){
@@ -347,14 +347,14 @@ public final class Sink implements ApplicationListener {
 	}
 
 	private static void clearScene(){
-		camera.position.set(Config.TARGET_WIDTH/2, Config.TARGET_HEIGHT/2, 0);
+		camera.position.set(Config.targetWidth/2, Config.targetHeight/2, 0);
 		stage.clear();
 		currentScene.clear();
 		currentScene.setPosition(0, 0);
-		currentScene.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
-		currentScene.setBounds(0,0,Config.TARGET_WIDTH,Config.TARGET_HEIGHT);
+		currentScene.setSize(Config.targetWidth, Config.targetHeight);
+		currentScene.setBounds(0,0,Config.targetWidth,Config.targetHeight);
 		currentScene.grid = new Table();
-		currentScene.grid.setSize(Config.TARGET_WIDTH, Config.TARGET_HEIGHT);
+		currentScene.grid.setSize(Config.targetWidth, Config.targetHeight);
 		currentScene.grid.setFillParent(true);
 		currentScene.grid.setPosition(0, 0);
 		currentScene.grid.top().left();
@@ -409,15 +409,15 @@ public final class Sink implements ApplicationListener {
 		camera.position.x = actor.getX();
 		camera.position.y = actor.getY();
 		for(Actor hudactor: Sink.hudActors) 
-			hudactor.setPosition(camera.position.x + hudactor.getWidth()/12 - Config.TARGET_WIDTH/2, 
-					camera.position.y + hudactor.getHeight()/2 - Config.TARGET_HEIGHT/2);
+			hudactor.setPosition(camera.position.x + hudactor.getWidth()/12 - Config.targetWidth/2, 
+					camera.position.y + hudactor.getHeight()/2 - Config.targetHeight/2);
 	}
 	
 	public void moveTo(float x, float y) {
 		camera.position.x = x;
 		camera.position.y = y;
 		for(Actor hudactor: Sink.hudActors) 
-			hudactor.setPosition(x- Config.TARGET_WIDTH/2, y - Config.TARGET_HEIGHT/2);
+			hudactor.setPosition(x- Config.targetWidth/2, y - Config.targetHeight/2);
 	}
      
      /** Moves the actor instantly. */
