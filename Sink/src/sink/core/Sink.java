@@ -86,7 +86,7 @@ import com.badlogic.gdx.utils.ArrayMap;
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {
-	public static String version = "0.90";
+	public static String version = "0.91";
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
 	

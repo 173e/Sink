@@ -112,10 +112,10 @@ public final class Asset {
 	private static Array<String> fontJarFiles = new Array<String>();
 	private static Array<String> atlasJarFiles = new Array<String>();
 	public final static ArrayMap<String, Music> musicMap = new ArrayMap<String, Music>();
-	private final static ArrayMap<String, Sound> soundMap = new ArrayMap<String, Sound>();
-	private final static ArrayMap<String, BitmapFont> fontMap = new ArrayMap<String, BitmapFont>();
-	private final static ArrayMap<String, TextureRegion> texMap = new ArrayMap<String, TextureRegion>();
-	private final static ArrayMap<String, Animation> animMap = new ArrayMap<String, Animation>();
+	public final static ArrayMap<String, Sound> soundMap = new ArrayMap<String, Sound>();
+	public final static ArrayMap<String, BitmapFont> fontMap = new ArrayMap<String, BitmapFont>();
+	public final static ArrayMap<String, TextureRegion> texMap = new ArrayMap<String, TextureRegion>();
+	public final static ArrayMap<String, Animation> animMap = new ArrayMap<String, Animation>();
 	
 	private static Music currentMusic = null;
 	public static String currentMusicName = ""; //Only file name no prefix or suffix
@@ -650,35 +650,35 @@ public final class Asset {
 	
 	public static void logTextures(){
 		Sink.log("BEGIN logging Textures------------------");
-		for(String na: texMap.keys)
+		for(String na: texMap.keys())
 			Sink.log(na);
 		Sink.log("END logging Textures------------------");
 	}
 	
 	public static void logAnimations(){
 		Sink.log("BEGIN logging Animations------------------");
-		for(String na: animMap.keys)
+		for(String na: animMap.keys())
 			Sink.log(na);
 		Sink.log("END logging Animations------------------");
 	}
 	
 	public static void logFonts(){
 		Sink.log("BEGIN logging Fonts------------------");
-		for(String na: fontMap.keys)
+		for(String na: fontMap.keys())
 			Sink.log(na);
 		Sink.log("END logging Fonts------------------");
 	}
 	
 	public static void logSounds(){
 		Sink.log("BEGIN logging Sounds------------------");
-		for(String na: soundMap.keys)
+		for(String na: soundMap.keys())
 			Sink.log(na);
 		Sink.log("END logging Sounds------------------");
 	}
 	
 	public static void logMusics(){
 		Sink.log("BEGIN logging Musics------------------");
-		for(String na: musicMap.keys)
+		for(String na: musicMap.keys())
 			Sink.log(na);
 		Sink.log("END logging Musics------------------");
 	}
