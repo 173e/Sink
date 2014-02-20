@@ -8,13 +8,20 @@ import java.awt.Graphics2D;
 import java.awt.SplashScreen;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import web.laf.lite.widget.Register;
+
 public class SinkStudio {
-	public static final String version = "0.07";
+	public static final String version = "0.11";
 	
 	public static Frame frame;
 	private static int ind = 8;
@@ -24,9 +31,9 @@ public class SinkStudio {
             @Override
             public void run() {
             	 try{
-            		Config.init();
-            		if(!Config.getLaf().isEmpty())
-            			UIManager.setLookAndFeel(Config.getLaf());
+            		 Register.init("sinkstudio");
+            		if(!Register.getLaf().isEmpty())
+            			UIManager.setLookAndFeel(Register.getLaf());
             		else
             			UIManager.setLookAndFeel("web.laf.lite.ui.WebLookAndFeelLite");
                  }
@@ -56,6 +63,8 @@ public class SinkStudio {
 		});
 	}
 	
+	
+	
 	/**
      * Forces global components UI update in all existing application windows.
      */
@@ -66,6 +75,32 @@ public class SinkStudio {
             SwingUtilities.updateComponentTreeUI ( window );
         }
     }
+    
+    public static ArrayList<File> projects = new ArrayList<File>();
+	
+	public static void redirectSystemStreams(){
+		SinkStudio.log("Redirecting System.out and System.err");
+		final OutputStream out = new OutputStream() 
+		{
+		      @Override
+		      public void write(int b) throws IOException {
+		        //RightSideBar.$updateConsoleArea(String.valueOf((char) b));
+		      }
+		
+		      @Override
+		      public void write(byte[] b, int off, int len) throws IOException {
+		        //RightSideBar.$updateConsoleArea(new String(b, off, len));
+		      }
+		
+		      @Override
+		      public void write(byte[] b) throws IOException {
+		        write(b, 0, b.length);
+		      }
+		 };
+		SinkStudio.log("Redirecting System.out and System.err"); 
+		System.setOut(new PrintStream(out, true));
+		System.setErr(new PrintStream(out, true));
+	}
     
     static void createFrameWithoutSplash(){
 	     Asset.loadIcons();

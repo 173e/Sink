@@ -9,20 +9,21 @@ public class SceneSprite extends SceneActor {
 	private Animation animation;
 	private TextureRegion keyFrame;
 	
-	private boolean isAnimationActive = false;
+	private boolean isAnimationActive = true;
 	private boolean isAnimationLooping = true;
 	
-	public SceneSprite(Animation animation){
+	public SceneSprite(Animation animation, float width, float height){
 		this.animation = animation;
+		setSize(width, height);
 	}
 	
-	public SceneSprite(Animation animation, boolean looping){
-		this(animation);
+	public SceneSprite(Animation animation, float width, float height, boolean looping){
+		this(animation, width, height);
 		isAnimationLooping = looping;
 	}
 	
-	public SceneSprite(Animation animation, boolean looping, boolean active){
-		this(animation, looping);
+	public SceneSprite(Animation animation, float width, float height, boolean looping, boolean active){
+		this(animation, width, height, looping);
 		isAnimationActive = active;
 	}
 	

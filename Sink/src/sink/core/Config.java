@@ -53,16 +53,7 @@ public final class Config {
 	public static float targetWidth = 0;
 	public static float targetHeight  = 0;
 	
-	public static String firstScene = "";
 	public static String firstSceneClassName = "";
-
-	private static String basePath = "";
-	public static String getBasePath(){
-		if(!Config.isJar) 
-			return basePath;
-		else
-			return "";
-	}
 	
     static final String MUSIC = "music";
     static final String SOUND = "sound";
@@ -154,6 +145,15 @@ public final class Config {
  
     public static void setLevels(int ue){
         prefs.putInteger(LEVELS, ue);
+        prefs.flush();
+    }
+    
+    public static int currentLevel(){
+        return prefs.getInteger(CURRENT_LEVEL, 0);
+    }
+ 
+    public static void setCurrentLevel(int ue){
+        prefs.putInteger(CURRENT_LEVEL, ue);
         prefs.flush();
     }
     

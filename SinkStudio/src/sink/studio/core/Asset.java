@@ -19,7 +19,7 @@ public class Asset {
 		"newinterface", "newfolder", "newfile", "newenum", "newclass", "lib", "level", 
 		"idea", "icon", "high", "go", "font", "find", "esource", "eprj", "epaste", "epackage", 
 		"eopen", "emusic", "empty", "eimage", "efile", "editor", "eclipse", "dark", "console", 
-		"color"
+		"color", "up","down2"
 	};
 	
 	// Icons

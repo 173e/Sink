@@ -3,6 +3,7 @@ package sink.studio.core;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
 
@@ -13,10 +14,10 @@ import javax.swing.JScrollPane;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-import sink.studio.bar.PanelToolBar;
 import sink.studio.panel.ProjectPanel;
 import sink.studio.panel.SinkPanel;
 import web.laf.lite.utils.UIUtils;
+import web.laf.lite.widget.Register;
 
 import com.badlogic.gdx.tools.hiero.HieroPanel;
 import com.badlogic.gdx.tools.particleeditor.ParticlePanel;
@@ -24,16 +25,13 @@ import com.badlogic.gdx.tools.particleeditor.ParticlePanel;
 final public class Content extends JPanel {
 	private static final long serialVersionUID = 1L;
 	static JPanel con;
-    static PanelToolBar panelToolBar;
     static String currentView = "Project";
     
     static ProjectPanel projectPanel;
     
-    public static Theme theme = Asset.loadTheme(Config.getTheme());
+    public static Theme theme = Asset.loadTheme(Register.getTheme());
     public static RTextScrollPane editorScroll;
     public static Editor editor;
-    
-	
 	
 	static SinkPanel scenePanel;
 	static HieroPanel hieroPanel;
@@ -43,7 +41,8 @@ final public class Content extends JPanel {
 	
 	Content(){
 		super(new BorderLayout());
-		panelToolBar = new PanelToolBar();
+		UIUtils.setMargin(this, new Insets(3,1,0,1));
+		UIUtils.setUndecorated(this, true);
 		projectPanel = new ProjectPanel();
 		try {
 			editor = new Editor(new File("C:/bootex.log"));
@@ -68,7 +67,6 @@ final public class Content extends JPanel {
         con.add(new JScrollPane(scenePanel), "Scene");
         con.add(new JScrollPane(hieroPanel),"Hiero");
         con.add(particlePanel,"Particle");
-        UIUtils.setUndecorated(this, false);
 		add(title, BorderLayout.NORTH);
         add(con, BorderLayout.CENTER);
 	}
@@ -117,15 +115,15 @@ final public class Content extends JPanel {
 	}
 	
 	public static void find(String text){
-    	//tabPanel.find(text);
+    	editor.find(text);
     }
 	
 	public static void replace(String text, String rep){
-    	//tabPanel.replace(text, rep);
+		editor.replace(text, rep);
     }
 	
 	public static void replaceAll(String text, String rep){
-    	//tabPanel.replaceAll(text, rep);
+    	editor.replaceAll(text, rep);
     }
 	
 	public void dispose(){

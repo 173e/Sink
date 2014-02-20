@@ -5,14 +5,13 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import sink.core.Asset;
 import sink.core.Sink;
 
 public class Export {
 	
 	private static void loadFromJar(){
 		try{
-			File jarName = new File(Asset.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			File jarName = new File(Export.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 			ZipFile zf = new ZipFile(jarName.getAbsoluteFile());
 		    Enumeration<? extends ZipEntry> e=zf.entries();
 		    while (e.hasMoreElements()) 
@@ -27,5 +26,4 @@ public class Export {
 		}
 		catch (Exception e){e.printStackTrace();}
 	}
-
 }

@@ -78,7 +78,6 @@ public final class MainDesktop {
 			Config.showFps = jv.get("showFps").asBoolean();
 			Config.showLogger = jv.get("showLogger").asBoolean();
 			Config.loggingEnabled = jv.get("loggingEnabled").asBoolean();
-			Config.firstScene = jv.get("firstScene").asString();
 			Config.firstSceneClassName = jv.get("firstSceneClassName").asString();
 			new LwjglApplication(new Sink(), cfg);
 		}

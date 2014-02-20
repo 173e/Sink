@@ -2,6 +2,7 @@ package sink.studio.core;
 
 import java.awt.Insets;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
@@ -11,10 +12,11 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
+import javax.swing.event.CaretListener;
+import javax.swing.event.CaretEvent;
 
 import org.fife.rsta.ac.LanguageSupport;
 import org.fife.rsta.ac.LanguageSupportFactory;
@@ -24,17 +26,20 @@ import org.fife.ui.rsyntaxtextarea.FileLocation;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.TextEditorPane;
+import org.fife.ui.rtextarea.SearchContext;
+import org.fife.ui.rtextarea.SearchEngine;
 
 import web.laf.lite.popup.NotificationManager;
+import sink.studio.panel.AssetType;
 
 final public class Editor extends TextEditorPane {
 	private static final long serialVersionUID = 1L;
 	static DefaultCompletionProvider provider = new DefaultCompletionProvider();
+	static SearchContext context = new SearchContext(); 
 	
 	final Timer saveTimer = new Timer(10000, new ActionListener(){
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			//$log("Timer Action: "+file.getName());
 			save();
 		}
 	});
@@ -44,18 +49,28 @@ final public class Editor extends TextEditorPane {
 	public Editor(File nfile) throws IOException{
 		super(TextEditorPane.INSERT_MODE, true, FileLocation.create(nfile));
 		file = nfile;
+		
+		context.setMatchCase(false);
+        context.setRegularExpression(false);
+        context.setSearchForward(true);
+        context.setWholeWord(false);
+        
 		setCodeFoldingEnabled(true);
         setMargin(new Insets(0, 5, 0, 0));
         setAntiAliasingEnabled(true);
+        setAutoIndentEnabled(true);
+        setBracketMatchingEnabled(true);
         setUseFocusableTips(true);
         setTabSize(4);
         setLineWrap(true);
         setWrapStyleWord(true);
+        setTabsEmulated(true);
+        //setMarginLineColor(Color.black);
         //setMarkOccurrences(true);
         //setPaintMarkOccurrencesBorder(true);
         //setPaintMatchedBracketPair(true);
-        //requestFocusInWindow();
-		setTabsEmulated(true);
+        
+		
 		setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		LanguageSupportFactory lsf = LanguageSupportFactory.get();
 		LanguageSupport support = lsf.getSupportFor(SYNTAX_STYLE_JAVA);
@@ -64,8 +79,8 @@ final public class Editor extends TextEditorPane {
 		JavaLanguageSupport jls = (JavaLanguageSupport)support;
 		try {
 			jls.getJarManager().addCurrentJreClassFileSource();
-			//jls.install(this);
-			//jsls.getJarManager().addClassFileSource(ji);
+			jls.install(this);
+			//jls.getJarManager().addClassFileSource(ji);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -73,16 +88,75 @@ final public class Editor extends TextEditorPane {
         addFocusListener(new FocusListener(){
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				//$log("Timer Started: "+file.getName());
 				saveTimer.start();
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				//$log("Timer Stopped: "+file.getName());
 				saveTimer.stop();
 				save();
 			}
+        });
+        
+        addCaretListener(new CaretListener(){
+        	@Override
+        	public void caretUpdate(CaretEvent e) {
+        		StatusBar.updateCaret(getCaretLineNumber()+1, getCaretOffsetFromLineStart()+1);
+        	}
+        });
+        setDropTarget(new DropTarget() {
+			private static final long serialVersionUID = 1L;
+			public synchronized void drop(DropTargetDropEvent event) {
+				try
+			    {
+			      Transferable transferable = event.getTransferable();
+			      if(transferable.isDataFlavorSupported(DataFlavor.stringFlavor))
+			      {
+			        event.acceptDrop( DnDConstants.ACTION_MOVE );
+			        String s = ( String )transferable.getTransferData( DataFlavor.stringFlavor );
+			        SinkStudio.log(s);
+			        String[] data = s.split(":");
+			        switch(AssetType.getType(data[0])){
+			        	case Font:
+			        		insert("font(\""+data[1]+"\");", 5);
+			        		break;
+			        	case Texture:
+			        		insert("tex(\""+data[1]+"\");", 5);
+							break;
+						case Animation:
+							insert("anim(\""+data[1]+"\");", 5);
+							break;
+						case Music:
+							insert("musicPlay(\""+data[1]+");\"", 5);
+							break;
+						case Sound:
+							insert("soundPlay(\""+data[1]+");\"", 5);
+							break;
+						
+						case Particle:
+							break;
+						
+						case Button:
+							insert("new Button(Asset.skin);", 5);
+							break;
+						case TextButton:
+							insert("new TextButton(\"TextButton\",Asset.skin);", 5);
+							break;
+						
+						case None:break;
+						default:break;
+			        }
+			        event.getDropTargetContext().dropComplete(true);
+			      }
+			      else{
+			        event.rejectDrop();
+			      }
+			    }
+			    catch( Exception exception ){
+			      System.err.println( "Exception" + exception.getMessage() );
+			      event.rejectDrop();
+			    }
+            }
         });
 	}
 	
@@ -92,7 +166,7 @@ final public class Editor extends TextEditorPane {
 			try {
 				super.save();
 			} catch (IOException e) {
-				NotificationManager.showNotification("Could'nt Save File: "+file.getName());
+				NotificationManager.showNotification("Error: Could'nt Save File: "+file.getName());
 				e.printStackTrace();
 			}
 		}
@@ -108,4 +182,21 @@ final public class Editor extends TextEditorPane {
 		zoomSize -= 1;
 		setFont(getFont().deriveFont(zoomSize));
 	}
+	
+	public void find(String text){
+    	context.setSearchFor(text);
+    	SearchEngine.find(this, context);
+    }
+    
+    public void replace(String text, String replaceText){
+    	context.setSearchFor(text);
+    	context.setReplaceWith(replaceText);
+    	SearchEngine.replace(this, context);
+    }
+    
+    public void replaceAll(String text, String replaceText){
+    	context.setSearchFor(text);
+    	context.setReplaceWith(replaceText);
+    	SearchEngine.replaceAll(this, context);
+    }
 }

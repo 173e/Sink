@@ -86,7 +86,7 @@ import com.badlogic.gdx.utils.ArrayMap;
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {
-	public static String version = "0.91";
+	public static String version = "0.92";
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
 	
@@ -144,10 +144,10 @@ public final class Sink implements ApplicationListener {
  		Gdx.input.setInputProcessor(stage);
  		Sink.stage.addListener(touchInput);
  		log("TotalTime: "+toScreenTime(Config.readTotalTime()));
- 		if(!Config.firstSceneClassName.isEmpty() && !Config.firstScene.isEmpty()){
+ 		if(!Config.firstSceneClassName.isEmpty()){
 			try {
 				Class<Scene> clazz = (Class<Scene>) Class.forName(Config.firstSceneClassName);
-				Sink.registerScene(Config.firstScene, clazz.newInstance());
+				Sink.registerScene("first", clazz.newInstance());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (InstantiationException e) {
@@ -155,7 +155,7 @@ public final class Sink implements ApplicationListener {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
-			setScene(Config.firstScene);
+			setScene("first");
  		}
 	}
 	
@@ -165,7 +165,7 @@ public final class Sink implements ApplicationListener {
 			gameUptime +=1 ;
 			startTime = System.nanoTime();
 		}
-		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT |GL20.GL_DEPTH_BUFFER_BIT);
 		stage.act(Gdx.graphics.getDeltaTime());
 		updateController();

@@ -20,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import sink.studio.bar.ToolBar;
 import web.laf.lite.layout.HorizontalFlowLayout;
 import web.laf.lite.layout.ToolbarLayout;
 import web.laf.lite.layout.VerticalFlowLayout;
@@ -184,7 +183,7 @@ final public class LafStyle {
 	 * Creates a plain flat JButton/Header Button with current Style background color
 	 */
 	 final public static JButton createHeaderButton(String text){
-		final JButton btn = new JButton(text);
+		final JButton btn = new JButton(text.toUpperCase());
 		btn.setOpaque(true);
 		btn.setBackground(headerBg);
 		btn.setForeground(headerFg);
@@ -196,6 +195,7 @@ final public class LafStyle {
 	    UIUtils.setShadeWidth(btn, 2);
 		btn.setVerticalTextPosition(JLabel.CENTER);
 		btn.setHorizontalTextPosition(JLabel.CENTER);
+		btn.setHorizontalAlignment(JLabel.CENTER);
 		return btn;
 	}
 	 /* ToolBar Related Methods */

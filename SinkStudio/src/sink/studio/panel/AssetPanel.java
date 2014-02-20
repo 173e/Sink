@@ -51,7 +51,7 @@ final public class AssetPanel extends JPanel implements ActionListener, DragSour
 		add(LafStyle.createButtonToolBar(this, btns));
 		add(scrollPane);
 		dragSource.addDragSourceListener(this);
-	    dragSource.createDefaultDragGestureRecognizer( assetList, DnDConstants.ACTION_MOVE, this );
+	    dragSource.createDefaultDragGestureRecognizer(assetList, DnDConstants.ACTION_MOVE, this);
 	}
 	
 	public static void updateAsset(){
@@ -94,16 +94,8 @@ final public class AssetPanel extends JPanel implements ActionListener, DragSour
 
 	@Override
 	public void dragGestureRecognized(DragGestureEvent event) {
-		Object selected = assetList.getSelectedValue();
-	    if( selected != null )
-	    {
-	      StringSelection text = new StringSelection(AssetType.getString(selectedAsset)+":"+selected.toString());
-	      dragSource.startDrag( event, DragSource.DefaultMoveDrop, text, this);
-	    }
-	    else
-	    {
-	      System.out.println( "nothing was selected" );
-	    }
+	    StringSelection text = new StringSelection(AssetType.getString(selectedAsset)+":"+assetList.getSelectedValue());
+	    dragSource.startDrag( event, DragSource.DefaultMoveDrop, text, this);
 	}
 
 	@Override
@@ -134,39 +126,5 @@ final public class AssetPanel extends JPanel implements ActionListener, DragSour
 	public void dropActionChanged(DragSourceDragEvent arg0) {
 		// TODO Auto-generated method stub
 		
-	}
-}
-
-enum AssetType {
-	None,
-	Font,
-	Texture,
-	Animation,
-	Music,
-	Sound,
-	Particle;
-	
-	public static String getString(AssetType at){
-		switch(at){
-			case Font: return "Font";
-			case Texture: return "Texture";
-			case Animation: return "Animation";
-			case Music: return "Music";
-			case Sound: return "Sound";
-			case Particle: return "Particle";
-			default: return "";
-		}
-	}
-	
-	public static AssetType getType(String name){
-		switch(name){
-			case "Font": return AssetType.Font;
-			case "Texture": return AssetType.Texture;
-			case "Animation": return AssetType.Animation;
-			case "Music": return AssetType.Music;
-			case "Sound": return AssetType.Sound;
-			case "Particle": return AssetType.Particle;
-			default: return AssetType.None;
-		}
 	}
 }

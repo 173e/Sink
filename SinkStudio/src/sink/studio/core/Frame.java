@@ -2,26 +2,27 @@ package sink.studio.core;
 
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.awt.Graphics;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import javax.swing.AbstractAction;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-import sink.studio.bar.LeftSideBar;
-import sink.studio.bar.RightSideBar;
-import sink.studio.bar.StatusBar;
-import sink.studio.bar.ToolBar;
+import sink.studio.panel.ActorPanel;
+import sink.studio.panel.AssetPanel;
+import sink.studio.panel.PropertyPanel;
+import sink.studio.panel.ScenePanel;
+import sink.studio.panel.WidgetPanel;
+import web.laf.lite.layout.VerticalFlowLayout;
 
 
 final public class Frame extends JFrame implements WindowListener{
 	private static final long serialVersionUID = 1L;
 	static ToolBar toolBar;
-	static RightSideBar rightSideBar;
-	static LeftSideBar leftSideBar;
+	static JPanel rightSideBar;
+	static JPanel leftSideBar;
 	static StatusBar statusBar;
 	static Content content;
 	static JSplitPane splitPane;
@@ -30,13 +31,6 @@ final public class Frame extends JFrame implements WindowListener{
     public Frame() {
        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
        addWindowListener(this);
-       Config.addHotKey(KeyEvent.VK_T, KeyEvent.ALT_MASK, new AbstractAction() {
-		private static final long serialVersionUID = 1L;
-		@Override
-         public void actionPerformed(ActionEvent e) {
-           Frame.toggleToolBar();
-         }
-       });
     }
 
     public void initToolBar(){
@@ -45,8 +39,28 @@ final public class Frame extends JFrame implements WindowListener{
     }
     
     public void initSideBar(){
-   	 	rightSideBar = new RightSideBar();
-   	 	leftSideBar = new LeftSideBar();
+   	 	rightSideBar = new JPanel(new VerticalFlowLayout(0, 10)){
+			private static final long serialVersionUID = 1L;
+			@Override
+	   		public void paintComponent(Graphics g){
+	   			LafStyle.drawVerticalBar(g, getWidth(), getHeight());
+	   		}
+   	 	};
+   	 	rightSideBar.add(new ActorPanel());
+   	 	rightSideBar.add(new PropertyPanel());
+   	 	rightSideBar.add(new WidgetPanel());
+   	 	
+   	 	leftSideBar = new JPanel(new VerticalFlowLayout(0, 10)){
+   	 	private static final long serialVersionUID = 1L;
+	   	 	@Override
+	   		public void paintComponent(Graphics g){
+	   			LafStyle.drawVerticalBar(g, getWidth(), getHeight());
+	   		}
+   	 	};
+   	 	leftSideBar.add(new ScenePanel());
+   	 	leftSideBar.add(new PropertyPanel());
+   	 	leftSideBar.add(new AssetPanel());
+   	 	
    	 	add(rightSideBar, BorderLayout.EAST);
    	 	add(leftSideBar, BorderLayout.WEST);
    }
@@ -76,10 +90,6 @@ final public class Frame extends JFrame implements WindowListener{
     public static void toggleRightSideBar(){
     	rightSideBar.setVisible(!rightSideBar.isVisible());
     }
-	
-	public static void togglePanelToolBar(){
-		Content.panelToolBar.setVisible(!Content.panelToolBar.isVisible());
-	}
     
     public static void toggleEditor(){
 		content.setVisible(!content.isVisible());

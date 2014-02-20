@@ -1,5 +1,5 @@
-Sink v0.91
-===============
+Sink v0.92
+==========
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
 writing error free setup code etc.
@@ -13,6 +13,8 @@ Stage3d class can be used to construct a Stage for Actor3d's
 You can use the Actor3d class to create Actors for the Stage  
 Actor3d has almost identical properties to Actor  
 You can perform actions on these actors using Action3d  
+
+Checkout: [SinkStudio](https://github.com/pyros2097/Sink/SinkStudio)  
 
 ScreenShots
 ============
@@ -114,7 +116,7 @@ r.addAction3d(Actions.rotateTo(59, 1f));
 
 Download
 --------
-[Sink Framework](https://github.com/pyros2097/Sink/releases/download/v0.90/sink.jar)
+[Sink Framework](https://github.com/pyros2097/Sink/releases/download/v0.92/sink.jar)
 
 Running
 --------
@@ -130,7 +132,7 @@ Todo
   
 Credits
 --------
-Thanks all these awesome frameworks  
+Thanks to all these awesome frameworks  
 [mtx](http://moribitotechx.blogspot.co.uk)  
 [libgdx](libgdx.badlogicgames.com)  
 [lwjgl](lwjgl.org)  
@@ -171,7 +173,6 @@ Create a config.json file in your src folder and add these lines to it
    "showLogger": false,
    "loggingEnabled": true,
    
-   "firstScene": "splash",
    "firstSceneClassName": "sky.warsong.scene.SplashScene"
 }
 ```
@@ -186,15 +187,14 @@ where
 	screenHeight -> your game's screen size  
 	x -> x position of your game window  
 	y -> y position of your game window  
-	resize -> wheter you can resize the window  
+	resize -> whether you can resize the window  
 	isJar -> When exporting your game to jar isJar must be set true so that all your assets
 			 will get loaded automatically within the jar file  
 	
 	showFps -> Whether you want to display the fps on the game screen  
 	showLogger -> Whether you want to display the logging pane on the game screen  
 	loggingEnabled -> To disable logging and improve performance
-	
-	firstScene -> the main entry point scene for your game all other scenes must be registered in this  
+	  
 	firstSceneClassName -> The class name for your first scene so that it is automatically loaded  
 ```
 	
@@ -219,6 +219,9 @@ public class MenuScene extends Scene{
 
 ##SceneActor
 This extends the Actor class and all the Asset methods are directly built into it
+
+##SceneSprite
+This extends the SceneActor and has animation built into it so you can directly display animations in your game
 
 ##SceneGroup
 This extends the Group class and all the Asset methods are directly built into it

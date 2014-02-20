@@ -628,13 +628,13 @@ public final class Asset {
 	* 								TMX MAP Related Functions							   				   *
 ************************************************************************************************************/
 	public static TiledMap loadTmx(int i){
-		assetMan.load(Config.getBasePath()+"map/level"+i+".tmx", TiledMap.class);
+		assetMan.load("map/level"+i+".tmx", TiledMap.class);
 		assetMan.finishLoading();
-		return assetMan.get(Config.getBasePath()+"map/level"+i+".tmx", TiledMap.class);
+		return assetMan.get("map/level"+i+".tmx", TiledMap.class);
 	}
 	
 	public static void unloadTmx(int i){
-		assetMan.unload(Config.getBasePath()+"map/level"+i+".tmx");
+		assetMan.unload("map/level"+i+".tmx");
 	}
 	
 /***********************************************************************************************************
