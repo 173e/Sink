@@ -27,11 +27,13 @@ import javax.swing.UIManager;
 
 
 
+
 import sink.studio.core.Asset;
 import sink.studio.core.Config;
 import sink.studio.core.Content;
 import sink.studio.core.Frame;
 import sink.studio.core.LafStyle;
+import sink.studio.core.Register;
 import sink.studio.core.SinkStudio;
 import web.laf.lite.layout.HorizontalFlowLayout;
 import web.laf.lite.layout.ToolbarLayout;
@@ -152,15 +154,15 @@ final public class ToolBar extends JPanel {
         // ToolBar Stuff
         popupContent.add(UIUtils.setBoldFont(new JLabel("     ToolBar")));
         popupContent.add(new JSeparator(SwingConstants.HORIZONTAL));
-        MSwitch left = new MSwitch();
+        MSwitch left = new MSwitch(); 
         MSwitch right = new MSwitch();
         MSwitch status = new MSwitch();
         popupContent.add(menuItem(left, "Show Left SideBar"));
         popupContent.add(menuItem(right, "Show Right SideBar"));
         popupContent.add(menuItem(status, "Show StatusBar"));
-        if(!left.isSelected()) Frame.toggleLeftSideBar();
-        if(!right.isSelected()) Frame.toggleRightSideBar();
-        if(!status.isSelected()) Frame.toggleStatusBar();
+        if(!left.load()) Frame.toggleLeftSideBar();
+        if(!right.load()) Frame.toggleRightSideBar();
+        if(!status.load()) Frame.toggleStatusBar();
         left.addActionListener(new ActionListener(){
      		@Override
      		public void actionPerformed(ActionEvent arg0) {

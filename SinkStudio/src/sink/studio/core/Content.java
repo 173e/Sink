@@ -14,6 +14,8 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import sink.studio.bar.PanelToolBar;
+import sink.studio.panel.ProjectPanel;
+import sink.studio.panel.SinkPanel;
 import web.laf.lite.utils.UIUtils;
 
 import com.badlogic.gdx.tools.hiero.HieroPanel;
@@ -33,7 +35,7 @@ final public class Content extends JPanel {
     
 	
 	
-	static ScenePanel scenePanel;
+	static SinkPanel scenePanel;
 	static HieroPanel hieroPanel;
 	static ParticlePanel particlePanel;
 	
@@ -55,7 +57,7 @@ final public class Content extends JPanel {
 		editorScroll.getGutter().setBookmarkingEnabled(true);
 		editorScroll.setVerticalScrollBarPolicy(RTextScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		UIUtils.setDrawBorder(editorScroll, false);
-		scenePanel = new ScenePanel();
+		scenePanel = new SinkPanel();
         hieroPanel = new HieroPanel((Frame) this.getParent());
         particlePanel = new ParticlePanel();
 

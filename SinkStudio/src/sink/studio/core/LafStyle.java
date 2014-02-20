@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 
 import sink.studio.bar.ToolBar;
 import web.laf.lite.layout.HorizontalFlowLayout;
+import web.laf.lite.layout.ToolbarLayout;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.popup.ButtonPopup;
 import web.laf.lite.popup.PopupWay;
@@ -267,13 +268,42 @@ final public class LafStyle {
 	}
 	
 	/* Explorer Related Methods */
-	final private static JButton createExplorerToolButton(String text,String iconname){
+	final public static JButton createExplorerToolButton(String text,String iconname){
 		final JButton btn = new JButton(Asset.icon(iconname));
 	    UIUtils.setRolloverDecoratedOnly(btn,true);
 	    UIUtils.setLeftRightSpacing(btn, 0);
 	    btn.setFocusable(false);
 	    btn.setToolTipText(text);
 		return btn;
+	}
+	
+	final public static JPanel createButtonToolBarPanel(){
+		JPanel tools = new JPanel(new ToolbarLayout(ToolbarLayout.HORIZONTAL)){
+			@Override
+			public void paintComponent(Graphics g){
+		    	sink.studio.core.LafStyle.drawHorizontalBar(g, getWidth (), getHeight ());
+		        g.setColor(Color.GRAY);
+		        g.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
+			}
+		};
+		return tools;
+	}
+	
+	public static JPanel createButtonToolBar(ActionListener al, String[] list){
+		JPanel tools = createButtonToolBarPanel();
+		for(int i=0;i< list.length-1; i++){
+			if(i != 0)
+				if(i%2 != 0) 
+					continue;
+			final JButton btn = new JButton(Asset.icon(list[i+1]));
+		    UIUtils.setRolloverDecoratedOnly(btn,true);
+		    UIUtils.setLeftRightSpacing(btn, 0);
+		    btn.setFocusable(false);
+		    btn.setToolTipText(list[i]);
+		    btn.addActionListener(al);
+		    tools.add(btn);
+		}
+		return tools;
 	}
 	
 	final private static ButtonPopup createExplorerToolMenu(JButton btn, String title){
@@ -289,10 +319,10 @@ final public class LafStyle {
 		return menu;
 	}
 	
-	final public static JButton createExplorerToolButton(final String icon, final String title, 
+	final public static JButton createExplorerToolPopButton(final String text, final String icon,
 			final JPanel panel, final String finishText, final ActionListener onClick){
-		 final JButton btn = createExplorerToolButton(title, icon);
-		 final ButtonPopup menu = createExplorerToolMenu(btn, title);
+		 final JButton btn = createExplorerToolButton(text, icon);
+		 final ButtonPopup menu = createExplorerToolMenu(btn, text);
 		 final JButton finish = createHeaderButton(finishText);
 		 final JPanel hoz = new JPanel(new VerticalFlowLayout(10));
 		 panel.setOpaque(false);
@@ -315,11 +345,11 @@ final public class LafStyle {
 		return btn;
 	}
 	
-	final public static JButton createExplorerToolButton(final String icon, final String title,
-			JTextField field, String finishText, final ActionListener onClick){
-		final JButton btn = createExplorerToolButton(title, icon);
-		final ButtonPopup menu = createExplorerToolMenu(btn, title);
-		final JButton finish = createHeaderButton(finishText);
+	final public static JButton createExplorerToolPopButton(final String text, final String icon,
+			JTextField field, final ActionListener onClick){
+		final JButton btn = createExplorerToolButton(text, icon);
+		final ButtonPopup menu = createExplorerToolMenu(btn, text);
+		final JButton finish = createHeaderButton("OK");
 	    final JPanel hoz = new JPanel(new HorizontalFlowLayout(10));
 		field.setPreferredSize(new Dimension(240,25));
 		UIUtils.setMargin(hoz, new Insets(10,10,10,10));

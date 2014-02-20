@@ -34,33 +34,58 @@ import web.laf.lite.utils.UpdateTimer;
 
 final public class StatusBar extends JPanel {
 	private static final long serialVersionUID = 1L;
-	JLabel caret, type, lineno, syntax;
+	static JLabel caret, xy, lineno, selected;
 
 	public StatusBar(){
 		 super(new ToolbarLayout());
-         caret = new JLabel("Smart Insert  ");
-         type = new JLabel("Writable       ");
+         //caret = new JLabel("Smart Insert  ");
+        // type = new JLabel("Writable       ");
+		 caret = new JLabel("");
+	     xy = new JLabel("");
+	     selected = new JLabel("");
          lineno = new JLabel("Line 15,Column 42");
-         syntax = new JLabel("Java   ");
          add(lineno, ToolbarLayout.START);
-        // initZoomIn();
-        // initZoomOut();
-         //add(new JSeparator(SwingConstants.VERTICAL));
-         add(type, ToolbarLayout.END);
-         add(new JSeparator(SwingConstants.VERTICAL), ToolbarLayout.END);
-         add(caret, ToolbarLayout.END);
-         add(new JSeparator(SwingConstants.VERTICAL), ToolbarLayout.END);
+         addSpace();
+         
+         addSeparator();
+         
+         addSpace();
+         add(selected, ToolbarLayout.START);
+         addSpace();
+         
+         addSeparator();
+         
+         addSpace();
+         add(xy, ToolbarLayout.START);
+         addSpace();
+         
+         addSeparator();
+         //add(caret, ToolbarLayout.END);
          //initUpdate();
          //initNuke();
-         add(syntax, ToolbarLayout.END);
-         add(new JSeparator(SwingConstants.VERTICAL));
          add(new MemoryBar(), ToolbarLayout.END);
+	}
+	
+	public void addSpace(){
+		add(new JLabel("       "), ToolbarLayout.START);
+	}
+	
+	public void addSeparator(){
+		add(new JSeparator(SwingConstants.VERTICAL), ToolbarLayout.START);
 	}
 	
 	@Override
 	protected void paintComponent(Graphics g) {
 	    LafStyle.drawHorizontalBar(g, getWidth (), getHeight ());
 	    LafStyle.drawTopBorder(g, getWidth());
+	}
+	
+	public static void updateXY(float x, float y){
+		xy.setText("<html><b>x:</b>"+(int)x+" <b>y:</b>"+(int)y+"</html>");
+	}
+	
+	public static void updateSelected(String text){
+		selected.setText("<html><b>   Selected:</b>"+text+"</html>");
 	}
 	
 	void initZoomIn(){

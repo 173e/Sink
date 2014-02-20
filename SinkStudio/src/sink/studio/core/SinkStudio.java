@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class SinkStudio {
-	public static final String version = "0.05";
+	public static final String version = "0.07";
 	
 	public static Frame frame;
 	private static int ind = 8;

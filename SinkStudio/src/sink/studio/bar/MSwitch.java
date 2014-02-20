@@ -48,7 +48,8 @@ public class MSwitch extends JPanel{
     private JPanel gripper;
     private JLabel leftComponent;
     private JLabel rightComponent;
-    private Register reg;
+    final public Register register;
+    static int count = 201;
 
     public MSwitch ()
     {
@@ -57,11 +58,9 @@ public class MSwitch extends JPanel{
         UIUtils.setRound ( this, 0 );
         UIUtils.setDrawFocus (this, true );
         setFocusable ( true );
-        
-        reg = new Register();
-        Config.registerBoolean(reg);
-        setSelected(Config.getBoolean(reg));
-        
+        register = new Register(count);
+        count++;
+        setSelected(load());
         putClientProperty ( "HANDLES_ENABLE_STATE", true );
         
         gripper = new JPanel(new BorderLayout ());
@@ -84,6 +83,13 @@ public class MSwitch extends JPanel{
         UIUtils.setDrawShade (rightComponent, true );
         rightComponent.setForeground ( Color.DARK_GRAY );
         add ( rightComponent, SwitchLayout.RIGHT );
+        
+        addActionListener(new ActionListener(){
+     		@Override
+     		public void actionPerformed(ActionEvent arg0) {
+     			save();
+     		}
+        });
 
         // Switch animator
 
@@ -97,7 +103,7 @@ public class MSwitch extends JPanel{
                 {
                     requestFocusInWindow ();
                     setSelected ( !isSelected () );
-                    Config.putBoolean(reg, isSelected());
+                    //save();
                 }
             }
         };
@@ -244,5 +250,13 @@ public class MSwitch extends JPanel{
         {
             actionListener.actionPerformed ( actionEvent );
         }
+    }
+    
+    public void save(){
+    	Config.putBoolean(register, isSelected());
+    }
+    
+    public boolean load(){
+    	return Config.getBoolean(register);
     }
 }

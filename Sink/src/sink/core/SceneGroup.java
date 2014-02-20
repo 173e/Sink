@@ -22,6 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 
 public class SceneGroup extends Group{
 	
+	private boolean selected = false;
+	
 	public static void musicPlay(String filename){
 		Asset.musicPlay(filename);
 	}
@@ -79,5 +81,13 @@ public class SceneGroup extends Group{
 	
 	public static void log(String log){
 		Sink.log(log);
+	}
+	
+	public void selected(){
+		selected = true;
+	}
+	
+	public void unselect(){
+		selected = false;
 	}
 }

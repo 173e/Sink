@@ -35,7 +35,6 @@ public class Config {
 	static KeyboardFocusManager kfm;
 	
 	public static DefaultLogger $antLogger;
-	public static boolean isJar = false;
 
 	public static void init(){
 		prefs = Preferences.userRoot().node("sinkstudio");

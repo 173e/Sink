@@ -23,6 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class SceneActor extends Actor {
 	public float stateTime = 0;
 	
+	private boolean selected = false;
+	
 	public SceneActor(){}
 	
 	@Override
@@ -95,5 +97,13 @@ public class SceneActor extends Actor {
 	
 	public static void log(String log){
 		Sink.log(log);
+	}
+	
+	public void selected(){
+		selected = true;
+	}
+	
+	public void unselect(){
+		selected = false;
 	}
 }
