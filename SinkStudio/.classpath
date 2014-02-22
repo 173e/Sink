@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="assets"/>
 	<classpathentry kind="src" path="src_libs"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/ecj-4.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/rsyntaxtextarea.jar"/>
 	<classpathentry kind="lib" path="libs/autocomplete.jar"/>
 	<classpathentry kind="lib" path="libs/proguard.jar"/>

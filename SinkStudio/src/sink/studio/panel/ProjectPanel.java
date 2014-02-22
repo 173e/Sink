@@ -1,6 +1,5 @@
 package sink.studio.panel;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
@@ -12,10 +11,38 @@ import javax.swing.SpringLayout;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.utils.SpringUtils;
 import web.laf.lite.utils.UIUtils;
+import web.laf.lite.widget.NumberTextField;
 import web.laf.lite.widget.WebSwitch;
 
 public class ProjectPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
+	
+	public static JTextField titleField = new JTextField();
+	public static NumberTextField targetWidthField = new NumberTextField();
+	public static NumberTextField targetHeightField = new NumberTextField();
+	public static NumberTextField ScreenWidthField = new NumberTextField();
+	public static NumberTextField screenHeightField = new NumberTextField();
+	public static NumberTextField xField = new NumberTextField();
+	public static NumberTextField yField = new NumberTextField();
+	public static NumberTextField audioField = new NumberTextField();
+	public static NumberTextField iconField = new NumberTextField();
+	public static NumberTextField firstSceneField = new NumberTextField();
+	
+	public static WebSwitch iconSwitch = new WebSwitch();
+	public static WebSwitch resizeableSwitch = new WebSwitch();
+	public static WebSwitch forceExitSwitch = new WebSwitch();
+	public static WebSwitch fullScreenSwitch = new WebSwitch();
+	public static WebSwitch useGL20Switch = new WebSwitch();
+	
+	public static WebSwitch vSyncSwitch = new WebSwitch();
+	public static WebSwitch disableAudioSwitch = new WebSwitch();
+	public static WebSwitch keepAspectRatioSwitch = new WebSwitch();
+	public static WebSwitch isJarSwitch = new WebSwitch();
+	public static WebSwitch useCloudSwitch = new WebSwitch();
+	
+	public static WebSwitch showFPSSwitch = new WebSwitch();
+	public static WebSwitch showLoggerSwitch = new WebSwitch();
+	public static WebSwitch loggingEnabledSwitch = new WebSwitch();
 
 	public ProjectPanel(){
 		super(new VerticalFlowLayout());
@@ -26,32 +53,33 @@ public class ProjectPanel extends JPanel{
 	
     void initPacker(){
     	JPanel content = new JPanel(new SpringLayout());
-    	createRow(content, "Title", new JTextField(""));
-    	createRow(content, "Show Icon",  new WebSwitch());
-    	createRow(content, "Icon Location", new JTextField(""));
-    	createRow(content, "Target Width", new JTextField(""));
-    	createRow(content, "Target Height", new JTextField(""));
-    	createRow(content, "Screen Width", new JTextField(""));
-    	createRow(content, "Screen Height", new JTextField(""));
-    	createRow(content, "X", new JTextField(""));
-    	createRow(content, "Y", new JTextField(""));
-
-    	createRow(content, "Resizeable", new WebSwitch());
-    	createRow(content, "Force Exit", new WebSwitch());
-    	createRow(content, "Full Screen", new WebSwitch());
-    	createRow(content, "Use GL20", new WebSwitch());
+    	createRow(content, "Title", titleField);
+    	createRow(content, "Target Width", targetWidthField);
+    	createRow(content, "Target Height", targetHeightField);
+    	createRow(content, "Screen Width", ScreenWidthField);
+    	createRow(content, "Screen Height", screenHeightField);
+    	createRow(content, "X", xField);
+    	createRow(content, "Y", yField);
+    	createRow(content, "Audio Buffer Count", audioField);
+    	createRow(content, "Icon Location", iconField);
+    	createRow(content, "First Scene Class Name", firstSceneField);
     	
-    	createRow(content, "vSync", new WebSwitch());
-    	createRow(content, "Audio Buffer Count", new JTextField());
-    	createRow(content, "Disable Audio", new WebSwitch());
-    	createRow(content, "Keep Aspect Ratio", new WebSwitch());
-    	createRow(content, "Is Jar", new WebSwitch());
-    	createRow(content, "Use Cloud", new WebSwitch());
     	
-    	createRow(content, "Show FPS", new WebSwitch());
-    	createRow(content, "Show Logger", new WebSwitch());
-    	createRow(content, "Logging Enabled", new WebSwitch());
-    	createRow(content, "First Scene Class Name", new JTextField());
+    	createRow(content, "Show Icon",  iconSwitch);
+    	createRow(content, "Resizeable", resizeableSwitch);
+    	createRow(content, "Force Exit", forceExitSwitch);
+    	createRow(content, "Full Screen", fullScreenSwitch);
+    	createRow(content, "Use GL20", useGL20Switch);
+    	
+    	createRow(content, "vSync", vSyncSwitch);
+    	createRow(content, "Disable Audio", disableAudioSwitch);
+    	createRow(content, "Keep Aspect Ratio", keepAspectRatioSwitch);
+    	createRow(content, "Is Jar", isJarSwitch);
+    	createRow(content, "Use Cloud", useCloudSwitch);
+    	
+    	createRow(content, "Show FPS", showFPSSwitch);
+    	createRow(content, "Show Logger", showLoggerSwitch);
+    	createRow(content, "Logging Enabled", loggingEnabledSwitch);
     	
     	/*createRow(content, "Use Accelerometer", new WebSwitch());
     	createRow(content, "Use Compass", new WebSwitch());
@@ -60,8 +88,8 @@ public class ProjectPanel extends JPanel{
     	
     	SpringUtils.makeCompactGrid(content,
                 23, 2, //rows, cols
-                0, 0, //initialX, initialY
-                0, 0);//xPad, yPad
+                10, 0, //initialX, initialY
+                10, 0);//xPad, yPad
     	add(content);
     }
     

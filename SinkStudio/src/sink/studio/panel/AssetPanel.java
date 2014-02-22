@@ -31,7 +31,9 @@ final public class AssetPanel extends JPanel implements ActionListener, DragSour
 	static DefaultListModel<String> assetModel = new DefaultListModel<String>();
 	
 	String[] btns = new String[]{
-			"Font", "newfile","Texture", "eopen", "Animation", "eopen", "Music", "eopen",
+			"New File", "newfile", "Delete", "trash",
+			"Font", "eopen","Texture", "eopen", 
+			"Animation", "eopen", "Music", "eopen",
 			"Sound", "eopen", "Particle", "eopen"
 	};
 	

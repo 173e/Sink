@@ -9,9 +9,6 @@ import java.awt.SplashScreen;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -21,7 +18,7 @@ import javax.swing.UIManager;
 import web.laf.lite.widget.Register;
 
 public class SinkStudio {
-	public static final String version = "0.11";
+	public static final String version = "0.15";
 	
 	public static Frame frame;
 	private static int ind = 8;
@@ -44,6 +41,7 @@ public class SinkStudio {
             	//skyFrame.pack();
        	     	frame.setVisible(true);
        	     	frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+       	     	StatusBar.redirectSystemStreams();
             }
         });
 	}
@@ -78,29 +76,7 @@ public class SinkStudio {
     
     public static ArrayList<File> projects = new ArrayList<File>();
 	
-	public static void redirectSystemStreams(){
-		SinkStudio.log("Redirecting System.out and System.err");
-		final OutputStream out = new OutputStream() 
-		{
-		      @Override
-		      public void write(int b) throws IOException {
-		        //RightSideBar.$updateConsoleArea(String.valueOf((char) b));
-		      }
-		
-		      @Override
-		      public void write(byte[] b, int off, int len) throws IOException {
-		        //RightSideBar.$updateConsoleArea(new String(b, off, len));
-		      }
-		
-		      @Override
-		      public void write(byte[] b) throws IOException {
-		        write(b, 0, b.length);
-		      }
-		 };
-		SinkStudio.log("Redirecting System.out and System.err"); 
-		System.setOut(new PrintStream(out, true));
-		System.setErr(new PrintStream(out, true));
-	}
+	
     
     static void createFrameWithoutSplash(){
 	     Asset.loadIcons();

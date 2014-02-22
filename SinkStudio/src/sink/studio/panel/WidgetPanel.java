@@ -23,7 +23,7 @@ import sink.studio.core.SinkStudio;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.utils.UIUtils;
 
-public class WidgetPanel extends JPanel  implements DragSourceListener, DragGestureListener {
+public class WidgetPanel extends JPanel  implements ListSelectionListener, DragSourceListener, DragGestureListener {
 	private static final long serialVersionUID = 1L;
 	
 	static JList<String> widgetList;
@@ -35,16 +35,7 @@ public class WidgetPanel extends JPanel  implements DragSourceListener, DragGest
 		super(new VerticalFlowLayout());
 		UIUtils.setUndecorated(this, false);
 		widgetList = new JList<String>(new String[]{"Sprite", "Button","TextButton", "ScrollPane", "Table"});
-		widgetList.addListSelectionListener(new ListSelectionListener(){
-			@Override
-			public void valueChanged(ListSelectionEvent arg0) {
-				switch(widgetList.getSelectedValue()){
-					case "Text": 
-						//Display Dialog
-						break;
-				}
-			}
-		});
+		widgetList.addListSelectionListener(this);
 		add(LafStyle.createHeaderLabel("Widgets"));
 		JScrollPane scrollPane = new JScrollPane(widgetList);
 		scrollPane.setPreferredSize(new Dimension(200, 180));
@@ -92,5 +83,14 @@ public class WidgetPanel extends JPanel  implements DragSourceListener, DragGest
 	public void dragGestureRecognized(DragGestureEvent event) {
 	    StringSelection text = new StringSelection(widgetList.getSelectedValue()+":");
 	    dragSource.startDrag(event, DragSource.DefaultMoveDrop, text, this);
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		switch(widgetList.getSelectedValue()){
+		case "Text": 
+			//Display Dialog
+			break;
+		}
 	}
 }

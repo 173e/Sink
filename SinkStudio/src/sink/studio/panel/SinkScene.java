@@ -187,17 +187,3 @@ public class SinkScene extends Scene {
 		StatusBar.updateSelected(actorName);
 	}
 }
-
-/*
-URL url = Menu.class.getProtectionDomain().getCodeSource().getLocation();
-File file = DataUtilities.urlToFile(url);
-JarFile jar = null;
-try {
-    jar = new JarFile(file);
-    Manifest manifest = jar.getManifest();
-    Attributes attributes = manifest.getMainAttributes();
-    return attributes.getValue("Built-By");
-} finally {
-    jar.close();
-}
-*/

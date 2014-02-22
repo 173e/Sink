@@ -182,7 +182,7 @@ final public class LafStyle {
 	/*
 	 * Creates a plain flat JButton/Header Button with current Style background color
 	 */
-	 final public static JButton createHeaderButton(String text){
+	 final public static JButton createHeaderButton(String text, ActionListener al){
 		final JButton btn = new JButton(text.toUpperCase());
 		btn.setOpaque(true);
 		btn.setBackground(headerBg);
@@ -196,6 +196,8 @@ final public class LafStyle {
 		btn.setVerticalTextPosition(JLabel.CENTER);
 		btn.setHorizontalTextPosition(JLabel.CENTER);
 		btn.setHorizontalAlignment(JLabel.CENTER);
+		if(al != null)
+			btn.addActionListener(al);
 		return btn;
 	}
 	 /* ToolBar Related Methods */
@@ -267,18 +269,10 @@ final public class LafStyle {
         });
 	}
 	
-	/* Explorer Related Methods */
-	final public static JButton createExplorerToolButton(String text,String iconname){
-		final JButton btn = new JButton(Asset.icon(iconname));
-	    UIUtils.setRolloverDecoratedOnly(btn,true);
-	    UIUtils.setLeftRightSpacing(btn, 0);
-	    btn.setFocusable(false);
-	    btn.setToolTipText(text);
-		return btn;
-	}
-	
 	final public static JPanel createButtonToolBarPanel(){
 		JPanel tools = new JPanel(new ToolbarLayout(ToolbarLayout.HORIZONTAL)){
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paintComponent(Graphics g){
 		    	sink.studio.core.LafStyle.drawHorizontalBar(g, getWidth (), getHeight ());
@@ -306,6 +300,18 @@ final public class LafStyle {
 		return tools;
 	}
 	
+	/* Explorer Related Methods */
+	final public static JButton createExplorerToolButton(String text,String iconname, ActionListener al){
+		final JButton btn = new JButton(Asset.icon(iconname));
+	    UIUtils.setRolloverDecoratedOnly(btn,true);
+	    UIUtils.setLeftRightSpacing(btn, 0);
+	    btn.setFocusable(false);
+	    btn.setToolTipText(text);
+	    if(al != null)
+			btn.addActionListener(al);
+		return btn;
+	}
+	
 	final private static ButtonPopup createExplorerToolMenu(JButton btn, String title){
 		final ButtonPopup menu = new ButtonPopup(btn, PopupWay.upRight);
 		menu.setRound(0);
@@ -321,9 +327,10 @@ final public class LafStyle {
 	
 	final public static JButton createExplorerToolPopButton(final String text, final String icon,
 			final JPanel panel, final String finishText, final ActionListener onClick){
-		 final JButton btn = createExplorerToolButton(text, icon);
+		 final JButton btn = createExplorerToolButton(text, icon, null);
 		 final ButtonPopup menu = createExplorerToolMenu(btn, text);
-		 final JButton finish = createHeaderButton(finishText);
+		 final JButton finish = createHeaderButton(finishText, null);
+		 finish.setToolTipText(text);
 		 final JPanel hoz = new JPanel(new VerticalFlowLayout(10));
 		 panel.setOpaque(false);
 		 UIUtils.setMargin(hoz, new Insets(10,10,10,10));
@@ -336,10 +343,10 @@ final public class LafStyle {
 		 menu.getContentPanel().add(new CenterPanel(hoz), BorderLayout.CENTER);
 	     finish.addActionListener(new ActionListener(){
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent event) {
 				menu.hidePopup();
 				if(onClick != null)
-					onClick.actionPerformed(arg0);
+					onClick.actionPerformed(event);
 			}
 	     });
 		return btn;
@@ -347,9 +354,10 @@ final public class LafStyle {
 	
 	final public static JButton createExplorerToolPopButton(final String text, final String icon,
 			JTextField field, final ActionListener onClick){
-		final JButton btn = createExplorerToolButton(text, icon);
+		final JButton btn = createExplorerToolButton(text, icon, null);
 		final ButtonPopup menu = createExplorerToolMenu(btn, text);
-		final JButton finish = createHeaderButton("OK");
+		final JButton finish = createHeaderButton("OK", null);
+		finish.setToolTipText(text);
 	    final JPanel hoz = new JPanel(new HorizontalFlowLayout(10));
 		field.setPreferredSize(new Dimension(240,25));
 		UIUtils.setMargin(hoz, new Insets(10,10,10,10));
@@ -363,9 +371,9 @@ final public class LafStyle {
 		finish.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				menu.hidePopup();
 				if(onClick != null)
 					onClick.actionPerformed(arg0);
+				menu.hidePopup();
 			}
 	    });
 		return btn;

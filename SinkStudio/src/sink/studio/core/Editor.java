@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.File;
 import java.io.IOException;
 
 import javax.swing.Timer;
@@ -22,14 +21,12 @@ import org.fife.rsta.ac.LanguageSupport;
 import org.fife.rsta.ac.LanguageSupportFactory;
 import org.fife.rsta.ac.java.JavaLanguageSupport;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
-import org.fife.ui.rsyntaxtextarea.FileLocation;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.TextEditorPane;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 
-import web.laf.lite.popup.NotificationManager;
 import sink.studio.panel.AssetType;
 
 final public class Editor extends TextEditorPane {
@@ -43,18 +40,14 @@ final public class Editor extends TextEditorPane {
 			save();
 		}
 	});
-	final File file;
 	float zoomSize = 13;
 	
-	public Editor(File nfile) throws IOException{
-		super(TextEditorPane.INSERT_MODE, true, FileLocation.create(nfile));
-		file = nfile;
-		
+	public Editor(){
+		super(TextEditorPane.INSERT_MODE, true);
 		context.setMatchCase(false);
         context.setRegularExpression(false);
         context.setSearchForward(true);
         context.setWholeWord(false);
-        
 		setCodeFoldingEnabled(true);
         setMargin(new Insets(0, 5, 0, 0));
         setAntiAliasingEnabled(true);
@@ -69,8 +62,6 @@ final public class Editor extends TextEditorPane {
         //setMarkOccurrences(true);
         //setPaintMarkOccurrencesBorder(true);
         //setPaintMatchedBracketPair(true);
-        
-		
 		setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		LanguageSupportFactory lsf = LanguageSupportFactory.get();
 		LanguageSupport support = lsf.getSupportFor(SYNTAX_STYLE_JAVA);
@@ -118,29 +109,29 @@ final public class Editor extends TextEditorPane {
 			        String[] data = s.split(":");
 			        switch(AssetType.getType(data[0])){
 			        	case Font:
-			        		insert("font(\""+data[1]+"\");", 5);
+			        		insert("font(\""+data[1]+"\");", getCaretPosition());
 			        		break;
 			        	case Texture:
-			        		insert("tex(\""+data[1]+"\");", 5);
+			        		insert("tex(\""+data[1]+"\");", getCaretPosition());
 							break;
 						case Animation:
-							insert("anim(\""+data[1]+"\");", 5);
+							insert("anim(\""+data[1]+"\");", getCaretPosition());
 							break;
 						case Music:
-							insert("musicPlay(\""+data[1]+");\"", 5);
+							insert("musicPlay(\""+data[1]+");\"", getCaretPosition());
 							break;
 						case Sound:
-							insert("soundPlay(\""+data[1]+");\"", 5);
+							insert("soundPlay(\""+data[1]+");\"", getCaretPosition());
 							break;
 						
 						case Particle:
 							break;
 						
 						case Button:
-							insert("new Button(Asset.skin);", 5);
+							insert("new Button(Asset.skin);", getCaretPosition());
 							break;
 						case TextButton:
-							insert("new TextButton(\"TextButton\",Asset.skin);", 5);
+							insert("new TextButton(\"TextButton\",Asset.skin);", getCaretPosition());
 							break;
 						
 						case None:break;
@@ -163,11 +154,10 @@ final public class Editor extends TextEditorPane {
 	@Override
 	public void save(){
 		if(isDirty()){
-			try {
-				super.save();
-			} catch (IOException e) {
-				NotificationManager.showNotification("Error: Could'nt Save File: "+file.getName());
-				e.printStackTrace();
+			//super.save();
+			if(Content.editorFile != null && !Content.editorFile.isEmpty()){
+				Export.writeFile("source/"+Content.editorFile, getText());
+				StatusBar.compile();
 			}
 		}
 	}

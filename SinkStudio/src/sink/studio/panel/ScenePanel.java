@@ -21,6 +21,9 @@ final public class ScenePanel extends JPanel implements ActionListener {
 	static DefaultListModel<String> scenesModel = new DefaultListModel<String>();
 	
 	final JTextField addField = new JTextField ();
+	String[] btns = new String[]{
+			"Delete", "trash", "Resume", "resume","Pause", "pause", "Stop", "stop"
+	};
 	
 	public ScenePanel(){
 		super(new VerticalFlowLayout());
@@ -36,7 +39,8 @@ final public class ScenePanel extends JPanel implements ActionListener {
 	
 	void initToolBar(){
 		JPanel tools = LafStyle.createButtonToolBarPanel();
-		tools.add(LafStyle.createExplorerToolPopButton("New Scene", "newfolder", addField, this));
+		tools.add(LafStyle.createExplorerToolPopButton("New Scene", "newfile", addField, this));
+		tools.add(LafStyle.createButtonToolBar(this, btns));
 		add(tools);
 	}
 

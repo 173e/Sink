@@ -12,9 +12,16 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
+import java.net.URI;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -24,6 +31,15 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.tools.FileObject;
+import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+import javax.tools.JavaFileObject.Kind;
 
 import web.laf.lite.layout.ToolbarLayout;
 import web.laf.lite.layout.VerticalFlowLayout;
@@ -37,8 +53,15 @@ final public class StatusBar extends JPanel {
 	private static final long serialVersionUID = 1L;
 	static JLabel caret, xy, selected;
 	
-	public static final JTextArea consoleArea = new JTextArea("");
-	public static final JScrollPane consoleAreaPane = new JScrollPane(consoleArea);
+	static final JTextArea consoleArea = new JTextArea("");
+	static final JScrollPane consoleAreaPane = new JScrollPane(consoleArea);
+	
+	static final JTextArea errorArea = new JTextArea("");
+	static final JScrollPane errorAreaPane = new JScrollPane(errorArea);
+	
+	//static JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+	//static JavaFileManager fileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
+	//static List<JavaFileObject> jfiles = new ArrayList<JavaFileObject>();
 
 	public StatusBar(){
 		 super(new ToolbarLayout());
@@ -99,6 +122,54 @@ final public class StatusBar extends JPanel {
 	    LafStyle.drawHorizontalBar(g, getWidth (), getHeight ());
 	    LafStyle.drawTopBorder(g, getWidth());
 	}
+
+	public static void compile() {
+		errorArea.setText("");
+		//jfiles.add(new CharSequenceJavaFileObject(Content.editorFile, Content.editor.getText()));
+		///compiler.getTask(null, fileManager, null, null, null, jfiles).call();
+		//Export.writeFile("DynaClass.class", ClassFileManager.jclassObject.getClassText());
+		//jfiles.clear();
+	}
+
+	public static void redirectSystemStreams(){
+		SinkStudio.log("Redirecting System.out and System.err");
+		final OutputStream out = new OutputStream() {
+		      @Override
+		      public void write(int b) throws IOException {
+		          updateConsoleArea(String.valueOf((char) b));
+		      }
+		
+		      @Override
+		      public void write(byte[] b, int off, int len) throws IOException {
+		    	  updateConsoleArea(new String(b, off, len));
+		      }
+		
+		      @Override
+		      public void write(byte[] b) throws IOException {
+		          write(b, 0, b.length);
+		      }
+		 };
+		 final OutputStream err = new OutputStream() {
+			      @Override
+			      public void write(int b) throws IOException {
+			          updateErrorArea(String.valueOf((char) b));
+			      }
+			
+			      @Override
+			      public void write(byte[] b, int off, int len) throws IOException {
+			    	  updateErrorArea(new String(b, off, len));
+			      }
+			
+			      @Override
+			      public void write(byte[] b) throws IOException {
+			        write(b, 0, b.length);
+			      }
+		};
+		SinkStudio.log("Redirected System.out and System.err"); 
+		System.setOut(new PrintStream(out, true));
+		System.setErr(new PrintStream(err, true));
+	}
+	
 	
 	public static void updateCaret(int row, int col){
 		caret.setText("<html><b>Line</b> "+row+" <b>Column</b> "+col+"</html>");
@@ -112,18 +183,46 @@ final public class StatusBar extends JPanel {
 		selected.setText("<html><b>Selected:</b> &nbsp "+text+"</html>");
 	}
 	
+	public static void updateConsoleArea(final String text) {
+	    SwingUtilities.invokeLater(new Runnable() {
+	      public void run() {
+	    	  consoleArea.append(text);
+	    	  consoleArea.setCaretPosition(consoleArea.getText().length());
+	      }
+	    });
+	  }
+
+	public static void updateErrorArea(final String text) {
+		 SwingUtilities.invokeLater(new Runnable() {
+		      public void run() {
+		    	  errorArea.append(text);
+		    	  errorArea.setCaretPosition(errorArea.getText().length());
+		      }
+		    });
+	}
+	
+	public static void updateWarningTree(final String text) {
+	    SwingUtilities.invokeLater(new Runnable() {
+	      public void run() {
+	      }
+	    });
+	}
+	
 	void initError(){
 		final JButton menuBtn1 = LafStyle.createMenuButton("<html><b>Errors:</b> 0");
         final ButtonPopup menu = new ButtonPopup(menuBtn1,PopupWay.upRight);
         menu.setRound(0);
-        JPanel popupContent = new JPanel ( new VerticalFlowLayout ( 5, 5 ) );
-        popupContent.setPreferredSize(new Dimension(200, 200));
-        popupContent.add(UIUtils.setBoldFont(new JLabel("     ToolBar")));
-        popupContent.add(new JSeparator(SwingConstants.HORIZONTAL));
-        popupContent.add(UIUtils.setBoldFont(new JLabel("     Explorer")));
-        popupContent.add(new JSeparator(SwingConstants.HORIZONTAL));
-        popupContent.setOpaque(false);
-        menu.setContent(popupContent);
+        menu.setShadeWidth(7);
+        JPanel pan = new JPanel(new VerticalFlowLayout ());
+        pan.add(LafStyle.createHeaderButton("Errors", new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				menu.hidePopup();
+			}
+        }));
+        errorAreaPane.setPreferredSize(new Dimension(600, 350));
+        pan.add(errorAreaPane);
+        menu.setContent(pan);
         add(menuBtn1, ToolbarLayout.START);
 	}
 	
@@ -131,12 +230,15 @@ final public class StatusBar extends JPanel {
 		final JButton menuBtn1 = LafStyle.createMenuButton("<html><b>Warnings:</b> 0");
         final ButtonPopup menu = new ButtonPopup(menuBtn1,PopupWay.upRight);
         menu.setRound(0);
+        menu.setShadeWidth(7);
         JPanel popupContent = new JPanel ( new VerticalFlowLayout ( 5, 5 ) );
         popupContent.setPreferredSize(new Dimension(200, 200));
-        popupContent.add(UIUtils.setBoldFont(new JLabel("     ToolBar")));
-        popupContent.add(new JSeparator(SwingConstants.HORIZONTAL));
-        popupContent.add(UIUtils.setBoldFont(new JLabel("     Explorer")));
-        popupContent.add(new JSeparator(SwingConstants.HORIZONTAL));
+        popupContent.add(LafStyle.createHeaderButton("Warnings", new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				menu.hidePopup();
+			}
+        }));
         popupContent.setOpaque(false);
         menu.setContent(popupContent);
         add(menuBtn1, ToolbarLayout.START);
@@ -149,7 +251,12 @@ final public class StatusBar extends JPanel {
         menu.setShadeWidth(7);
         consoleAreaPane.setPreferredSize(new Dimension(600, 350));
         JPanel pan = new JPanel(new VerticalFlowLayout());
-        pan.add(LafStyle.createHeaderLabel("Console"));
+        pan.add(LafStyle.createHeaderButton("Console", new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				menu.hidePopup();
+			}
+        }));
         pan.add(consoleAreaPane);
         menu.setContent(pan);
         add(menuBtn1, ToolbarLayout.START);
@@ -160,7 +267,7 @@ final public class StatusBar extends JPanel {
 		zoomin.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//TabPanel.zoomin();
+				Content.editor.zoomin();
 			}
 			
 		});
@@ -172,7 +279,7 @@ final public class StatusBar extends JPanel {
 		zoomout.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//TabPanel.zoomout();
+				Content.editor.zoomout();
 			}
 			
 		});
@@ -382,5 +489,56 @@ class MemoryBar extends JLabel{
     {
         return Math.round ( ( float ) ( getWidth () - ( 2 ) -
                 ( fill ? 0 : 1 ) ) * progress / ( allocatedMemory ) );
+    }
+}
+
+class ClassFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
+	public static JavaClassObject jclassObject;
+
+	public ClassFileManager(StandardJavaFileManager standardManager) {
+		super(standardManager);
+	}
+
+	@Override
+	public JavaFileObject getJavaFileForOutput(Location location,
+			String className, Kind kind, FileObject sibling)
+					throws IOException {
+		jclassObject = new JavaClassObject(className, kind);
+		return jclassObject;
+	}
+}
+
+
+class CharSequenceJavaFileObject extends SimpleJavaFileObject {
+
+    private CharSequence content;
+
+    public CharSequenceJavaFileObject(String className,
+        CharSequence content) {
+        super(URI.create("string:///" + className.replace('.', '/')+ Kind.SOURCE.extension), Kind.SOURCE);
+        this.content = content;
+    }
+
+    @Override
+    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+        return content;
+    }
+}
+
+class JavaClassObject extends SimpleJavaFileObject {
+	
+    protected final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+    public JavaClassObject(String name, Kind kind) {
+        super(URI.create("string:///" + name.replace('.', '/')+ kind.extension), kind);
+    }
+    
+    public String getClassText(){
+			return bos.toString();
+    }
+    
+    @Override
+    public OutputStream openOutputStream() throws IOException {
+        return bos;//new FileOutputStream(new File("C:\\DynaClass.class"));
     }
 }

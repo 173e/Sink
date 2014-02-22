@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Graphics;
 import java.awt.Insets;
-import java.io.File;
-import java.io.IOException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,17 +36,16 @@ final public class Content extends JPanel {
 	static ParticlePanel particlePanel;
 	
 	static JLabel title = LafStyle.createHeaderLabel("Project");
+	public static String projectFile = "C:\\game.jar";
+	public static String editorFile = "";
+	
 	
 	Content(){
 		super(new BorderLayout());
 		UIUtils.setMargin(this, new Insets(3,1,0,1));
 		UIUtils.setUndecorated(this, true);
 		projectPanel = new ProjectPanel();
-		try {
-			editor = new Editor(new File("C:/bootex.log"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		editor = new Editor();
 		theme.apply(editor);
 		editorScroll = new RTextScrollPane(editor);
 		editorScroll.setIconRowHeaderEnabled(true);
@@ -80,6 +77,8 @@ final public class Content extends JPanel {
     static void showContent(String contentName){
     	if(currentView.equals("Scene"))
     		scenePanel.destroyCanvas();
+    	else if(currentView.equals("Project"))
+    		Export.updateConfigFile();
     	//if(currentView.equals("Hiero"));
     	//	hieroPanel.destroyCanvas();
     	//if(currentView.equals("Particle"));

@@ -12,14 +12,14 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 public class Asset {
 	
 	static String[] iconsList = new String[]{
-		"vs", "trash", "toc_open", "threadgroup_obj", "thread_view", "szoomout", "szoomin", 
+		"vs", "trash", "toc_open", "szoomout", "szoomin", 
 		"sweblaf", "supdate", "style", "stop", "stexturepacker", "sparticle", "snuke", 
 		"slibGDX", "shierologo", "shiero", "search", "screen", "sabout", "run", "refresh",
 		"paste_edit", "packer", "options", "newprj", "newpack", 
 		"newinterface", "newfolder", "newfile", "newenum", "newclass", "lib", "level", 
 		"idea", "icon", "high", "go", "font", "find", "esource", "eprj", "epaste", "epackage", 
 		"eopen", "emusic", "empty", "eimage", "efile", "editor", "eclipse", "dark", "console", 
-		"color", "up","down2"
+		"color", "up","down", "resume", "pause", "export"
 	};
 	
 	// Icons

@@ -1,12 +1,14 @@
 package sink.studio.core;
 
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,10 +20,12 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import sink.studio.panel.FilePanel;
 import web.laf.lite.layout.HorizontalFlowLayout;
 import web.laf.lite.layout.ToolbarLayout;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.popup.ButtonPopup;
+import web.laf.lite.popup.NotificationManager;
 import web.laf.lite.popup.PopupWay;
 import web.laf.lite.utils.SwingUtils;
 import web.laf.lite.utils.UIUtils;
@@ -40,7 +44,6 @@ final public class ToolBar extends JPanel {
         initOpen();
         //initFile();
        // initEdit();
-        //LafStyle.btnMap.get("stop").setEnabled(false);
         initOptions();
         initStyle();
         addSeparator();
@@ -158,6 +161,31 @@ final public class ToolBar extends JPanel {
 	void initOpen(){
 		JButton open = LafStyle.createMenuButton("Open");
 		open.setIcon(Asset.icon("eopen"));
+		open.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FileDialog fd = new FileDialog((Frame)null, "Open Sink Project", FileDialog.LOAD);
+				fd.setVisible(true);
+				String filename = fd.getDirectory()+fd.getFile();
+				SinkStudio.log("Opening Project: "+filename);
+				if(filename != null)
+					if(!filename.isEmpty() && filename.endsWith(".jar"))
+						if(new File(filename).exists()){
+							String oldprj = Content.projectFile;
+							Content.projectFile = filename;
+							if(Export.readFile("config.json").isEmpty()){
+								SinkStudio.log("Could'nt Open Project: "+filename);
+								NotificationManager.showNotification("This is not a valid Sink Project");
+								Content.projectFile = oldprj;
+							}
+							else{
+								SinkStudio.log("Opened Project: "+filename);
+								FilePanel.updateList();
+								SinkStudio.log("Current Project: "+filename);
+							}
+						}
+			}
+		});
 		add(open);
 	}
 
@@ -436,7 +464,7 @@ final class LCD2 extends JTextField {
         UIUtils.setUndecorated(searchUpBtn, true);
         //UIUtils.setTrailingComponent(this, searchBtn);
         
-        JButton searchDownBtn = LafStyle.createToolButton("down2");
+        JButton searchDownBtn = LafStyle.createToolButton("down");
         UIUtils.setLeftRightSpacing(searchDownBtn, 0);
         UIUtils.setUndecorated(searchDownBtn, true);
         
@@ -445,7 +473,7 @@ final class LCD2 extends JTextField {
         updownPanel.add(searchDownBtn);
         updownPanel.setOpaque(false);
         UIUtils.setUndecorated(updownPanel, true);
-        UIUtils.setTrailingComponent(this, searchDownBtn);
+        UIUtils.setTrailingComponent(this, updownPanel);
         
         
         final ButtonPopup searchMenu = new ButtonPopup(searchDownBtn, PopupWay.downCenter);
@@ -461,10 +489,10 @@ final class LCD2 extends JTextField {
         
         JPanel hoz2 = new JPanel(new HorizontalFlowLayout(10));
         hoz2.setOpaque(false);
-        JButton find = LafStyle.createHeaderButton("FIND");hoz2.add(find);
-        JButton replace = LafStyle.createHeaderButton("REPLACE");hoz2.add(replace);
-        JButton replaceall = LafStyle.createHeaderButton("REPLACE ALL");hoz2.add(replaceall);
-        JButton clear = LafStyle.createHeaderButton("CLEAR");hoz2.add(clear);
+        JButton find = LafStyle.createHeaderButton("FIND", null);hoz2.add(find);
+        JButton replace = LafStyle.createHeaderButton("REPLACE", null);hoz2.add(replace);
+        JButton replaceall = LafStyle.createHeaderButton("REPLACE ALL", null);hoz2.add(replaceall);
+        JButton clear = LafStyle.createHeaderButton("CLEAR", null);hoz2.add(clear);
         
         searchMenuContent.add(hoz1);
         searchMenuContent.add(hoz2);

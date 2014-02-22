@@ -12,6 +12,7 @@ import javax.swing.JSplitPane;
 
 import sink.studio.panel.ActorPanel;
 import sink.studio.panel.AssetPanel;
+import sink.studio.panel.FilePanel;
 import sink.studio.panel.PropertyPanel;
 import sink.studio.panel.ScenePanel;
 import sink.studio.panel.WidgetPanel;
@@ -58,7 +59,7 @@ final public class Frame extends JFrame implements WindowListener{
 	   		}
    	 	};
    	 	leftSideBar.add(new ScenePanel());
-   	 	leftSideBar.add(new PropertyPanel());
+   	 	leftSideBar.add(new FilePanel());
    	 	leftSideBar.add(new AssetPanel());
    	 	
    	 	add(rightSideBar, BorderLayout.EAST);
