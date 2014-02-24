@@ -18,7 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import sink.studio.core.LafStyle;
+import sink.studio.core.Style;
 import sink.studio.core.SinkStudio;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.utils.UIUtils;
@@ -36,7 +36,8 @@ public class WidgetPanel extends JPanel  implements ListSelectionListener, DragS
 		UIUtils.setUndecorated(this, false);
 		widgetList = new JList<String>(new String[]{"Sprite", "Button","TextButton", "ScrollPane", "Table"});
 		widgetList.addListSelectionListener(this);
-		add(LafStyle.createHeaderLabel("Widgets"));
+		//widgetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		add(Style.createHeaderLabel("Widgets"));
 		JScrollPane scrollPane = new JScrollPane(widgetList);
 		scrollPane.setPreferredSize(new Dimension(200, 180));
 		UIUtils.setDrawBorder(scrollPane, false);
@@ -87,10 +88,12 @@ public class WidgetPanel extends JPanel  implements ListSelectionListener, DragS
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		switch(widgetList.getSelectedValue()){
-		case "Text": 
-			//Display Dialog
-			break;
+		if (e.getValueIsAdjusting() == false) {
+			switch(widgetList.getSelectedValue()){
+			case "Text": 
+				//Display Dialog
+				break;
+			}
 		}
 	}
 }

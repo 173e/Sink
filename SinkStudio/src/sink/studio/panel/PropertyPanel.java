@@ -10,7 +10,7 @@ import javax.swing.JScrollPane;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import sink.core.Sink;
-import sink.studio.core.LafStyle;
+import sink.studio.core.Style;
 import sink.studio.core.SinkStudio;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.utils.UIUtils;
@@ -25,7 +25,7 @@ public class PropertyPanel extends JPanel {
 		super(new VerticalFlowLayout());
 		UIUtils.setUndecorated(this, false);
 		propList = new JList<String>(propModel);
-		add(LafStyle.createHeaderLabel("Properties"));
+		add(Style.createHeaderLabel("Properties"));
 		JScrollPane scrollPane = new JScrollPane(propList);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		UIUtils.setDrawBorder(scrollPane, false);

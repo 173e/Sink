@@ -28,7 +28,7 @@ import web.laf.lite.popup.PopupWay;
 import web.laf.lite.utils.UIUtils;
 import web.laf.lite.widget.CenterPanel;
 
-final public class LafStyle {
+final public class Style {
 	
 	 private static StyleName styleName = StyleName.STYLE2;
 	 public static Color headerBg = new Color(0x2a3b57);
@@ -275,7 +275,7 @@ final public class LafStyle {
 
 			@Override
 			public void paintComponent(Graphics g){
-		    	sink.studio.core.LafStyle.drawHorizontalBar(g, getWidth (), getHeight ());
+		    	sink.studio.core.Style.drawHorizontalBar(g, getWidth (), getHeight ());
 		        g.setColor(Color.GRAY);
 		        g.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);
 			}

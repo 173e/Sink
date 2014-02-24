@@ -10,12 +10,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import sink.studio.core.Content;
 import sink.studio.core.Export;
-import sink.studio.core.LafStyle;
+import sink.studio.core.Style;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.popup.NotificationManager;
 import web.laf.lite.utils.UIUtils;
@@ -24,8 +25,8 @@ import web.laf.lite.utils.UIUtils;
 final public class FilePanel extends JPanel implements ListSelectionListener, ActionListener {
 	private static final long serialVersionUID = 1L;
 	
-	static JList<String> propList;
-	static DefaultListModel<String> propModel = new DefaultListModel<String>();
+	static JList<String> filesList;
+	static DefaultListModel<String> filesModel = new DefaultListModel<String>();
 	
 	JTextField classField, interfaceField, enumField;
 
@@ -35,62 +36,55 @@ final public class FilePanel extends JPanel implements ListSelectionListener, Ac
 		interfaceField = new JTextField();
 		enumField = new JTextField();
 		UIUtils.setUndecorated(this, false);
-		propList = new JList<String>(propModel);
-		propList.addListSelectionListener(this);
-		add(LafStyle.createHeaderLabel("Files"));
+		filesList = new JList<String>(filesModel);
+		filesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		UIUtils.setHighlightRolloverCell(filesList, false);
+		filesList.addListSelectionListener(this);
+		add(Style.createHeaderLabel("Files"));
 		initToolBar();
-		JScrollPane scrollPane = new JScrollPane(propList);
+		JScrollPane scrollPane = new JScrollPane(filesList);
 		scrollPane.setPreferredSize(new Dimension(200, 175));
 		UIUtils.setDrawBorder(scrollPane, false);
 		add(scrollPane);
-		updateList();
+		if(Content.checkProjectExists()){
+			updateList();
+			if(Content.checkFileExists()){
+				filesList.setSelectedIndex(filesModel.indexOf(Content.getFile()));
+			}
+		}
 	}
 	void initToolBar(){
-		JPanel tools = LafStyle.createButtonToolBarPanel();
-		tools.add(LafStyle.createExplorerToolPopButton("New Class", "newclass", classField, (ActionListener)this));
-		tools.add(LafStyle.createExplorerToolPopButton("New Interface", "newinterface", interfaceField, (ActionListener)this));
-		tools.add(LafStyle.createExplorerToolPopButton("New Enum", "newenum", enumField, (ActionListener)this));
-		tools.add(LafStyle.createExplorerToolButton("Delete", "trash", this));
+		JPanel tools = Style.createButtonToolBarPanel();
+		tools.add(Style.createExplorerToolPopButton("New Class", "newclass", classField, (ActionListener)this));
+		tools.add(Style.createExplorerToolPopButton("New Interface", "newinterface", interfaceField, (ActionListener)this));
+		tools.add(Style.createExplorerToolPopButton("New Enum", "newenum", enumField, (ActionListener)this));
+		tools.add(Style.createExplorerToolButton("Delete", "trash", this));
 		add(tools);
 	}
 	
 	public static void updateList(){
-		propModel.clear();
+		filesModel.clear();
 		for(String fname: Export.listFiles())
-			propModel.addElement(fname.replace("source/", ""));
+			filesModel.addElement(fname.replace("source/", "").replace(".java", ""));
 	}
 	
 	public static void createJavaFile(String type, String name){
-		if(name != null && name.isEmpty())
+		if(name == null || name.isEmpty())
 			return;
-		if(name.endsWith(".java"))
-			if(propModel.contains(name)){
-				NotificationManager.showNotification("Error: File already exists: "+name);
-				return;
-			}
-		else
-			if(propModel.contains(name+".java")){ //bug
-				NotificationManager.showNotification("Error: File already exists: "+name);
-				return;
-			}
+		name = name.replace(".java", "");
+		if(filesModel.contains(name)){
+			NotificationManager.showNotification("Error: File already exists: "+name);
+			return;
+		}
 		switch(type){
 			case "class": 
-				if(name.endsWith(".java"))
-					Export.writeFile("source/"+name, "public class "+name.replace(".java", "")+" {\n\n    public "+name.replace(".java", "")+"(){\n\n    }\n}");
-				else
-					Export.writeFile("source/"+name+".java", "public class "+name+" {\n\n    public "+name+"(){\n\n    }\n}");
+				Export.writeFile("source/"+name+".java", "public class "+name+" {\n\n    public "+name+"(){\n\n    }\n}");
 				break;
 			case "interface":
-				if(name.endsWith(".java"))
-					Export.writeFile("source/"+name, "public interface "+name.replace(".java", "")+" {\n\n}");
-				else
-					Export.writeFile("source/"+name+".java", "public interface "+name+" {\n\n}");
+				Export.writeFile("source/"+name+".java", "public interface "+name+" {\n\n}");
 				break;
 			case "enum":
-				if(name.endsWith(".java"))
-					Export.writeFile("source/"+name, "public enum "+name.replace(".java", "")+" {\n\n}");
-				else
-					Export.writeFile("source/"+name+".java", "public enum "+name+" {\n\n}");
+				Export.writeFile("source/"+name+".java", "public enum "+name+" {\n\n}");
 				break;
 			default: break;
 		}
@@ -104,21 +98,26 @@ final public class FilePanel extends JPanel implements ListSelectionListener, Ac
 			case "New Interface": createJavaFile("interface", interfaceField.getText());interfaceField.setText("");break;
 			case "New Enum": createJavaFile("enum", enumField.getText());enumField.setText("");break;
 			case "Delete":
-				Export.deleteFile("source/"+propList.getSelectedValue());
-				Content.editorFile = null;
-				Content.editor.setText("");
-				updateList();
+				Export.deleteFile("source/"+filesList.getSelectedValue()+".java");
+				//Content.editorFile = "";
+				//Content.editor.setText("");
+				filesModel.removeElement(filesList.getSelectedValue());
 				break;
 		}
 	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		Content.showEditor();
-		Content.editor.save();
-		Content.editorFile = propList.getSelectedValue();
-		if(Content.editorFile != null && !Content.editorFile.isEmpty())
-			Content.editor.setText(Export.readFile("source/"+Content.editorFile));
+		if (e.getValueIsAdjusting() == false) {
+			if(filesList.getSelectedValue() == null)
+				return;
+			if(Content.getFile().equals(filesList.getSelectedValue()))
+				return;
+			Content.editor.save();
+			Content.setFile(filesList.getSelectedValue());
+			Content.showEditor();
+			Content.editor.load();
+		}
 	}
 	
 }

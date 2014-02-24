@@ -13,28 +13,32 @@ import java.awt.dnd.DragSourceListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
+import santhosh.DefaultListCellEditor;
+import santhosh.DefaultMutableListModel;
+import santhosh.JListMutable;
 import sink.core.Asset;
-import sink.studio.core.LafStyle;
+import sink.studio.core.Style;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.utils.UIUtils;
 
 final public class AssetPanel extends JPanel implements ActionListener, DragSourceListener, DragGestureListener{
 	private static final long serialVersionUID = 1L;
 	
-	static JList<String> assetList;
-	static DefaultListModel<String> assetModel = new DefaultListModel<String>();
+	static JListMutable<String> assetsList;
+	static DefaultMutableListModel<String> assetsModel = new DefaultMutableListModel<String>();
 	
 	String[] btns = new String[]{
 			"New File", "newfile", "Delete", "trash",
-			"Font", "eopen","Texture", "eopen", 
-			"Animation", "eopen", "Music", "eopen",
-			"Sound", "eopen", "Particle", "eopen"
+			"Font", "f","Texture", "t", 
+			"Animation", "a", "Music", "m",
+			"Sound", "s", "Particle", "p"
 	};
 	
 	AssetType selectedAsset = AssetType.Font;
@@ -44,50 +48,58 @@ final public class AssetPanel extends JPanel implements ActionListener, DragSour
 	public AssetPanel(){
 		super(new VerticalFlowLayout());
 		UIUtils.setUndecorated(this, false);
-		assetList = new JList<String>(assetModel);
-		JScrollPane scrollPane = new JScrollPane(assetList);
+		assetsList = new JListMutable<String>(assetsModel);
+		assetsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		assetsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		UIUtils.setHighlightRolloverCell(assetsList, false);
+		//UIUtils.setDecorateSelection(assetsList, false);
+	    JTextField tf = new JTextField();
+	    UIUtils.setDrawFocus(tf, false);
+	    UIUtils.setShadeWidth(tf, 0);
+	    assetsList.setListCellEditor(new DefaultListCellEditor(tf));
+		JScrollPane scrollPane = new JScrollPane(assetsList);
 		scrollPane.setPreferredSize(new Dimension(200, 155));
 		UIUtils.setDrawBorder(scrollPane, false);
 		
-		add(LafStyle.createHeaderLabel("Assets"));
-		add(LafStyle.createButtonToolBar(this, btns));
+		add(Style.createHeaderLabel("Assets"));
+		add(Style.createButtonToolBar(this, btns));
 		add(scrollPane);
 		dragSource.addDragSourceListener(this);
-	    dragSource.createDefaultDragGestureRecognizer(assetList, DnDConstants.ACTION_MOVE, this);
+	    dragSource.createDefaultDragGestureRecognizer(assetsList, DnDConstants.ACTION_MOVE, this);
 	}
 	
 	public static void updateAsset(){
 		for(String names: Asset.fontMap.keys())
-			assetModel.addElement(names);
+			assetsModel.addElement(names);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		assetModel.clear();
+		assetsModel.clear();
 		switch(((JButton)event.getSource()).getToolTipText()){
 			case "Font": 
 				for(String names: Asset.fontMap.keys()) 
-					assetModel.addElement(names);
+					assetsModel.addElement(names);
 				selectedAsset = AssetType.Font;
 				break;
 			case "Texture": 
 				for(String names: Asset.texMap.keys()) 
-					assetModel.addElement(names);
+					assetsModel.addElement(names);
 				selectedAsset = AssetType.Texture;
 				break;
 			case "Animation": 
 				for(String names: Asset.animMap.keys()) 
-					assetModel.addElement(names);
+					assetsModel.addElement(names);
 				selectedAsset = AssetType.Animation;
 				break;
 			case "Music": 
 				for(String names: Asset.musicMap.keys()) 
-					assetModel.addElement(names);
+					assetsModel.addElement(names);
 				selectedAsset = AssetType.Music;
 				break;
 			case "Sound": 
 				for(String names: Asset.soundMap.keys()) 
-					assetModel.addElement(names);
+					assetsModel.addElement(names);
 				selectedAsset = AssetType.Sound;
 				break;
 			//case "Particle": 	for(String names: Asset.musicMap.keys()) assetModel.addElement(names); break;
@@ -96,7 +108,7 @@ final public class AssetPanel extends JPanel implements ActionListener, DragSour
 
 	@Override
 	public void dragGestureRecognized(DragGestureEvent event) {
-	    StringSelection text = new StringSelection(AssetType.getString(selectedAsset)+":"+assetList.getSelectedValue());
+	    StringSelection text = new StringSelection(AssetType.getString(selectedAsset)+":"+assetsList.getSelectedValue());
 	    dragSource.startDrag( event, DragSource.DefaultMoveDrop, text, this);
 	}
 

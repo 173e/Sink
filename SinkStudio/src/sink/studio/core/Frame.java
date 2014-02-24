@@ -44,7 +44,7 @@ final public class Frame extends JFrame implements WindowListener{
 			private static final long serialVersionUID = 1L;
 			@Override
 	   		public void paintComponent(Graphics g){
-	   			LafStyle.drawVerticalBar(g, getWidth(), getHeight());
+	   			Style.drawVerticalBar(g, getWidth(), getHeight());
 	   		}
    	 	};
    	 	rightSideBar.add(new ActorPanel());
@@ -55,7 +55,7 @@ final public class Frame extends JFrame implements WindowListener{
    	 	private static final long serialVersionUID = 1L;
 	   	 	@Override
 	   		public void paintComponent(Graphics g){
-	   			LafStyle.drawVerticalBar(g, getWidth(), getHeight());
+	   			Style.drawVerticalBar(g, getWidth(), getHeight());
 	   		}
    	 	};
    	 	leftSideBar.add(new ScenePanel());
@@ -109,6 +109,7 @@ final public class Frame extends JFrame implements WindowListener{
 	@Override
 	public void windowClosing(WindowEvent arg0) {
 		Content.editor.save();
+		Export.updateConfigFile();
 		content.dispose();
 		dispose();
 		System.exit(0);

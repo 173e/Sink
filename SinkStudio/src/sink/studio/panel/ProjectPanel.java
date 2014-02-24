@@ -8,6 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
+
+import sink.studio.core.Content;
+import sink.studio.core.Export;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.utils.SpringUtils;
 import web.laf.lite.utils.UIUtils;
@@ -20,13 +25,13 @@ public class ProjectPanel extends JPanel{
 	public static JTextField titleField = new JTextField();
 	public static NumberTextField targetWidthField = new NumberTextField();
 	public static NumberTextField targetHeightField = new NumberTextField();
-	public static NumberTextField ScreenWidthField = new NumberTextField();
+	public static NumberTextField screenWidthField = new NumberTextField();
 	public static NumberTextField screenHeightField = new NumberTextField();
 	public static NumberTextField xField = new NumberTextField();
 	public static NumberTextField yField = new NumberTextField();
 	public static NumberTextField audioField = new NumberTextField();
-	public static NumberTextField iconField = new NumberTextField();
-	public static NumberTextField firstSceneField = new NumberTextField();
+	public static JTextField iconField = new JTextField();
+	public static JTextField firstSceneField = new JTextField();
 	
 	public static WebSwitch iconSwitch = new WebSwitch();
 	public static WebSwitch resizeableSwitch = new WebSwitch();
@@ -48,6 +53,8 @@ public class ProjectPanel extends JPanel{
 		super(new VerticalFlowLayout());
 		UIUtils.setUndecorated(this, true);
 	    initPacker();
+	    if(Content.checkProjectExists())
+	    	updateProjectConfig();
 	}
 
 	
@@ -56,7 +63,7 @@ public class ProjectPanel extends JPanel{
     	createRow(content, "Title", titleField);
     	createRow(content, "Target Width", targetWidthField);
     	createRow(content, "Target Height", targetHeightField);
-    	createRow(content, "Screen Width", ScreenWidthField);
+    	createRow(content, "Screen Width", screenWidthField);
     	createRow(content, "Screen Height", screenHeightField);
     	createRow(content, "X", xField);
     	createRow(content, "Y", yField);
@@ -100,5 +107,36 @@ public class ProjectPanel extends JPanel{
 		content.add(label);
 		content.add(b);
     	//hoz.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, java.awt.Color.black));
+    }
+    
+    void updateProjectConfig(){
+    	JsonReader jsonReader = new JsonReader();
+    	JsonValue value = jsonReader.parse(Export.readFile("config.json"));
+    	titleField.setText(value.get("title").asString());
+    	targetWidthField.setText(value.get("targetWidth").asString());
+    	targetHeightField.setText(value.get("targetHeight").asString());
+    	screenWidthField.setText(value.get("screenWidth").asString());
+    	screenHeightField.setText(value.get("screenHeight").asString());
+    	xField.setText(value.get("x").asString());
+    	yField.setText(value.get("y").asString());
+    	audioField.setText(value.get("audio").asString());
+    	iconField.setText(value.get("icon").asString());
+    	firstSceneField.setText(value.get("firstScene").asString());
+    	
+    	iconSwitch.setSelected(value.getBoolean("showIcon"));
+    	resizeableSwitch.setSelected(value.getBoolean("resizeable"));
+    	forceExitSwitch.setSelected(value.getBoolean("forceExit"));
+    	fullScreenSwitch.setSelected(value.getBoolean("fullScreen"));
+    	useGL20Switch.setSelected(value.getBoolean("useGL20"));
+    	
+    	vSyncSwitch.setSelected(value.getBoolean("vSync"));
+    	disableAudioSwitch.setSelected(value.getBoolean("disableAudio"));
+    	keepAspectRatioSwitch.setSelected(value.getBoolean("keepAspectRatio"));
+    	isJarSwitch.setSelected(value.getBoolean("isJar"));
+    	useCloudSwitch.setSelected(value.getBoolean("useCloud"));
+    	
+    	showFPSSwitch.setSelected(value.getBoolean("showFPS"));
+    	showLoggerSwitch.setSelected(value.getBoolean("showLogger"));
+    	loggingEnabledSwitch.setSelected(value.getBoolean("loggingEnabled"));
     }
 }

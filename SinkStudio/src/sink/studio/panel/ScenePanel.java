@@ -9,12 +9,19 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import sink.studio.core.LafStyle;
+import sink.core.Sink;
+import sink.studio.core.Content;
+import sink.studio.core.Export;
+import sink.studio.core.Style;
+import sink.studio.core.SinkStudio;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.utils.UIUtils;
 
-final public class ScenePanel extends JPanel implements ActionListener {
+final public class ScenePanel extends JPanel implements ListSelectionListener, ActionListener {
 	private static final long serialVersionUID = 1L;
 	
 	static JList<String> scenesList;
@@ -29,25 +36,51 @@ final public class ScenePanel extends JPanel implements ActionListener {
 		super(new VerticalFlowLayout());
 		UIUtils.setUndecorated(this, false);
 		scenesList = new JList<String>(scenesModel);
-		add(LafStyle.createHeaderLabel("Scenes"));
+		scenesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scenesList.addListSelectionListener(this);
+		add(Style.createHeaderLabel("Scenes"));
 		JScrollPane scrollPane = new JScrollPane(scenesList);
 		scrollPane.setPreferredSize(new Dimension(200, 175));
 		UIUtils.setDrawBorder(scrollPane, false);
 		initToolBar();
 		add(scrollPane);
+		//updateList();
 	}
 	
 	void initToolBar(){
-		JPanel tools = LafStyle.createButtonToolBarPanel();
-		tools.add(LafStyle.createExplorerToolPopButton("New Scene", "newfile", addField, this));
-		tools.add(LafStyle.createButtonToolBar(this, btns));
+		JPanel tools = Style.createButtonToolBarPanel();
+		tools.add(Style.createExplorerToolPopButton("New Scene", "newfile", addField, this));
+		tools.add(Style.createButtonToolBar(this, btns));
 		add(tools);
+	}
+	
+	public static void updateList(){
+		scenesModel.clear();
+		for(String fname: Export.listFiles())
+			scenesModel.addElement(fname.replace("source/", "").replace(".java", ""));
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		if (e.getValueIsAdjusting() == false) {
+			SinkStudio.log("clicked");// bug
+			if(!Content.currentView.equals("Scene"))
+				return;
+			if(scenesList.getSelectedValue() == null)
+				return;
+			if(Content.getFile().equals(scenesList.getSelectedValue()))
+				return;
+			StudioScene intro = (StudioScene) Sink.getScene();
+			intro.save();
+			Content.setFile(scenesList.getSelectedValue());
+			//Content.showScene();
+			intro.load();
+		}
 	}
 
 }

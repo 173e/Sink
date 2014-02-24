@@ -1,7 +1,7 @@
 SinkStudio v0.15
 ================
-SinkStudio is a tool for creating awesome games using libGdx. It is written in Java using Swing, libGdx,
-WebLookandfeel and RSyntaxTextArea. It has similar features of Xcode. It has all the features of libGdx
+SinkStudio is a tool for creating awesome games using libGdx. It is written in Java using Swing, libgdx,
+WebLookandfeel and RSyntaxTextArea. It has similar features of Xcode. It has all the features of libgdx
 built-in so you can easily,start creating games with it. Tools like Hiero Font Editor, Particle Editor,
 Texture Packer, GDXBuilder, TMXBuilder, ImagingTools are already built into it. 
 It also has a powerful Game Framework based on libGDX called Sink which allows the game coder 

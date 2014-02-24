@@ -11,16 +11,13 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-import sink.studio.panel.FilePanel;
 import web.laf.lite.layout.HorizontalFlowLayout;
 import web.laf.lite.layout.ToolbarLayout;
 import web.laf.lite.layout.VerticalFlowLayout;
@@ -35,7 +32,7 @@ import web.laf.lite.widget.WebSwitch;
 
 final public class ToolBar extends JPanel {
 	private static final long serialVersionUID = 1L;
-	LCD2 lcd;
+	SearchBar lcd;
     
 	public ToolBar(){
 		super(new ToolbarLayout());
@@ -70,12 +67,12 @@ final public class ToolBar extends JPanel {
 	
 	@Override
 	public void paintComponent(Graphics g){
-		LafStyle.drawHorizontalBar(g, getWidth (), getHeight ());
-		LafStyle.drawBottomBorder(g, getWidth (), getHeight ());
+		Style.drawHorizontalBar(g, getWidth (), getHeight ());
+		Style.drawBottomBorder(g, getWidth (), getHeight ());
 	}
 	
 	void initLCD(){
-		lcd = new LCD2();
+		lcd = new SearchBar();
         final JPanel pan = new JPanel(new VerticalFlowLayout(FlowLayout.CENTER));
         pan.setOpaque(false);
         pan.add(lcd);
@@ -83,9 +80,9 @@ final public class ToolBar extends JPanel {
 	}
 	
 	void initAbout(){
-		add(LafStyle.createToolPanel("", "sabout", null));
-		UIUtils.setUndecorated(LafStyle.btnMap.get("sabout"), true);
-        final ButtonPopup menu = new ButtonPopup(LafStyle.btnMap.get("sabout"), PopupWay.downRight);
+		add(Style.createToolPanel("", "sabout", null));
+		UIUtils.setUndecorated(Style.btnMap.get("sabout"), true);
+        final ButtonPopup menu = new ButtonPopup(Style.btnMap.get("sabout"), PopupWay.downRight);
         menu.setRound(0);
         final JPanel popupContent = new JPanel (new VerticalFlowLayout(5, 10));
         final JButton licenseBtn = new JButton("Apache License v2.0");
@@ -109,7 +106,7 @@ final public class ToolBar extends JPanel {
 	}
 	
 	void initFile(){
-		final JButton menuBtn1 = LafStyle.createMenuButton("File");
+		final JButton menuBtn1 = Style.createMenuButton("File");
         final ButtonPopup menu = new ButtonPopup(menuBtn1,PopupWay.downRight);
         menu.setRound(0);
         JPanel popupContent = new JPanel ( new VerticalFlowLayout ( 5, 5 ) );
@@ -124,7 +121,7 @@ final public class ToolBar extends JPanel {
 	}
         
     void initEdit(){
-    	final JButton menuBtn2 = LafStyle.createMenuButton("Edit");
+    	final JButton menuBtn2 = Style.createMenuButton("Edit");
         final ButtonPopup menu2 = new ButtonPopup(menuBtn2,PopupWay.downRight);
         menu2.setRound(0);
         JPanel popupContent2 = new JPanel ( new VerticalFlowLayout ( 5, 5 ) );
@@ -139,27 +136,27 @@ final public class ToolBar extends JPanel {
 	}
 	
 	public static void run(){
-		if(!LafStyle.btnMap.get("stop").isEnabled()){
-			LafStyle.btnMap.get("stop").setEnabled(true);
-			LafStyle.btnMap.get("run").setEnabled(false);
+		if(!Style.btnMap.get("stop").isEnabled()){
+			Style.btnMap.get("stop").setEnabled(true);
+			Style.btnMap.get("run").setEnabled(false);
 		}
 	}
 	
 	public static void stop(){
-		if(!LafStyle.btnMap.get("run").isEnabled()){
-			LafStyle.btnMap.get("stop").setEnabled(false);
-			LafStyle.btnMap.get("run").setEnabled(true);
+		if(!Style.btnMap.get("run").isEnabled()){
+			Style.btnMap.get("stop").setEnabled(false);
+			Style.btnMap.get("run").setEnabled(true);
 		}
 	}
 	
 	void initProject(){
-		JButton prj = LafStyle.createMenuButton("Project");
+		JButton prj = Style.createMenuButton("Project");
 		prj.setIcon(Asset.icon("newprj"));
 		add(prj);
 	}
 	
 	void initOpen(){
-		JButton open = LafStyle.createMenuButton("Open");
+		JButton open = Style.createMenuButton("Open");
 		open.setIcon(Asset.icon("eopen"));
 		open.addActionListener(new ActionListener(){
 			@Override
@@ -171,16 +168,16 @@ final public class ToolBar extends JPanel {
 				if(filename != null)
 					if(!filename.isEmpty() && filename.endsWith(".jar"))
 						if(new File(filename).exists()){
-							String oldprj = Content.projectFile;
-							Content.projectFile = filename;
+							String oldprj = Content.getProject();
+							Content.setProject(filename);
 							if(Export.readFile("config.json").isEmpty()){
 								SinkStudio.log("Could'nt Open Project: "+filename);
 								NotificationManager.showNotification("This is not a valid Sink Project");
-								Content.projectFile = oldprj;
+								Content.setProject(oldprj);
 							}
 							else{
 								SinkStudio.log("Opened Project: "+filename);
-								FilePanel.updateList();
+								Content.setProject(filename);
 								SinkStudio.log("Current Project: "+filename);
 							}
 						}
@@ -190,9 +187,9 @@ final public class ToolBar extends JPanel {
 	}
 
 	void initOptions(){
-	    add(LafStyle.createToolPanel("Options", "options", null));
-        final ButtonPopup menu = new ButtonPopup(LafStyle.btnMap.get("options"),PopupWay.downRight);
-        UIUtils.setRound(LafStyle.btnMap.get("options"), 10);
+	    add(Style.createToolPanel("Options", "options", null));
+        final ButtonPopup menu = new ButtonPopup(Style.btnMap.get("options"),PopupWay.downRight);
+        UIUtils.setRound(Style.btnMap.get("options"), 10);
         JPanel popupContent = new JPanel ( new VerticalFlowLayout ( 5, 5 ) );
         // ToolBar Stuff
         popupContent.add(UIUtils.setBoldFont(new JLabel("     ToolBar")));
@@ -240,6 +237,10 @@ final public class ToolBar extends JPanel {
         popupContent.add(menuItem(paintTabLines, "Show Tab"));
         popupContent.add(menuItem(codeFold, "Code Folding"));
         popupContent.add(menuItem(showWhitespaces, "Show WhiteSpace"));
+      //setMarginLineColor(Color.black);
+        //setMarkOccurrences(true);
+        //setPaintMarkOccurrencesBorder(true);
+        //setPaintMatchedBracketPair(true);
         
     	Content.editorScroll.setLineNumbersEnabled(showLineNumbers.isSelected());
     	Content.editorScroll.setIconRowHeaderEnabled(showMargin.isSelected());
@@ -287,6 +288,38 @@ final public class ToolBar extends JPanel {
 				Content.editor.setWhitespaceVisible(showWhitespaces.isSelected());
 			}
         });
+        
+        // Search Stuff
+        popupContent.add(UIUtils.setBoldFont(new JLabel("     SearchBar")));
+        popupContent.add(new JSeparator(SwingConstants.HORIZONTAL));
+        final WebSwitch cs = new WebSwitch(); 
+        final WebSwitch ww = new WebSwitch();
+        final WebSwitch re = new WebSwitch();
+        popupContent.add(menuItem(cs, "Case Sensitive"));
+        popupContent.add(menuItem(ww, "Whole Word"));
+        popupContent.add(menuItem(re, "Regular Expression"));
+        
+        cs.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Editor.context.setMatchCase(cs.isSelected());
+			}
+        });
+        
+        ww.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Editor.context.setWholeWord(ww.isSelected());
+			}
+        });
+        
+        re.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Editor.context.setRegularExpression(re.isSelected());
+			}
+        });
+        
         popupContent.setOpaque(false);
         menu.setContent(popupContent);
 	}
@@ -309,9 +342,9 @@ final public class ToolBar extends JPanel {
 	}
 	
 	void initStyle(){
-		add(LafStyle.createToolPanel("Style", "style", null));
-		UIUtils.setRound(LafStyle.btnMap.get("style"), 10);
-        final ButtonPopup wbp = new ButtonPopup(LafStyle.btnMap.get("style"),PopupWay.downRight);
+		add(Style.createToolPanel("Style", "style", null));
+		UIUtils.setRound(Style.btnMap.get("style"), 10);
+        final ButtonPopup wbp = new ButtonPopup(Style.btnMap.get("style"),PopupWay.downRight);
         JPanel lafStyles = new JPanel ( new VerticalFlowLayout (5, 5) );
         lafStyles.setOpaque(false);
         JLabel lafTitle = new JLabel("    LookAndFeel");
@@ -381,12 +414,12 @@ final public class ToolBar extends JPanel {
 	
 	void initView(){
 		JPanel pan = new JPanel(new VerticalFlowLayout(FlowLayout.CENTER, 0, 0));
-		LafStyle.viewButton("Editor", "editor");
-        LafStyle.viewButton("Project", "screen");
-        LafStyle.viewButton("Studio", "level");
-        LafStyle.viewButton("Hiero", "shiero");
-        LafStyle.viewButton("Particle", "sparticle");
-        WebButtonGroup textGroup = new WebButtonGroup(true,LafStyle.viewGroup.toArray(new JButton[LafStyle.viewGroup.size()]));
+		Style.viewButton("Editor", "editor");
+        Style.viewButton("Project", "screen");
+        Style.viewButton("Studio", "level");
+        Style.viewButton("Hiero", "shiero");
+        Style.viewButton("Particle", "sparticle");
+        WebButtonGroup textGroup = new WebButtonGroup(true,Style.viewGroup.toArray(new JButton[Style.viewGroup.size()]));
         textGroup.setButtonsDrawFocus(false);
         pan.setOpaque(false);
         pan.add(textGroup);
@@ -396,8 +429,8 @@ final public class ToolBar extends JPanel {
 	
 
     public static void toggleView(int index) {
-		for(JButton b: LafStyle.viewGroup){
-			if(index-1 == LafStyle.viewGroup.indexOf(b))
+		for(JButton b: Style.viewGroup){
+			if(index-1 == Style.viewGroup.indexOf(b))
 				b.setSelected(true);
 			else
 				b.setSelected(false);
@@ -405,7 +438,7 @@ final public class ToolBar extends JPanel {
     	switch(index){
 	    	case 1: Content.showEditor(); break;
 	    	case 2: Content.showProject();break;
-	    	case 3: Content.showScene(); break;
+	    	case 3: Content.showStudio(); break;
 	    	case 4: Content.showHiero(); break;
 	    	case 5: Content.showParticle(); break;
 	    	default: break;
@@ -447,77 +480,5 @@ final class ThemeButton extends JToggleButton{
 		setVerticalTextPosition(SwingConstants.BOTTOM);
         setHorizontalTextPosition(SwingConstants.CENTER);
         setFocusable(false);
-	}
-}
-
-final class LCD2 extends JTextField {
-	private static final long serialVersionUID = 1L;
-	
-	public LCD2(){
-		UIUtils.setRound(this, 2);
-		UIUtils.setAlwaysDrawFocus(this, true);
-		UIUtils.setDrawFocus(this, false);
-        setPreferredSize(new Dimension(280, 22));
-        
-        JButton searchUpBtn = LafStyle.createToolButton("up");
-        UIUtils.setLeftRightSpacing(searchUpBtn, 0);
-        UIUtils.setUndecorated(searchUpBtn, true);
-        //UIUtils.setTrailingComponent(this, searchBtn);
-        
-        JButton searchDownBtn = LafStyle.createToolButton("down");
-        UIUtils.setLeftRightSpacing(searchDownBtn, 0);
-        UIUtils.setUndecorated(searchDownBtn, true);
-        
-        JPanel updownPanel = new JPanel(new HorizontalFlowLayout(0));
-        updownPanel.add(searchUpBtn);
-        updownPanel.add(searchDownBtn);
-        updownPanel.setOpaque(false);
-        UIUtils.setUndecorated(updownPanel, true);
-        UIUtils.setTrailingComponent(this, updownPanel);
-        
-        
-        final ButtonPopup searchMenu = new ButtonPopup(searchDownBtn, PopupWay.downCenter);
-        JPanel searchMenuContent = new JPanel(new VerticalFlowLayout(10, 10));
-        searchMenuContent.setOpaque(false);
-
-        JPanel hoz1 = new JPanel(new HorizontalFlowLayout(10));
-        hoz1.setOpaque(false);
-        JCheckBox cs = new JCheckBox("CS");cs.setFocusable(false);hoz1.add(cs);
-        JCheckBox ww = new JCheckBox("WW");ww.setFocusable(false);hoz1.add(ww);
-        JCheckBox fd = new JCheckBox("FD");fd.setFocusable(false);hoz1.add(fd);
-        JCheckBox rv = new JCheckBox("RV");rv.setFocusable(false);hoz1.add(rv);
-        
-        JPanel hoz2 = new JPanel(new HorizontalFlowLayout(10));
-        hoz2.setOpaque(false);
-        JButton find = LafStyle.createHeaderButton("FIND", null);hoz2.add(find);
-        JButton replace = LafStyle.createHeaderButton("REPLACE", null);hoz2.add(replace);
-        JButton replaceall = LafStyle.createHeaderButton("REPLACE ALL", null);hoz2.add(replaceall);
-        JButton clear = LafStyle.createHeaderButton("CLEAR", null);hoz2.add(clear);
-        
-        searchMenuContent.add(hoz1);
-        searchMenuContent.add(hoz2);
-        searchMenu.setContent(searchMenuContent);
-        
-        replace.addActionListener( new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Content.replace(getText(), "");
-			}
-        	
-        });
-        
-        replaceall.addActionListener( new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Content.replaceAll(getText(), "");
-			}
-        	
-        });     
-        addActionListener( new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Content.find(getText());
-			}
-        });
 	}
 }

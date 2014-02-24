@@ -17,12 +17,12 @@ import sink.studio.core.SinkStudio;
 import com.badlogic.gdx.backends.lwjgl.LwjglAWTCanvas;
 import com.badlogic.gdx.backends.lwjgl.LwjglCanvas;
 
-final public class SinkPanel extends JPanel {
+final public class StudioPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	static LwjglCanvas can;
 	LwjglAWTCanvas canvas;
 	
-	public SinkPanel(){
+	public StudioPanel(){
 		super(new BorderLayout());
 		setPreferredSize(new Dimension(400, 240));
 		setMaximumSize(new Dimension(400, 240));
@@ -36,7 +36,7 @@ final public class SinkPanel extends JPanel {
 						String s = (String)transferable.getTransferData(DataFlavor.stringFlavor);
 						SinkStudio.log(s);
 						String[] data = s.split(":");
-						SinkScene intro = (SinkScene) Sink.getScene();
+						StudioScene intro = (StudioScene) Sink.getScene();
 						//float x = event.getLocation().x - getLocationOnScreen().x;
 						// float y = event.getLocation().y - getLocationOnScreen().y;
 						// x= (x/getWidth()) * Config.targetWidth;
@@ -84,7 +84,7 @@ final public class SinkPanel extends JPanel {
 	}
 	
 	public void createCanvas(){
-		SinkStudio.log("Creating Scene Canvas");
+		SinkStudio.log("Creating Studio Canvas");
 		try{
 			/*File file = new File("C:/CODE/Warsong/core/bin/"); 
 			File file2 = new File("C:/CODE/Warsong/core/libs/"); //, file2.toURI().toURL()
@@ -93,7 +93,7 @@ final public class SinkPanel extends JPanel {
 			Class  cls = cl.loadClass("sink.core.Sink");
 			Sink obj = (Sink) cls.newInstance();*/
 			canvas = new  LwjglAWTCanvas(new Sink(), false);
-			Config.firstSceneClassName = "sink.studio.panel.SinkScene";
+			Config.firstSceneClassName = StudioScene.class.getName();
 			Config.targetWidth = 800;
 			Config.targetHeight = 640;
 			Config.isJar = false;

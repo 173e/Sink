@@ -119,8 +119,8 @@ final public class StatusBar extends JPanel {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
-	    LafStyle.drawHorizontalBar(g, getWidth (), getHeight ());
-	    LafStyle.drawTopBorder(g, getWidth());
+	    Style.drawHorizontalBar(g, getWidth (), getHeight ());
+	    Style.drawTopBorder(g, getWidth());
 	}
 
 	public static void compile() {
@@ -198,7 +198,7 @@ final public class StatusBar extends JPanel {
 		    	  errorArea.append(text);
 		    	  errorArea.setCaretPosition(errorArea.getText().length());
 		      }
-		    });
+		  });
 	}
 	
 	public static void updateWarningTree(final String text) {
@@ -209,12 +209,12 @@ final public class StatusBar extends JPanel {
 	}
 	
 	void initError(){
-		final JButton menuBtn1 = LafStyle.createMenuButton("<html><b>Errors:</b> 0");
+		final JButton menuBtn1 = Style.createMenuButton("<html><b>Errors:</b> 0");
         final ButtonPopup menu = new ButtonPopup(menuBtn1,PopupWay.upRight);
         menu.setRound(0);
         menu.setShadeWidth(7);
         JPanel pan = new JPanel(new VerticalFlowLayout ());
-        pan.add(LafStyle.createHeaderButton("Errors", new ActionListener(){
+        pan.add(Style.createHeaderButton("Errors", new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				menu.hidePopup();
@@ -227,13 +227,13 @@ final public class StatusBar extends JPanel {
 	}
 	
 	void initWarning(){
-		final JButton menuBtn1 = LafStyle.createMenuButton("<html><b>Warnings:</b> 0");
+		final JButton menuBtn1 = Style.createMenuButton("<html><b>Warnings:</b> 0");
         final ButtonPopup menu = new ButtonPopup(menuBtn1,PopupWay.upRight);
         menu.setRound(0);
         menu.setShadeWidth(7);
         JPanel popupContent = new JPanel ( new VerticalFlowLayout ( 5, 5 ) );
         popupContent.setPreferredSize(new Dimension(200, 200));
-        popupContent.add(LafStyle.createHeaderButton("Warnings", new ActionListener(){
+        popupContent.add(Style.createHeaderButton("Warnings", new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				menu.hidePopup();
@@ -245,13 +245,13 @@ final public class StatusBar extends JPanel {
 	}
 	
 	void initConsole(){
-		final JButton menuBtn1 = LafStyle.createMenuButton("<html><b>Console</b>");
+		final JButton menuBtn1 = Style.createMenuButton("<html><b>Console</b>");
         final ButtonPopup menu = new ButtonPopup(menuBtn1,PopupWay.upRight);
         menu.setRound(0);
         menu.setShadeWidth(7);
         consoleAreaPane.setPreferredSize(new Dimension(600, 350));
         JPanel pan = new JPanel(new VerticalFlowLayout());
-        pan.add(LafStyle.createHeaderButton("Console", new ActionListener(){
+        pan.add(Style.createHeaderButton("Console", new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				menu.hidePopup();

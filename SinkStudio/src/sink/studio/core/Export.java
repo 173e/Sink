@@ -34,6 +34,31 @@ public class Export {
 		+ createField("title", ProjectPanel.titleField.getText())
 		+ createField("showIcon", ""+ProjectPanel.iconSwitch.isSelected())
 		+ createField("targetWidth", ""+ProjectPanel.targetWidthField.getText())
+		+ createField("targetHeight", ""+ProjectPanel.targetHeightField.getText())
+		+ createField("screenWidth", ""+ProjectPanel.screenWidthField.getText())
+		+ createField("screenHeight", ""+ProjectPanel.screenHeightField.getText())
+		+ createField("x", ""+ProjectPanel.xField.getText())
+		+ createField("y", ""+ProjectPanel.yField.getText())
+		+ createField("audio", ""+ProjectPanel.audioField.getText())
+		+ createField("icon", ""+ProjectPanel.iconField.getText())
+		+ createField("firstScene", ""+ProjectPanel.firstSceneField.getText())
+		
+		+ createField("showIcon", ""+ProjectPanel.iconSwitch.isSelected())
+		+ createField("resizeable", ""+ProjectPanel.resizeableSwitch.isSelected())
+		+ createField("forceExit", ""+ProjectPanel.forceExitSwitch.isSelected())
+		+ createField("fullScreen", ""+ProjectPanel.fullScreenSwitch.isSelected())
+		+ createField("useGL20", ""+ProjectPanel.useGL20Switch.isSelected())
+		+ createField("vSync", ""+ProjectPanel.vSyncSwitch.isSelected())
+		+ createField("disableAudio", ""+ProjectPanel.disableAudioSwitch.isSelected())
+		+ createField("keepAspectRatio", ""+ProjectPanel.keepAspectRatioSwitch.isSelected())
+		
+		+ createField("isJar", ""+ProjectPanel.isJarSwitch.isSelected())
+		+ createField("useCloud", ""+ProjectPanel.useCloudSwitch.isSelected())
+		+ createField("showFPS", ""+ProjectPanel.showFPSSwitch.isSelected())
+		
+		+ createField("showLogger", ""+ProjectPanel.showLoggerSwitch.isSelected())
+		+ createField("loggingEnabled", ""+ProjectPanel.loggingEnabledSwitch.isSelected())
+		
 		+ "}";
 	}
 	
@@ -42,10 +67,10 @@ public class Export {
 	}
 	
 	public static void createJar(){
-		SinkStudio.log("Creating Project: "+Content.projectFile);
+		SinkStudio.log("Creating Project: "+Content.getProject());
 		Archive archive;
 		try {
-			archive = new Archive(Content.projectFile);
+			archive = new Archive(Content.getProject());
 	    	archive.output_stream_for("font/");
 	    	archive.output_stream_for("atlas/");
 	    	archive.output_stream_for("music/");
@@ -58,10 +83,10 @@ public class Export {
 	    	writeFile("META-INF/MANIFEST.MF", mani);
 	    	updateConfigFile();
 		} catch (IOException e) {
-			NotificationManager.showNotification("Error: Could'nt Create Project: "+Content.projectFile);
+			NotificationManager.showNotification("Error: Could'nt Create Project: "+Content.getProject());
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			NotificationManager.showNotification("Error: Could'nt Create Project: "+Content.projectFile);
+			NotificationManager.showNotification("Error: Could'nt Create Project: "+Content.getProject());
 			e.printStackTrace();
 		}
 	}
@@ -70,7 +95,7 @@ public class Export {
 		SinkStudio.log("Writing File: "+filename);
 		Archive archive;
 		try {
-			archive = new Archive(Content.projectFile);
+			archive = new Archive(Content.getProject());
 			copyInputToOutput(data, archive.output_stream_for(filename));
 			archive.close();
 		} catch (IOException e) {
@@ -87,7 +112,7 @@ public class Export {
 		Archive archive;
 		String text = "";
 		try {
-			archive = new Archive(Content.projectFile);
+			archive = new Archive(Content.getProject());
 			text = fromStream(archive.input_stream_for(filename));
 			archive.close();
 		} catch (IOException e) {
@@ -105,7 +130,7 @@ public class Export {
 		ArrayList<String> list = new ArrayList<String>();
 		ZipFile zf;
 		try {
-			zf = new ZipFile(Content.projectFile);
+			zf = new ZipFile(Content.getProject());
 			Enumeration<? extends ZipEntry> e = zf.entries();
 			while (e.hasMoreElements()) 
 			{
@@ -126,7 +151,7 @@ public class Export {
 		SinkStudio.log("Deleting File: "+filename);
 		Archive archive;
 		try {
-			archive = new Archive(Content.projectFile);
+			archive = new Archive(Content.getProject());
 			archive.remove(filename);
 			archive.close();
 		} catch (IOException e) {
@@ -143,7 +168,7 @@ public class Export {
 		Archive archive;
 		OutputStream out = null;
 		try {
-			archive = new Archive(Content.projectFile);
+			archive = new Archive(Content.getProject());
 			out = archive.output_stream_for(filename);
 			//archive.close();
 		} catch (IOException e) {

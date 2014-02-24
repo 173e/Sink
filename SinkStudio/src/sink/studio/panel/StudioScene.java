@@ -4,6 +4,9 @@ import sink.core.Asset;
 import sink.core.Config;
 import sink.core.Scene;
 import sink.core.Sink;
+import sink.studio.core.Content;
+import sink.studio.core.Export;
+import sink.studio.core.SinkStudio;
 import sink.studio.core.StatusBar;
 
 import com.badlogic.gdx.Gdx;
@@ -21,8 +24,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Json;
 
-public class SinkScene extends Scene {
+public class StudioScene extends Scene {
+	
+	//JsonWriter jsonWriter = new JsonWriter();
+	
+	Json json = new Json();
 	
 	boolean active = false;
 	Vector2 mouse = new Vector2();
@@ -46,8 +54,8 @@ public class SinkScene extends Scene {
 			super.clicked(event, x, y);
 			StatusBar.updateXY(x, y);
 			mouse.set(x, y);
-			Actor acc = SinkScene.this.hit(x, y, true);
-			if(acc != null && acc != SinkScene.this){			
+			Actor acc = StudioScene.this.hit(x, y, true);
+			if(acc != null && acc != StudioScene.this){			
 				selectedActor = acc;
 				ActorPanel.selectActor(acc.getName());
 				StatusBar.updateSelected(acc.getName());
@@ -90,13 +98,6 @@ public class SinkScene extends Scene {
 	}
 	
 	@Override
-	public void addActor(Actor actor){
-		super.addActor(actor);
-		actor.setName("Actor"+getChildren().size);
-		ActorPanel.addActor(actor.getName());
-	}
-	
-	@Override
 	public void act(float delta){
 		super.act(delta);
 		if(Asset.update() && !active ){
@@ -112,22 +113,38 @@ public class SinkScene extends Scene {
 		}
 	}
 	
+	public void setName(Actor actor){
+		actor.setName("Actor"+getChildren().size);
+		ActorPanel.addActor(actor.getName());
+	}
+	
 	public void createLabel(String fontName){
 		Label.LabelStyle ls = new Label.LabelStyle();
 		ls.font = font(fontName);
 		Label info = new Label("Text", ls);
+		setName(info);
 		//Sink.stage.screenToStageCoordinates(mouse);
+		/*String text = json.toJson(new ActorJson(actor), ActorJson.class);
+		SinkStudio.log(text);
+		ActorJson person2 = json.fromJson(ActorJson.class, text);
+		SinkStudio.log(json.prettyPrint(person2));*/
+		
 		addActor(info, mouse.x, mouse.y);
 	}
 	
 	public void createTexture(String texName){
-		//mouse.set(Gdx.input.getX(),Gdx.input.getY());
-		//Sink.stage.screenToStageCoordinates(mouse);
-		addActor(new Image(tex(texName)), mouse.x, mouse.y);
+		Image image = new Image(tex(texName));
+		setName(image);
+		String text = json.toJson(new ImageJson(image, texName), ImageJson.class);
+		SinkStudio.log(text);
+		ImageJson person2 = json.fromJson(ImageJson.class, text);
+		SinkStudio.log(json.prettyPrint(person2));
+		addActor(image, mouse.x, mouse.y);
 	}
 	
 	public void createButton(){
-		addActor(new Button(Asset.skin), mouse.x, mouse.y);
+		Button button = new Button(Asset.skin);
+		addActor(button, mouse.x, mouse.y);
 	}
 	
 	public void createTextButton(){
@@ -186,4 +203,72 @@ public class SinkScene extends Scene {
 		selectedActor = Sink.getScene().findActor(actorName);
 		StatusBar.updateSelected(actorName);
 	}
+	
+	public void load(){
+		String text = Export.readFile("source/"+Content.getFile()+".java");
+		text = text.replaceAll("[\r]", "");
+		//ActorPanel.clear();
+		String[] lines = text.split("\n");
+		SinkStudio.log("Scene Size: "+lines.length);
+		for(int i =0; i< lines.length; i++){
+			if(lines[i].contains("//begin")){
+				SinkStudio.log("Beginning Scene: "+Content.getFile());
+			}
+			else if(lines[i].contains("//end")){
+				SinkStudio.log("Ending Scene: "+Content.getFile());
+				//break;
+			}
+			if(lines[i].contains("Label")){
+				createLabel("normal");
+			}
+			if(lines[i].contains("Image")){
+				createTexture("porgarett");
+			}
+		}
+	}
+	
+	public void save(){
+		
+	}
+}
+
+class ActorJson {
+	   public String name;
+	   public float x;
+	   public float y;
+	   public float w;
+	   public float h;
+	   
+	   ActorJson(){
+	   }
+	   
+	   ActorJson(Actor actor){
+		   name = actor.getName();
+		   x = actor.getX();
+		   y = actor.getY();
+		   w = actor.getWidth();
+		   h = actor.getHeight();
+	   }
+}
+
+class ImageJson {
+	   public String name;
+	   public float x;
+	   public float y;
+	   public float w;
+	   public float h;
+	   public String texName;
+	   
+	   ImageJson(){
+		   
+	   }
+	   
+	   ImageJson(Image image, String texName){
+		   name = image.getName();
+		   x = ((Actor)image).getX();
+		   y = image.getY();
+		   w = image.getWidth();
+		   h = image.getHeight();
+		   this.texName = texName;
+	   }
 }

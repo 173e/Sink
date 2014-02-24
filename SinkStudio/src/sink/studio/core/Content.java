@@ -12,8 +12,9 @@ import javax.swing.JScrollPane;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import sink.studio.panel.FilePanel;
 import sink.studio.panel.ProjectPanel;
-import sink.studio.panel.SinkPanel;
+import sink.studio.panel.StudioPanel;
 import web.laf.lite.utils.UIUtils;
 import web.laf.lite.widget.Register;
 
@@ -23,22 +24,32 @@ import com.badlogic.gdx.tools.particleeditor.ParticlePanel;
 final public class Content extends JPanel {
 	private static final long serialVersionUID = 1L;
 	static JPanel con;
-    static String currentView = "Project";
+    public static String currentView = "Project";
     
+    private static String projectFile = null;
+    private static Register projectRegister;
     static ProjectPanel projectPanel;
-    
+   
+	
     public static Theme theme = Asset.loadTheme(Register.getTheme());
     public static RTextScrollPane editorScroll;
     public static Editor editor;
 	
-	static SinkPanel scenePanel;
+	static StudioPanel studioPanel;
 	static HieroPanel hieroPanel;
 	static ParticlePanel particlePanel;
 	
-	static JLabel title = LafStyle.createHeaderLabel("Project");
-	public static String projectFile = "C:\\game.jar";
-	public static String editorFile = "";
+	static JLabel title = Style.createHeaderLabel("Project");
 	
+	private static String editorFile = null;
+	private static Register editorRegister;
+	
+	public static void initProjects(){
+		projectRegister = new Register(105);
+		projectFile = Register.getString(projectRegister);
+		editorRegister = new Register(106);
+		editorFile = Register.getString(editorRegister);
+	}
 	
 	Content(){
 		super(new BorderLayout());
@@ -53,7 +64,8 @@ final public class Content extends JPanel {
 		editorScroll.getGutter().setBookmarkingEnabled(true);
 		editorScroll.setVerticalScrollBarPolicy(RTextScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		UIUtils.setDrawBorder(editorScroll, false);
-		scenePanel = new SinkPanel();
+		studioPanel = new StudioPanel();
+		studioPanel.createCanvas();
         hieroPanel = new HieroPanel((Frame) this.getParent());
         particlePanel = new ParticlePanel();
 
@@ -61,7 +73,7 @@ final public class Content extends JPanel {
         con = new JPanel(new CardLayout());
         con.add(projectPanel, "Project");
         con.add(editorScroll, "Editor");
-        con.add(new JScrollPane(scenePanel), "Scene");
+        con.add(new JScrollPane(studioPanel), "Studio");
         con.add(new JScrollPane(hieroPanel),"Hiero");
         con.add(particlePanel,"Particle");
 		add(title, BorderLayout.NORTH);
@@ -70,24 +82,24 @@ final public class Content extends JPanel {
 	
 	@Override
 	public void paintComponent(Graphics g){
-		LafStyle.drawRightBorder(g, getWidth(), getHeight());
-		LafStyle.drawLeftBorder(g, getWidth(), getHeight());
+		Style.drawRightBorder(g, getWidth(), getHeight());
+		Style.drawLeftBorder(g, getWidth(), getHeight());
 	}
 	
     static void showContent(String contentName){
-    	if(currentView.equals("Scene"))
-    		scenePanel.destroyCanvas();
+    	if(currentView.equals(contentName))
+    		return;
+    	//if(currentView.equals("Scene"))
+    	//	scenePanel.destroyCanvas();
     	else if(currentView.equals("Project"))
     		Export.updateConfigFile();
     	//if(currentView.equals("Hiero"));
     	//	hieroPanel.destroyCanvas();
     	//if(currentView.equals("Particle"));
     	//	particlePanel.destroyCanvas();
-    	if(!currentView.equals(contentName)){
-			((CardLayout) con.getLayout()).show(con, contentName);
-			currentView = contentName;
-			title.setText(contentName);
-		}
+		((CardLayout) con.getLayout()).show(con, contentName);
+		currentView = contentName;
+		title.setText(contentName.toUpperCase());
     }
     
     public static void showProject(){
@@ -98,9 +110,8 @@ final public class Content extends JPanel {
 		showContent("Editor");
 	}
 	
-	public static void showScene(){
-		scenePanel.createCanvas();
-		showContent("Scene");
+	public static void showStudio(){
+		showContent("Studio");
 	}
 	
 	public static void showHiero(){
@@ -113,21 +124,40 @@ final public class Content extends JPanel {
 		showContent("Particle");
 	}
 	
-	public static void find(String text){
-    	editor.find(text);
-    }
-	
-	public static void replace(String text, String rep){
-		editor.replace(text, rep);
-    }
-	
-	public static void replaceAll(String text, String rep){
-    	editor.replaceAll(text, rep);
-    }
-	
 	public void dispose(){
-		scenePanel.destroyCanvas();
+		studioPanel.destroyCanvas();
 		hieroPanel.destroyCanvas();
 		//particlePanel.destroyCanvas();
+	}
+	
+	public static boolean checkProjectExists(){
+		if(getProject() == null || getProject().isEmpty())
+			return false;
+		return true;
+	}
+	
+	public static String getProject() {
+		return projectFile;
+	}
+	
+	public static void setProject(String prjName) {
+		Register.putString(projectRegister, prjName);
+		projectFile = prjName;
+		FilePanel.updateList();
+	}
+	
+	public static boolean checkFileExists(){
+		if(getFile() == null || getFile().isEmpty())
+			return false;
+		return true;
+	}
+	
+	public static String getFile() {
+		return editorFile;
+	}
+	
+	public static void setFile(String fileName) {
+		Register.putString(editorRegister, fileName);
+		editorFile = fileName;
 	}
 }

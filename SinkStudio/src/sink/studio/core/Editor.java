@@ -32,7 +32,7 @@ import sink.studio.panel.AssetType;
 final public class Editor extends TextEditorPane {
 	private static final long serialVersionUID = 1L;
 	static DefaultCompletionProvider provider = new DefaultCompletionProvider();
-	static SearchContext context = new SearchContext(); 
+	public static SearchContext context = new SearchContext(); 
 	
 	final Timer saveTimer = new Timer(10000, new ActionListener(){
 		@Override
@@ -44,12 +44,7 @@ final public class Editor extends TextEditorPane {
 	
 	public Editor(){
 		super(TextEditorPane.INSERT_MODE, true);
-		context.setMatchCase(false);
-        context.setRegularExpression(false);
-        context.setSearchForward(true);
-        context.setWholeWord(false);
-		setCodeFoldingEnabled(true);
-        setMargin(new Insets(0, 5, 0, 0));
+        setMargin(new Insets(0, 0, 0, 0));
         setAntiAliasingEnabled(true);
         setAutoIndentEnabled(true);
         setBracketMatchingEnabled(true);
@@ -58,10 +53,9 @@ final public class Editor extends TextEditorPane {
         setLineWrap(true);
         setWrapStyleWord(true);
         setTabsEmulated(true);
-        //setMarginLineColor(Color.black);
-        //setMarkOccurrences(true);
-        //setPaintMarkOccurrencesBorder(true);
-        //setPaintMatchedBracketPair(true);
+		if(Content.checkProjectExists())
+			if(Content.checkFileExists())
+				load();
 		setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		LanguageSupportFactory lsf = LanguageSupportFactory.get();
 		LanguageSupport support = lsf.getSupportFor(SYNTAX_STYLE_JAVA);
@@ -150,13 +144,16 @@ final public class Editor extends TextEditorPane {
             }
         });
 	}
+	public void load(){
+		if(Content.checkFileExists())
+			setText(Export.readFile("source/"+Content.getFile()+".java"));
+	}
 	
 	@Override
 	public void save(){
 		if(isDirty()){
-			//super.save();
-			if(Content.editorFile != null && !Content.editorFile.isEmpty()){
-				Export.writeFile("source/"+Content.editorFile, getText());
+			if(Content.checkFileExists()){
+				Export.writeFile("source/"+Content.getFile()+".java", getText());
 				StatusBar.compile();
 			}
 		}

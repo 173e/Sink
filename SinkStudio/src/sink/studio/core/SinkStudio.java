@@ -29,6 +29,7 @@ public class SinkStudio {
             public void run() {
             	 try{
             		 Register.init("sinkstudio");
+            		 Content.initProjects();
             		if(!Register.getLaf().isEmpty())
             			UIManager.setLookAndFeel(Register.getLaf());
             		else
