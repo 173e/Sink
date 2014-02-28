@@ -20,6 +20,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.net.URI;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -57,9 +58,9 @@ final public class StatusBar extends JPanel {
 	static final JTextArea errorArea = new JTextArea("");
 	static final JScrollPane errorAreaPane = new JScrollPane(errorArea);
 	
-	//static JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-	//static JavaFileManager fileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
-	//static List<JavaFileObject> jfiles = new ArrayList<JavaFileObject>();
+	static JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+	static JavaFileManager fileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
+	static ArrayList<JavaFileObject> jfiles = new ArrayList<JavaFileObject>();
 
 	public StatusBar(){
 		 super(new ToolbarLayout());
@@ -123,10 +124,10 @@ final public class StatusBar extends JPanel {
 
 	public static void compile() {
 		errorArea.setText("");
-		//jfiles.add(new CharSequenceJavaFileObject(Content.editorFile, Content.editor.getText()));
-		///compiler.getTask(null, fileManager, null, null, null, jfiles).call();
-		//Export.writeFile("DynaClass.class", ClassFileManager.jclassObject.getClassText());
-		//jfiles.clear();
+		jfiles.add(new CharSequenceJavaFileObject(Content.getFile(), Content.editor.getText()));
+		if(compiler.getTask(null, fileManager, null, null, null, jfiles).call())
+			Export.writeFile(Content.getFile()+".class", ClassFileManager.jclassObject.getClassText());
+		jfiles.clear();
 	}
 
 	public static void redirectSystemStreams(){
