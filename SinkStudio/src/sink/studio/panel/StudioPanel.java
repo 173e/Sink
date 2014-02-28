@@ -1,14 +1,18 @@
 package sink.studio.panel;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import sink.core.Config;
 import sink.core.Sink;
@@ -22,10 +26,16 @@ final public class StudioPanel extends JPanel {
 	static LwjglCanvas can;
 	LwjglAWTCanvas canvas;
 	
+	final Timer saveTimer = new Timer(10000, new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			StudioScene.save();
+		}
+	});
+	
+	
 	public StudioPanel(){
 		super(new BorderLayout());
-		setPreferredSize(new Dimension(400, 240));
-		setMaximumSize(new Dimension(400, 240));
 		setDropTarget(new DropTarget() {
 			private static final long serialVersionUID = 1L;
 			public synchronized void drop(DropTargetDropEvent event) {
@@ -46,7 +56,7 @@ final public class StudioPanel extends JPanel {
 							intro.createLabel(data[1]);
 							break;
 						case Texture:
-							intro.createTexture(data[1]);
+							intro.createImage(data[1]);
 							break;
 						case Animation:
 							break;
@@ -63,13 +73,12 @@ final public class StudioPanel extends JPanel {
 						case TextButton:
 							intro.createTextButton();
 							break;
-
 						case None:
 							break;
 						default:
 							break;
 						}
-						event.getDropTargetContext().dropComplete( true );
+						event.getDropTargetContext().dropComplete(true);
 					}
 					else{
 						event.rejectDrop();
@@ -85,19 +94,29 @@ final public class StudioPanel extends JPanel {
 	
 	public void createCanvas(){
 		SinkStudio.log("Creating Studio Canvas");
+		//SinkStudio.log(""+Frame.content.getPreferredSize().getWidth());
 		try{
-			/*File file = new File("C:/CODE/Warsong/core/bin/"); 
-			File file2 = new File("C:/CODE/Warsong/core/libs/"); //, file2.toURI().toURL()
-			URL[] urls = new URL[]{file.toURI().toURL() }; 
-			ClassLoader cl = new URLClassLoader(urls); 
-			Class  cls = cl.loadClass("sink.core.Sink");
-			Sink obj = (Sink) cls.newInstance();*/
 			canvas = new  LwjglAWTCanvas(new Sink(), false);
 			Config.firstSceneClassName = StudioScene.class.getName();
-			Config.targetWidth = 800;
-			Config.targetHeight = 640;
+			Config.targetWidth = 860;
+			Config.targetHeight = 650;
 			Config.isJar = false;
+			Config.useDrag = true;
+			Config.showFps = true;
+			Config.showLogger = false;
 			add(canvas.getCanvas(), BorderLayout.CENTER);
+			canvas.getCanvas().addFocusListener(new FocusListener(){
+				@Override
+				public void focusGained(FocusEvent arg0) {
+					saveTimer.start();
+				}
+
+				@Override
+				public void focusLost(FocusEvent arg0) {
+					saveTimer.stop();
+					StudioScene.save();
+				}
+			});
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
@@ -109,7 +128,6 @@ final public class StudioPanel extends JPanel {
 			remove(canvas.getCanvas());
 			canvas.stop();
 			canvas = null;
-			//Gdx.app.exit();
 		}
 	}
 }

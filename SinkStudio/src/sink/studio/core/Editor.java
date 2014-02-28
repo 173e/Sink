@@ -10,7 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
@@ -53,8 +55,8 @@ final public class Editor extends TextEditorPane {
         setLineWrap(true);
         setWrapStyleWord(true);
         setTabsEmulated(true);
-		if(Content.checkProjectExists())
-			if(Content.checkFileExists())
+		if(Content.projectExists())
+			if(Content.fileExists())
 				load();
 		setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		LanguageSupportFactory lsf = LanguageSupportFactory.get();
@@ -64,10 +66,16 @@ final public class Editor extends TextEditorPane {
 		JavaLanguageSupport jls = (JavaLanguageSupport)support;
 		try {
 			jls.getJarManager().addCurrentJreClassFileSource();
+			jls.setAutoActivationEnabled(true);
+			jls.setAutoCompleteEnabled(true);
+			jls.setAutoActivationDelay(250);
+			File jarName = new File(Asset.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			jls.getJarManager().addClassFileSource(jarName);
 			jls.install(this);
-			//jls.getJarManager().addClassFileSource(ji);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
 		}
         ((RSyntaxTextAreaHighlighter ) getHighlighter()).setDrawsLayeredHighlights(false);
         addFocusListener(new FocusListener(){
@@ -112,10 +120,10 @@ final public class Editor extends TextEditorPane {
 							insert("anim(\""+data[1]+"\");", getCaretPosition());
 							break;
 						case Music:
-							insert("musicPlay(\""+data[1]+");\"", getCaretPosition());
+							insert("musicPlay(\""+data[1]+")\";", getCaretPosition());
 							break;
 						case Sound:
-							insert("soundPlay(\""+data[1]+");\"", getCaretPosition());
+							insert("soundPlay(\""+data[1]+")\";", getCaretPosition());
 							break;
 						
 						case Particle:
@@ -145,16 +153,19 @@ final public class Editor extends TextEditorPane {
         });
 	}
 	public void load(){
-		if(Content.checkFileExists())
+		if(Content.fileExists()){
 			setText(Export.readFile("source/"+Content.getFile()+".java"));
+			setDirty(false);
+		}
 	}
 	
 	@Override
 	public void save(){
 		if(isDirty()){
-			if(Content.checkFileExists()){
+			if(Content.fileExists()){
 				Export.writeFile("source/"+Content.getFile()+".java", getText());
 				StatusBar.compile();
+				setDirty(false);
 			}
 		}
 	}

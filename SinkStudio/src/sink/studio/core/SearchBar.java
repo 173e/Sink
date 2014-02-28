@@ -18,6 +18,7 @@ final public class SearchBar extends JTextField {
 		UIUtils.setRound(this, 2);
 		UIUtils.setDrawFocus(this, false);
 		UIUtils.setInputPrompt(this, "Search");
+		UIUtils.setShadeWidth(this, 0);
         setPreferredSize(new Dimension(280, 22));
         
         JButton searchUpBtn = Style.createToolButton("up");

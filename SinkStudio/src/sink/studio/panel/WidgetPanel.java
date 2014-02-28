@@ -10,6 +10,8 @@ import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -23,13 +25,17 @@ import sink.studio.core.SinkStudio;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.utils.UIUtils;
 
-public class WidgetPanel extends JPanel  implements ListSelectionListener, DragSourceListener, DragGestureListener {
+public class WidgetPanel extends JPanel  implements ActionListener, ListSelectionListener, DragSourceListener, 
+DragGestureListener {
 	private static final long serialVersionUID = 1L;
 	
 	static JList<String> widgetList;
 	static DefaultListModel<String> widgetModel = new DefaultListModel<String>();
 	
 	DragSource dragSource = new DragSource();
+	String[] btns = new String[]{
+			"New Widget", "new","Delete", "trash"
+	};
 	
 	public WidgetPanel(){
 		super(new VerticalFlowLayout());
@@ -38,8 +44,9 @@ public class WidgetPanel extends JPanel  implements ListSelectionListener, DragS
 		widgetList.addListSelectionListener(this);
 		//widgetList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		add(Style.createHeaderLabel("Widgets"));
+		add(Style.createButtonToolBar(this, btns));
 		JScrollPane scrollPane = new JScrollPane(widgetList);
-		scrollPane.setPreferredSize(new Dimension(200, 180));
+		scrollPane.setPreferredSize(new Dimension(200, 160));
 		UIUtils.setDrawBorder(scrollPane, false);
 		add(scrollPane);
 		dragSource.addDragSourceListener(this);
@@ -95,5 +102,10 @@ public class WidgetPanel extends JPanel  implements ListSelectionListener, DragS
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
 	}
 }

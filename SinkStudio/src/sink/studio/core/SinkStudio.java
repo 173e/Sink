@@ -18,10 +18,11 @@ import javax.swing.UIManager;
 import web.laf.lite.widget.Register;
 
 public class SinkStudio {
-	public static final String version = "0.15";
+	public static final String version = "0.20";
 	
 	public static Frame frame;
 	private static int ind = 8;
+	
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -43,6 +44,7 @@ public class SinkStudio {
        	     	frame.setVisible(true);
        	     	frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
        	     	StatusBar.redirectSystemStreams();
+       	     	Content.setDisabledProject();
             }
         });
 	}

@@ -122,8 +122,12 @@ public final class Asset {
 	private static Sound currentSound = null;
 	
 	
+	public static void finishLoading(){
+		assetMan.finishLoading();
+	}
 	
 	public static boolean update(){
+		
 		return assetMan.update();
 	}
 	

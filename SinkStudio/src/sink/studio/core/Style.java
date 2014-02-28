@@ -264,7 +264,7 @@ final public class Style {
 		btn.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ToolBar.toggleView(id);
+				Content.toggleView(id);
 			}
         });
 	}

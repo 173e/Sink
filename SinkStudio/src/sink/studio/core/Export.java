@@ -2,6 +2,9 @@ package sink.studio.core;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +15,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import sink.studio.panel.FilePanel;
 import sink.studio.panel.ProjectPanel;
 import web.laf.lite.popup.NotificationManager;
 
@@ -19,7 +23,7 @@ import com.holub.tools.Archive;
 
 public class Export {
 
-	static String mani = "Manifest-Version: 1.0\n"
+	static String manifestText = "Manifest-Version: 1.0\n"
 				+"Class-Path: .\n"
 				+"Created-By: pyros2097\n"
 				+"Main-Class: sink.main.MainDesktop\n";
@@ -80,8 +84,9 @@ public class Export {
 	    	archive.output_stream_for("particle/");
 	    	archive.output_stream_for("source/");
 	    	archive.close();
-	    	writeFile("META-INF/MANIFEST.MF", mani);
+	    	writeFile("META-INF/MANIFEST.MF", manifestText);
 	    	updateConfigFile();
+	    	FilePanel.updateList();
 		} catch (IOException e) {
 			NotificationManager.showNotification("Error: Could'nt Create Project: "+Content.getProject());
 			e.printStackTrace();
@@ -92,6 +97,8 @@ public class Export {
 	}
 	
 	public static void writeFile(String filename, String data){
+		if(!Content.projectExists())
+			return;
 		SinkStudio.log("Writing File: "+filename);
 		Archive archive;
 		try {
@@ -107,7 +114,22 @@ public class Export {
 		}
 	}
 	
+	public static void writeFile2(String filename, String data){
+		SinkStudio.log("Writing File: "+filename);
+		File file = new File(filename);
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(data.getBytes());
+			fos.close();
+		} catch (IOException e) {
+			NotificationManager.showNotification("Error: Could'nt Save File: "+filename);
+			e.printStackTrace();
+		}
+	}
+	
 	public static String readFile(String filename){
+		if(!Content.projectExists())
+			return "";
 		SinkStudio.log("Reading File: "+filename);
 		Archive archive;
 		String text = "";
@@ -125,7 +147,24 @@ public class Export {
 		return text;
 	}
 	
-	public static ArrayList<String> listFiles(){
+	public static String readFile2(String filename){
+		SinkStudio.log("Reading File: "+filename);
+		File file = new File(filename);
+		String text = "";
+		try {
+			FileInputStream fin = new FileInputStream(file);
+			text = fromStream(fin);
+			fin.close();
+		} catch (IOException e) {
+			NotificationManager.showNotification("Error: Could'nt Read File: "+filename);
+			e.printStackTrace();
+		}
+		return text;
+	}
+	
+	public static ArrayList<String> listFiles(String foldername){
+		if(!Content.projectExists())
+			return null;
 		SinkStudio.log("Listing Files");
 		ArrayList<String> list = new ArrayList<String>();
 		ZipFile zf;
@@ -136,7 +175,7 @@ public class Export {
 			{
 				ZipEntry ze=(ZipEntry)e.nextElement();
 				String entryName = ze.getName();
-				if(entryName.startsWith("source") &&  entryName.endsWith(".java")) {
+				if(entryName.startsWith(foldername)) {
 					list.add(entryName);
 				}
 			}
@@ -148,6 +187,8 @@ public class Export {
 	}
 	
 	public static void deleteFile(String filename){
+		if(!Content.projectExists())
+			return;
 		SinkStudio.log("Deleting File: "+filename);
 		Archive archive;
 		try {
@@ -208,222 +249,4 @@ public class Export {
 	    //in.close();
 	    return out.toString();
 	}
-	
-	/*
-	public static void updateConfigFile() throws IOException{
-		addFilesToExistingZip("config.json", updateConfigString());
-	}
-
-	
-	public static void writeFile(String name,String text) throws IOException {
-		ZipOutputStream jar = new ZipOutputStream(new FileOutputStream(exportFile));
-    	ZipEntry configEntry = new ZipEntry("config.json");
-    	jar.putNextEntry(configEntry);
-    	InputStream in = new ByteArrayInputStream(configString.getBytes());
-    	while (0 < in.available()){
-    		int read = in.read();
-    		jar.write(read);
-    	}
-    	in.close();
-    	jar.closeEntry();
-    	jar.close();
-	}
-	
-    public static void copy() throws IOException, URISyntaxException {
-    	File jarName = new File(Export.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-    	ZipFile srcFile = new ZipFile(jarName.getAbsoluteFile());
-    	ZipOutputStream destFile = new ZipOutputStream(new FileOutputStream(exportFile));
-    	Enumeration<? extends ZipEntry> entries = srcFile.entries();
-    	byte[] buffer = new byte[512];
-    	while (entries.hasMoreElements()) {
-    		ZipEntry entry = (ZipEntry)entries.nextElement();
-    		String entryName = entry.getName();
-			//if(entryName.startsWith("sink")) {
-			//	Sink.log(entry.getName());
-			//}
-    		ZipEntry newEntry = new ZipEntry(entry.getName());  // empty entry
-    		destFile.putNextEntry(newEntry);
-    		//destFile.putNextEntry(entry); //to keep meta-data
-    		InputStream in = srcFile.getInputStream(entry);
-    		while (0 < in.available()){
-    			int read = in.read(buffer);
-    			destFile.write(buffer,0,read);
-    		}
-    		in.close();
-    		destFile.closeEntry();
-    	}
-    	destFile.close();
-    	srcFile.close();
-    }
-    
-    public static void writeFileToZipEntry(File file) throws IOException{
-    	ZipOutputStream destFile = new ZipOutputStream(new FileOutputStream(exportFile));
-    	add(file, destFile);
-    	destFile.close();
-    	//byte[] buffer = new byte[512];
-    	//ZipEntry newEntry = new ZipEntry(entry.getName());  // empty entry
-    	//destFile.putNextEntry();
-    	InputStream in = new FileInputStream(file);
-    	//InputStream ing = new ByteArrayInputStream( "gsg".getBytes());
-		while (0 < in.available()){
-			int read = in.read(buffer);
-			destFile.write(buffer,0,read);
-		}
-		in.close();
-    }
-
-	public static void add(File source, ZipOutputStream target) throws IOException {
-	  BufferedInputStream in = null;
-	  try
-	  {
-	    if (source.isDirectory())
-	    {
-	      String name = source.getPath().replace("\\", "/");
-	      if (!name.isEmpty())
-	      {
-	        if (!name.endsWith("/"))
-	          name += "/";
-	        ZipEntry entry = new ZipEntry(name);
-	        entry.setTime(source.lastModified());
-	        target.putNextEntry(entry);
-	        target.closeEntry();
-	      }
-	      for (File nestedFile: source.listFiles())
-	        add(nestedFile, target);
-	      return;
-	    }
-
-	    ZipEntry entry = new ZipEntry(source.getName());
-	    entry.setTime(source.lastModified());
-	    target.putNextEntry(entry);
-	    in = new BufferedInputStream(new FileInputStream(source));
-
-	    byte[] buffer = new byte[1024];
-	    while (true)
-	    {
-	      int count = in.read(buffer);
-	      if (count == -1)
-	        break;
-	      target.write(buffer, 0, count);
-	    }
-	    target.closeEntry();
-	  }
-	  finally
-	  {
-	    if (in != null)
-	      in.close();
-	  }
-	}
-	
-	public static void addFilesToExistingZip(File zipFile, File[] files) throws IOException {
-	        // get a temp file
-	    File tempFile = File.createTempFile(zipFile.getName(), null);
-	        // delete it, otherwise you cannot rename your existing zip to it.
-	    tempFile.delete();
-
-	    boolean renameOk=zipFile.renameTo(tempFile);
-	    if (!renameOk)
-	    {
-	        throw new RuntimeException("could not rename the file "+zipFile.getAbsolutePath()+" to "+tempFile.getAbsolutePath());
-	    }
-	    byte[] buf = new byte[1024];
-
-	    ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
-	    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-
-	    ZipEntry entry = zin.getNextEntry();
-	    while (entry != null) {
-	        String name = entry.getName();
-	        boolean notInFiles = true;
-	        for (File f : files) {
-	            if (f.getName().equals(name)) {
-	                notInFiles = false;
-	                break;
-	            }
-	        }
-	        if (notInFiles) {
-	            // Add ZIP entry to output stream.
-	            out.putNextEntry(new ZipEntry(name));
-	            // Transfer bytes from the ZIP file to the output file
-	            int len;
-	            while ((len = zin.read(buf)) > 0) {
-	                out.write(buf, 0, len);
-	            }
-	        }
-	        entry = zin.getNextEntry();
-	    }
-	    // Close the streams        
-	    zin.close();
-	    // Compress the files
-	    for (int i = 0; i < files.length; i++) {
-	        InputStream in = new FileInputStream(files[i]);
-	        // Add ZIP entry to output stream.
-	        out.putNextEntry(new ZipEntry(files[i].getName()));
-	        // Transfer bytes from the file to the ZIP file
-	        int len;
-	        while ((len = in.read(buf)) > 0) {
-	            out.write(buf, 0, len);
-	        }
-	        // Complete the entry
-	        out.closeEntry();
-	        in.close();
-	    }
-	    // Complete the ZIP file
-	    out.close();
-	    tempFile.delete();
-	}
-	
-	public static void addFilesToExistingZip(String fileName, String data) throws IOException {
-		File zipFile = new File(exportFile);
-		// get a temp file
-		File tempFile = File.createTempFile(zipFile.getName(), null);
-		// delete it, otherwise you cannot rename your existing zip to it.
-		tempFile.delete();
-
-		boolean renameOk=zipFile.renameTo(tempFile);
-		if (!renameOk)
-		{
-			throw new RuntimeException("could not rename the file "+zipFile.getAbsolutePath()+" to "+tempFile.getAbsolutePath());
-		}
-		byte[] buf = new byte[1024];
-
-		ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-
-		ZipEntry entry = zin.getNextEntry();
-		while (entry != null) {
-			String name = entry.getName();
-			if (fileName.equals(name)) {
-				InputStream in = new ByteArrayInputStream(data.getBytes());
-				// Add ZIP entry to output stream.
-				out.putNextEntry(new ZipEntry(fileName));
-				// Transfer bytes from the file to the ZIP file
-				int len;
-				while ((len = in.read(buf)) > 0) {
-					out.write(buf, 0, len);
-				}
-				// Complete the entry
-				out.closeEntry();
-				in.close();
-				// Complete the ZIP file
-			}
-			else {
-				// Add ZIP entry to output stream.
-				out.putNextEntry(new ZipEntry(name));
-				// Transfer bytes from the ZIP file to the output file
-				int len;
-				while ((len = zin.read(buf)) > 0) {
-					out.write(buf, 0, len);
-				}
-			}
-			entry = zin.getNextEntry();
-		}
-		// Close the streams        
-		zin.close();
-		out.close();
-		// Compress the files
-		tempFile.delete();
-	}
-	
-	*/
 }

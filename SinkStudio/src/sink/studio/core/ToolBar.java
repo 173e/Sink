@@ -14,10 +14,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import sink.studio.panel.ProjectPanel;
 import web.laf.lite.layout.HorizontalFlowLayout;
 import web.laf.lite.layout.ToolbarLayout;
 import web.laf.lite.layout.VerticalFlowLayout;
@@ -32,15 +34,15 @@ import web.laf.lite.widget.WebSwitch;
 
 final public class ToolBar extends JPanel {
 	private static final long serialVersionUID = 1L;
-	SearchBar lcd;
+	SearchBar searchBar;
     
 	public ToolBar(){
 		super(new ToolbarLayout());
         initAbout();
         initProject();
         initOpen();
-        //initFile();
-       // initEdit();
+        initExport();
+        addSeparator();
         initOptions();
         initStyle();
         addSeparator();
@@ -51,9 +53,7 @@ final public class ToolBar extends JPanel {
         addSpace();
         addSpace();
         addSpace();
-        addSpace();
-        initLCD();
-        addSpace();
+        initSearch();
         addSpace();
         addSpace();
         addSpace();
@@ -71,11 +71,11 @@ final public class ToolBar extends JPanel {
 		Style.drawBottomBorder(g, getWidth (), getHeight ());
 	}
 	
-	void initLCD(){
-		lcd = new SearchBar();
+	void initSearch(){
+		searchBar = new SearchBar();
         final JPanel pan = new JPanel(new VerticalFlowLayout(FlowLayout.CENTER));
         pan.setOpaque(false);
-        pan.add(lcd);
+        pan.add(searchBar);
         add(pan);
 	}
 	
@@ -152,6 +152,19 @@ final public class ToolBar extends JPanel {
 	void initProject(){
 		JButton prj = Style.createMenuButton("Project");
 		prj.setIcon(Asset.icon("newprj"));
+		prj.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				FileDialog fd = new FileDialog((Frame)null, "New Sink Project", FileDialog.SAVE);
+				fd.setVisible(true);
+				String filename = fd.getDirectory()+fd.getFile();
+				if(filename != null && !filename.isEmpty()){
+					filename.replace(".jar", "");
+					Content.setProject(filename+".jar");
+					Export.createJar();
+				}
+			}
+		});
 		add(prj);
 	}
 	
@@ -164,10 +177,10 @@ final public class ToolBar extends JPanel {
 				FileDialog fd = new FileDialog((Frame)null, "Open Sink Project", FileDialog.LOAD);
 				fd.setVisible(true);
 				String filename = fd.getDirectory()+fd.getFile();
-				SinkStudio.log("Opening Project: "+filename);
 				if(filename != null)
 					if(!filename.isEmpty() && filename.endsWith(".jar"))
 						if(new File(filename).exists()){
+							SinkStudio.log("Opening Project: "+filename);
 							String oldprj = Content.getProject();
 							Content.setProject(filename);
 							if(Export.readFile("config.json").isEmpty()){
@@ -176,14 +189,28 @@ final public class ToolBar extends JPanel {
 								Content.setProject(oldprj);
 							}
 							else{
-								SinkStudio.log("Opened Project: "+filename);
 								Content.setProject(filename);
+								Content.setEnabledProject();
 								SinkStudio.log("Current Project: "+filename);
 							}
 						}
 			}
 		});
 		add(open);
+	}
+	
+	void initExport(){
+		JButton export = Style.createMenuButton("Export");
+		export.setIcon(Asset.icon("export"));
+		export.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+			
+		});
+		add(export);
 	}
 
 	void initOptions(){
@@ -221,6 +248,37 @@ final public class ToolBar extends JPanel {
      			Frame.toggleStatusBar();
      		}
         });
+        
+     // Search Stuff
+        popupContent.add(UIUtils.setBoldFont(new JLabel("     SearchBar")));
+        popupContent.add(new JSeparator(SwingConstants.HORIZONTAL));
+        final WebSwitch cs = new WebSwitch(); 
+        final WebSwitch ww = new WebSwitch();
+        final WebSwitch re = new WebSwitch();
+        popupContent.add(menuItem(cs, "Case Sensitive"));
+        popupContent.add(menuItem(ww, "Whole Word"));
+        popupContent.add(menuItem(re, "Regular Expression"));
+        
+        cs.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Editor.context.setMatchCase(cs.isSelected());
+			}
+        });
+        
+        ww.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Editor.context.setWholeWord(ww.isSelected());
+			}
+        });
+        
+        re.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Editor.context.setRegularExpression(re.isSelected());
+			}
+        });
   
         // Editor Stuff
         popupContent.add(UIUtils.setBoldFont(new JLabel("     Editor")));
@@ -231,12 +289,14 @@ final public class ToolBar extends JPanel {
         final WebSwitch showEol = new WebSwitch();
         final WebSwitch paintTabLines = new WebSwitch();
         final WebSwitch showWhitespaces = new WebSwitch();
+        //final JSlider tabSlider = new JSlider(0, 0, 0);
         popupContent.add(menuItem(showLineNumbers, "Show Line Numbers"));
         popupContent.add(menuItem(showMargin, "Show Margin"));
         popupContent.add(menuItem(showEol, "Show Eol"));
         popupContent.add(menuItem(paintTabLines, "Show Tab"));
         popupContent.add(menuItem(codeFold, "Code Folding"));
         popupContent.add(menuItem(showWhitespaces, "Show WhiteSpace"));
+       // popupContent.add(menuItem(tabSlider, "Tab Size"));
       //setMarginLineColor(Color.black);
         //setMarkOccurrences(true);
         //setPaintMarkOccurrencesBorder(true);
@@ -287,39 +347,7 @@ final public class ToolBar extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				Content.editor.setWhitespaceVisible(showWhitespaces.isSelected());
 			}
-        });
-        
-        // Search Stuff
-        popupContent.add(UIUtils.setBoldFont(new JLabel("     SearchBar")));
-        popupContent.add(new JSeparator(SwingConstants.HORIZONTAL));
-        final WebSwitch cs = new WebSwitch(); 
-        final WebSwitch ww = new WebSwitch();
-        final WebSwitch re = new WebSwitch();
-        popupContent.add(menuItem(cs, "Case Sensitive"));
-        popupContent.add(menuItem(ww, "Whole Word"));
-        popupContent.add(menuItem(re, "Regular Expression"));
-        
-        cs.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Editor.context.setMatchCase(cs.isSelected());
-			}
-        });
-        
-        ww.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Editor.context.setWholeWord(ww.isSelected());
-			}
-        });
-        
-        re.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Editor.context.setRegularExpression(re.isSelected());
-			}
-        });
-        
+        }); 
         popupContent.setOpaque(false);
         menu.setContent(popupContent);
 	}
@@ -338,6 +366,15 @@ final public class ToolBar extends JPanel {
 		pan.setOpaque(false);
 		pan.add(label, ToolbarLayout.START);
 		pan.add(sw, ToolbarLayout.END);
+        return pan;
+	}
+	
+	JPanel menuItem(final JSlider slider, String text){
+		final JLabel label = new JLabel("   "+text);
+		JPanel pan = new JPanel(new ToolbarLayout());
+		pan.setOpaque(false);
+		pan.add(label, ToolbarLayout.START);
+		pan.add(slider, ToolbarLayout.END);
         return pan;
 	}
 	
@@ -389,7 +426,8 @@ final public class ToolBar extends JPanel {
 	
 	LafButton createLafItem(String title, String className){
 		final LafButton lafButton = new LafButton(title, className);
-		if(Register.getLaf().equals(title)) lafButton.setSelected(true);
+		if(Register.getLaf().equals(className)) 
+			lafButton.setSelected(true);
 		lafButton .addActionListener (new ActionListener (){
             public void actionPerformed (ActionEvent e){
                     SinkStudio.setLaf(lafButton.getClassName());
@@ -401,7 +439,8 @@ final public class ToolBar extends JPanel {
 	
 	ThemeButton createThemeItem(String title, String iconname){
 		final ThemeButton themeButton = new ThemeButton(title, iconname);
-		if(Register.getTheme().equals(iconname)) themeButton.setSelected(true);
+		if(Register.getTheme().equals(iconname)) 
+			themeButton.setSelected(true);
 		themeButton .addActionListener (new ActionListener (){
             public void actionPerformed (ActionEvent e){
             	Register.setTheme(themeButton.iconame);
@@ -424,26 +463,8 @@ final public class ToolBar extends JPanel {
         pan.setOpaque(false);
         pan.add(textGroup);
         add(pan, ToolbarLayout.MIDDLE);
-        toggleView(2);
+        Content.toggleView(2);
 	}
-	
-
-    public static void toggleView(int index) {
-		for(JButton b: Style.viewGroup){
-			if(index-1 == Style.viewGroup.indexOf(b))
-				b.setSelected(true);
-			else
-				b.setSelected(false);
-		}
-    	switch(index){
-	    	case 1: Content.showEditor(); break;
-	    	case 2: Content.showProject();break;
-	    	case 3: Content.showStudio(); break;
-	    	case 4: Content.showHiero(); break;
-	    	case 5: Content.showParticle(); break;
-	    	default: break;
-    	}
-    }
     
     public void addSpace(){
 		add(new JLabel("       "), ToolbarLayout.START);

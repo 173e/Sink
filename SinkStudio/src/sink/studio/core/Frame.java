@@ -2,19 +2,23 @@ package sink.studio.core;
 
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
 
 import sink.studio.panel.ActorPanel;
 import sink.studio.panel.AssetPanel;
 import sink.studio.panel.FilePanel;
 import sink.studio.panel.PropertyPanel;
 import sink.studio.panel.ScenePanel;
+import sink.studio.panel.StudioScene;
 import sink.studio.panel.WidgetPanel;
 import web.laf.lite.layout.VerticalFlowLayout;
 
@@ -25,8 +29,7 @@ final public class Frame extends JFrame implements WindowListener{
 	static JPanel rightSideBar;
 	static JPanel leftSideBar;
 	static StatusBar statusBar;
-	static Content content;
-	static JSplitPane splitPane;
+	public static Content content;
 	
 
     public Frame() {
@@ -94,9 +97,47 @@ final public class Frame extends JFrame implements WindowListener{
     
     public static void toggleEditor(){
 		content.setVisible(!content.isVisible());
-		splitPane.setRightComponent(content.isVisible() ? content : null);
-        splitPane.revalidate();
 	}
+    
+    public static void enableProject(){
+    	enablePanel(content);
+    	enablePanel(rightSideBar);
+    	enablePanel(leftSideBar);
+    	for(JButton btn : Style.viewGroup)
+    		btn.setEnabled(true);
+    }
+    
+    public static void disableProject(){
+    	disablePanel(content);
+    	disablePanel(rightSideBar);
+    	disablePanel(leftSideBar);
+    	for(JButton btn : Style.viewGroup)
+    		btn.setEnabled(false);
+    }
+    
+    private static void enablePanel(JPanel panel){
+    	for(Component c: panel.getComponents()){
+    		c.setEnabled(true);
+    		if(c instanceof JPanel)
+    			enablePanel((JPanel)c);
+    		else if(c instanceof JList)
+    			((JList)c).setEnabled(true);
+    		else if(c instanceof JLabel)
+    			((JLabel)c).setEnabled(true);
+    	}
+    }
+    
+    private static void disablePanel(JPanel panel){
+    	for(Component c: panel.getComponents()){
+    		c.setEnabled(false);
+    		if(c instanceof JPanel)
+    			disablePanel((JPanel)c);
+    		else if(c instanceof JList)
+    			((JList)c).setEnabled(false);
+    		else if(c instanceof JLabel)
+    			((JLabel)c).setEnabled(false);
+    	}
+    }
     
 	@Override
 	public void windowActivated(WindowEvent arg0) {
@@ -108,6 +149,7 @@ final public class Frame extends JFrame implements WindowListener{
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {
+		StudioScene.save();
 		Content.editor.save();
 		Export.updateConfigFile();
 		content.dispose();

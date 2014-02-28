@@ -3,10 +3,14 @@ package sink.studio.panel;
 import sink.core.Asset;
 import sink.core.Config;
 import sink.core.Scene;
+import sink.core.SceneSprite;
 import sink.core.Sink;
+import sink.json.ButtonJson;
+import sink.json.ImageJson;
+import sink.json.LabelJson;
+import sink.json.TextButtonJson;
 import sink.studio.core.Content;
 import sink.studio.core.Export;
-import sink.studio.core.SinkStudio;
 import sink.studio.core.StatusBar;
 
 import com.badlogic.gdx.Gdx;
@@ -18,25 +22,21 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 
 public class StudioScene extends Scene {
+	static Json json = new Json();
+	static JsonReader reader = new JsonReader();
+	static boolean isDirty = false;
 	
-	//JsonWriter jsonWriter = new JsonWriter();
-	
-	Json json = new Json();
-	
-	boolean active = false;
 	Vector2 mouse = new Vector2();
 	Vector2 vec = new Vector2();
 	
-	static Actor selectedActor = null;
 	ShapeRenderer shapeRenderer = new ShapeRenderer();
 	boolean showGrid = true;
 	
@@ -45,33 +45,21 @@ public class StudioScene extends Scene {
 	
 	int xlines = (int)Config.targetWidth/nxlines;
 	int ylines = (int)Config.targetHeight/nylines;
-	Animation an;
-	
-	
+
 	final ClickListener clicked = new ClickListener(){
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
 			super.clicked(event, x, y);
 			StatusBar.updateXY(x, y);
 			mouse.set(x, y);
-			Actor acc = StudioScene.this.hit(x, y, true);
-			if(acc != null && acc != StudioScene.this){			
-				selectedActor = acc;
-				ActorPanel.selectActor(acc.getName());
-				StatusBar.updateSelected(acc.getName());
-			}
-			else{
-				selectedActor = null;
-				StatusBar.updateSelected("None");
-			}
+			ActorPanel.setSelectedActor(StudioScene.this.hit(x, y, true));
 		}
 		
 		@Override
 		public void touchDragged(InputEvent event, float x, float y, int pointer){
 			super.touchDragged(event, x, y, pointer);
-			StatusBar.updateXY(x, y);
-			if(selectedActor != null)
-				selectedActor.setPosition(x, y);
+			ActorPanel.updateSelectedActor(x, y);
+			isDirty = true;
 		}
 		
 		@Override
@@ -94,68 +82,113 @@ public class StudioScene extends Scene {
 	@Override
 	public void onInit() {
 		Asset.loadData();
+		Asset.assetMan.finishLoading();
+		Asset.setup();
+		AssetPanel.updateAsset();
+		Asset.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+		Sink.setup(Asset.skin);
 		addListener(clicked);
+		initSerializers();
+		load();
+	}
+	
+	public void initSerializers(){
+		json.setSerializer(ImageJson.class, new ImageJson());
+		json.setSerializer(LabelJson.class, new LabelJson());
+		json.setSerializer(ButtonJson.class, new ButtonJson());
+		json.setSerializer(TextButtonJson.class, new TextButtonJson());
+	}
+	
+	public void load(){
+		if(Content.sceneExists()){
+			String file = Export.readFile("scene/"+Content.getScene()+".json");
+			String[] lines = file.split("\n");
+			for(String line: lines){
+				if(line.trim().isEmpty())
+					continue;
+				JsonValue jv = reader.parse(line);
+				switch(jv.get("class").asString()){
+					case "sink.json.ImageJson":addActor(json.fromJson(ImageJson.class, line));break;
+					case "sink.json.LabelJson":addActor(json.fromJson(LabelJson.class, line));break;
+					case "sink.json.ButtonJson":addActor(json.fromJson(ButtonJson.class, line));break;
+					case "sink.json.TextButtonJson":addActor(json.fromJson(TextButtonJson.class, line));break;	
+				}
+			}
+		}
+	}
+	
+	public static void save(){
+		if(isDirty){
+			String list = "";
+			for(Actor actor: Sink.getScene().getChildren())
+				list+=json.toJson(actor)+"\n";
+			Export.writeFile("scene/"+Content.getScene()+".json", list);
+			isDirty = false;
+		}
 	}
 	
 	@Override
-	public void act(float delta){
-		super.act(delta);
-		if(Asset.update() && !active ){
-			Asset.setup();
-			AssetPanel.updateAsset();
-			an = new Animation(0.5f, tex("porgarett"), tex("porsabra"));
-			addActor(new SceneSprite(an,100, 100));
-			Asset.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-			active = true;
-		}
-		if(selectedActor != null){
-			
-		}
-	}
-	
-	public void setName(Actor actor){
-		actor.setName("Actor"+getChildren().size);
+	public void addActor(Actor actor){
+		super.addActor(actor);
 		ActorPanel.addActor(actor.getName());
 	}
 	
-	public void createLabel(String fontName){
-		Label.LabelStyle ls = new Label.LabelStyle();
-		ls.font = font(fontName);
-		Label info = new Label("Text", ls);
-		setName(info);
-		//Sink.stage.screenToStageCoordinates(mouse);
-		/*String text = json.toJson(new ActorJson(actor), ActorJson.class);
-		SinkStudio.log(text);
-		ActorJson person2 = json.fromJson(ActorJson.class, text);
-		SinkStudio.log(json.prettyPrint(person2));*/
-		
-		addActor(info, mouse.x, mouse.y);
+	public void setName(Actor actor){
+		if(findActor("Actor"+getChildren().size) == null)
+			actor.setName("Actor"+getChildren().size);
+		else
+			actor.setName("Actor"+getChildren().size+"_1");
 	}
 	
-	public void createTexture(String texName){
-		Image image = new Image(tex(texName));
+	public void rename(Actor actor){
+		
+	}
+	
+	public void createLabel(String fontName){
+		//Sink.stage.screenToStageCoordinates(mouse);
+		LabelJson label = new LabelJson("Text", fontName);
+		setName(label);
+		label.setX(mouse.x);
+		label.setY(mouse.y);
+		addActor(label);
+		isDirty = true;
+	}
+	
+	public void createImage(String texName){
+		ImageJson image = new ImageJson(texName);
+		image.setX(mouse.x);
+		image.setY(mouse.y);
 		setName(image);
-		String text = json.toJson(new ImageJson(image, texName), ImageJson.class);
-		SinkStudio.log(text);
-		ImageJson person2 = json.fromJson(ImageJson.class, text);
-		SinkStudio.log(json.prettyPrint(person2));
-		addActor(image, mouse.x, mouse.y);
+		addActor(image);
+		isDirty = true;
+	}
+	
+	public void createSceneSprite(){
+		Animation an = new Animation(0.5f, tex("porgarett"), tex("porsabra"));
+		SceneSprite sceneSprite = new SceneSprite(an, 100, 100);
+		setName(sceneSprite);
+		addActor(sceneSprite);
+		isDirty = true;
 	}
 	
 	public void createButton(){
-		Button button = new Button(Asset.skin);
-		addActor(button, mouse.x, mouse.y);
+		ButtonJson button = new ButtonJson(true);
+		button.setX(mouse.x);
+		button.setY(mouse.y);
+		button.setWidth(100);
+		button.setHeight(70);
+		setName(button);
+		addActor(button);
+		isDirty = true;
 	}
 	
 	public void createTextButton(){
-		addActor(new TextButton("TextButton",Asset.skin), mouse.x, mouse.y);
-	}
-	
-	void drawBG(){
-		shapeRenderer.begin(ShapeType.Filled);
-		shapeRenderer.setColor(Color.BLACK);
-		shapeRenderer.rect(0, 0, getWidth(), getHeight());
-		shapeRenderer.end();
+		TextButtonJson button = new TextButtonJson("TextButton");
+		button.setX(mouse.x);
+		button.setY(mouse.y);
+		setName(button);
+		addActor(button);
+		isDirty = true;
 	}
 	
 	void drawGrid(){
@@ -165,24 +198,19 @@ public class StudioScene extends Scene {
 	        for(int i = 0; i<= xlines+1; i++)
 	        	for(int j = 0; j<= ylines+1; j++)
 	        		shapeRenderer.point(10+(i*xlines), j*ylines, 0);
-	        /*for(int i = 0; i<= xlines; i++)
-	        	shapeRenderer.line(i*xlines, 0, i*xlines, Config.targetHeight);
-	        for(int i = 0; i<= ylines; i++)
-	        	shapeRenderer.line(0, i*ylines, Config.targetWidth, i*ylines);*/
 	        shapeRenderer.end();
 		}
 	}
 	
 	void drawSelection(){
-		if(selectedActor != null){
-			vec.set(selectedActor.getX(), selectedActor.getY());
-			selectedActor.localToStageCoordinates(vec);
-	        
+		if(ActorPanel.selectedActor != null){
+			vec.set(ActorPanel.selectedActor.getX(), ActorPanel.selectedActor.getY());
+			ActorPanel.selectedActor.localToStageCoordinates(vec);
 	        shapeRenderer.begin(ShapeType.Line);
 	        shapeRenderer.setColor(Color.GREEN);
 	        //shapeRenderer.rect(vec.x, vec.y, selectedActor.getWidth(), selectedActor.getHeight());
-	        shapeRenderer.rect(selectedActor.getX(), selectedActor.getY(), selectedActor.getWidth(),
-	        		selectedActor.getHeight());
+	        shapeRenderer.rect(ActorPanel.selectedActor.getX(), ActorPanel.selectedActor.getY(), ActorPanel.selectedActor.getWidth(),
+	        		ActorPanel.selectedActor.getHeight());
 	        shapeRenderer.end();
 		}
 	}
@@ -190,7 +218,6 @@ public class StudioScene extends Scene {
 	@Override
     public void draw(Batch batch, float parentAlpha) {
 		batch.end();
-		//drawBG();
 		drawGrid();
         batch.begin();
 		super.draw(batch, parentAlpha);
@@ -198,77 +225,4 @@ public class StudioScene extends Scene {
 		drawSelection();
 		batch.begin();
     }
-	
-	public static void setSelectedActor(String actorName){
-		selectedActor = Sink.getScene().findActor(actorName);
-		StatusBar.updateSelected(actorName);
-	}
-	
-	public void load(){
-		String text = Export.readFile("source/"+Content.getFile()+".java");
-		text = text.replaceAll("[\r]", "");
-		//ActorPanel.clear();
-		String[] lines = text.split("\n");
-		SinkStudio.log("Scene Size: "+lines.length);
-		for(int i =0; i< lines.length; i++){
-			if(lines[i].contains("//begin")){
-				SinkStudio.log("Beginning Scene: "+Content.getFile());
-			}
-			else if(lines[i].contains("//end")){
-				SinkStudio.log("Ending Scene: "+Content.getFile());
-				//break;
-			}
-			if(lines[i].contains("Label")){
-				createLabel("normal");
-			}
-			if(lines[i].contains("Image")){
-				createTexture("porgarett");
-			}
-		}
-	}
-	
-	public void save(){
-		
-	}
-}
-
-class ActorJson {
-	   public String name;
-	   public float x;
-	   public float y;
-	   public float w;
-	   public float h;
-	   
-	   ActorJson(){
-	   }
-	   
-	   ActorJson(Actor actor){
-		   name = actor.getName();
-		   x = actor.getX();
-		   y = actor.getY();
-		   w = actor.getWidth();
-		   h = actor.getHeight();
-	   }
-}
-
-class ImageJson {
-	   public String name;
-	   public float x;
-	   public float y;
-	   public float w;
-	   public float h;
-	   public String texName;
-	   
-	   ImageJson(){
-		   
-	   }
-	   
-	   ImageJson(Image image, String texName){
-		   name = image.getName();
-		   x = ((Actor)image).getX();
-		   y = image.getY();
-		   w = image.getWidth();
-		   h = image.getHeight();
-		   this.texName = texName;
-	   }
 }

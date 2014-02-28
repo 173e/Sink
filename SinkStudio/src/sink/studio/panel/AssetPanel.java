@@ -58,6 +58,7 @@ final public class AssetPanel extends JPanel implements ActionListener, DragSour
 	    UIUtils.setShadeWidth(tf, 0);
 	    assetsList.setListCellEditor(new DefaultListCellEditor(tf));
 		JScrollPane scrollPane = new JScrollPane(assetsList);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(200, 155));
 		UIUtils.setDrawBorder(scrollPane, false);
 		

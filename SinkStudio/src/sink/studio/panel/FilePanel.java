@@ -16,6 +16,7 @@ import javax.swing.event.ListSelectionListener;
 
 import sink.studio.core.Content;
 import sink.studio.core.Export;
+import sink.studio.core.SinkStudio;
 import sink.studio.core.Style;
 import web.laf.lite.layout.VerticalFlowLayout;
 import web.laf.lite.popup.NotificationManager;
@@ -46,9 +47,9 @@ final public class FilePanel extends JPanel implements ListSelectionListener, Ac
 		scrollPane.setPreferredSize(new Dimension(200, 175));
 		UIUtils.setDrawBorder(scrollPane, false);
 		add(scrollPane);
-		if(Content.checkProjectExists()){
+		if(Content.projectExists()){
 			updateList();
-			if(Content.checkFileExists()){
+			if(Content.fileExists()){
 				filesList.setSelectedIndex(filesModel.indexOf(Content.getFile()));
 			}
 		}
@@ -64,7 +65,7 @@ final public class FilePanel extends JPanel implements ListSelectionListener, Ac
 	
 	public static void updateList(){
 		filesModel.clear();
-		for(String fname: Export.listFiles())
+		for(String fname: Export.listFiles("source/"))
 			filesModel.addElement(fname.replace("source/", "").replace(".java", ""));
 	}
 	
@@ -88,7 +89,8 @@ final public class FilePanel extends JPanel implements ListSelectionListener, Ac
 				break;
 			default: break;
 		}
-		updateList();
+		filesModel.addElement(name);
+		//updateList();
 	}
 	
 	@Override
@@ -99,8 +101,8 @@ final public class FilePanel extends JPanel implements ListSelectionListener, Ac
 			case "New Enum": createJavaFile("enum", enumField.getText());enumField.setText("");break;
 			case "Delete":
 				Export.deleteFile("source/"+filesList.getSelectedValue()+".java");
-				//Content.editorFile = "";
-				//Content.editor.setText("");
+				Content.setFile("");
+				Content.editor.setText("");
 				filesModel.removeElement(filesList.getSelectedValue());
 				break;
 		}
@@ -113,9 +115,10 @@ final public class FilePanel extends JPanel implements ListSelectionListener, Ac
 				return;
 			if(Content.getFile().equals(filesList.getSelectedValue()))
 				return;
+			SinkStudio.log("File Selected: "+filesList.getSelectedValue());
 			Content.editor.save();
 			Content.setFile(filesList.getSelectedValue());
-			Content.showEditor();
+			Content.toggleView(1);
 			Content.editor.load();
 		}
 	}
