@@ -14,7 +14,7 @@ You can use the Actor3d class to create Actors for the Stage
 Actor3d has almost identical properties to Actor  
 You can perform actions on these actors using Action3d  
 
-Checkout: [SinkStudio](https://github.com/pyros2097/Sink/SinkStudio)  
+Checkout: [SinkStudio](https://github.com/pyros2097/SinkStudio)  
 
 ScreenShots
 ============
@@ -134,9 +134,9 @@ Credits
 --------
 Thanks to all these awesome frameworks  
 [mtx](http://moribitotechx.blogspot.co.uk)  
-[libgdx](libgdx.badlogicgames.com)  
-[lwjgl](lwjgl.org)  
-[openal](kcat.strangesoft.net/openal.html)  
+[libgdx](http://libgdx.badlogicgames.com)  
+[lwjgl](http://lwjgl.org)  
+[openal](http://kcat.strangesoft.net/openal.html)  
 
 
 #Documentation
