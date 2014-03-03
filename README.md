@@ -1,4 +1,4 @@
-Sink v0.92
+Sink v0.94
 ==========
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 

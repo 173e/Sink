@@ -69,7 +69,7 @@ public final class MainDesktop {
 			cfg.resizable = jv.get("resize").asBoolean();
 			cfg.forceExit =  jv.get("forceExit").asBoolean();
 			cfg.fullscreen =  jv.get("fullScreen").asBoolean();
-			cfg.useGL20 = jv.get("useGL20").asBoolean();
+			cfg.useGL30 = jv.get("useGL30").asBoolean();
 			cfg.vSyncEnabled = jv.get("vSync").asBoolean();
 			LwjglApplicationConfiguration.disableAudio = jv.get("disableAudio").asBoolean();
 			cfg.audioDeviceBufferCount = jv.get("audioBufferCount").asInt();

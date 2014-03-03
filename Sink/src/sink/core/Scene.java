@@ -16,6 +16,21 @@
 
 package sink.core;
 
+import sink.json.ButtonJson;
+import sink.json.CheckBoxJson;
+import sink.json.DialogJson;
+import sink.json.ImageJson;
+import sink.json.LabelJson;
+import sink.json.ListJson;
+import sink.json.SelectBoxJson;
+import sink.json.SliderJson;
+import sink.json.TableJson;
+import sink.json.TextButtonJson;
+import sink.json.TextFieldJson;
+import sink.json.TouchpadJson;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,6 +42,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
 
 /** The base class for creating Scenes
@@ -216,6 +232,31 @@ public abstract class Scene extends Group {
 	public void transitionDownToUp(float duration, Interpolation inter){
 		setPosition(0, -999);
  		addAction(Actions.moveTo(0, 0, duration, inter));
+	}
+	
+	public void load(String sceneName){
+			FileHandle file = Gdx.files.internal("scene/"+sceneName+".json");
+			String text = file.readString();
+			String[] lines = text.split("\n");
+			for(String line: lines){
+				if(line.trim().isEmpty())
+					continue;
+				JsonValue jv = Sink.jsonReader.parse(line);
+				switch(jv.get("class").asString()){
+					case "sink.json.ImageJson":addActor(Sink.json.fromJson(ImageJson.class, line));break;
+					case "sink.json.LabelJson":addActor(Sink.json.fromJson(LabelJson.class, line));break;
+					case "sink.json.ButtonJson":addActor(Sink.json.fromJson(ButtonJson.class, line));break;
+					case "sink.json.TextButtonJson":addActor(Sink.json.fromJson(TextButtonJson.class, line));break;	
+					case "sink.json.TableJson":addActor(Sink.json.fromJson(TableJson.class, line));break;	
+					case "sink.json.CheckBoxJson":addActor(Sink.json.fromJson(CheckBoxJson.class, line));break;	
+					case "sink.json.SelectBoxJson":addActor(Sink.json.fromJson(SelectBoxJson.class, line));break;
+					case "sink.json.ListJson":addActor(Sink.json.fromJson(ListJson.class, line));break;
+					case "sink.json.SliderJson":addActor(Sink.json.fromJson(SliderJson.class, line));break;
+					case "sink.json.TextFieldJson":addActor(Sink.json.fromJson(TextFieldJson.class, line));break;
+					case "sink.json.DialogJson":addActor(Sink.json.fromJson(DialogJson.class, line));break;
+					case "sink.json.TouchpadJson":addActor(Sink.json.fromJson(TouchpadJson.class, line));break;
+				}
+			}
 	}
 	
 	public abstract void onInit();

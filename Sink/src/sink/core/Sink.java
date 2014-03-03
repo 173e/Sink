@@ -42,6 +42,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
 
 /** The Main Entry Point for the Sink Game is the Sink class
  * <p>
@@ -86,11 +88,13 @@ import com.badlogic.gdx.utils.ArrayMap;
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {
-	public static String version = "0.92";
+	public static String version = "0.94";
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
 	
 	public static Stage stage;
+	public static Json json = new Json();
+	public static JsonReader jsonReader = new JsonReader();
 	private static OrthographicCamera camera;
 	private static LogPane logPane;
 	private static Label fpsLabel;
