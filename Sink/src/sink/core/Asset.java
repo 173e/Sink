@@ -17,6 +17,7 @@
 package sink.core;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -88,11 +89,6 @@ import com.badlogic.gdx.utils.ArrayMap;
  *	musicPlay("musicname");
  *	soundPlay("soundname");
  *	
- *
- *  //When exporting your game to jar Conig.isJar must be set so that
- *  //all your assets will get loaded automatically within the jar file
- *	Config.isJar = true;
- *	
  *  //The asset functions will return null for Font, TextureRegion and Animation if the asset cannot be found
  * </code>
   </pre>
@@ -124,6 +120,7 @@ public final class Asset {
 	private static boolean readinglock = false;
 	private static boolean updatinglock = false;
 	
+	private static File jarFile = null;
 	/* This is to be used by sink studio */
 	private static String basePath = "";
 	
@@ -165,9 +162,11 @@ public final class Asset {
 				loadSkin();
 				loadFPS();
 				updatinglock = true;
+				Sink.nextScene();
 			}
 		return updatinglock;
 	}
+	
 	
 	private static void readData(){
 		if (Gdx.app.getType() == ApplicationType.Android){
@@ -182,7 +181,15 @@ public final class Asset {
 			assetMan.load("skin/uiskin.json", Skin.class);
 		}
 		else if(Gdx.app.getType() == ApplicationType.Desktop){
-			if(Config.isJar)
+			try {
+				if(Sink.getScene() != null){
+					jarFile = new File(Sink.getScene().getClass().getProtectionDomain()
+							.getCodeSource().getLocation().toURI());
+				}
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+			if(jarFile != null)
 				loadFromJar();
 			else{
 				Sink.log("Loading Music Files");
@@ -212,10 +219,8 @@ public final class Asset {
 	}
 	
 	private static void loadFromJar(){
-		if(Sink.clazz != null){
 			try{
-				File jarName = new File(Sink.clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
-				ZipFile zf = new ZipFile(jarName.getAbsoluteFile());
+				ZipFile zf = new ZipFile(jarFile.getAbsoluteFile());
 			    Enumeration<? extends ZipEntry> e=zf.entries();
 			    while (e.hasMoreElements()) 
 			     {
@@ -253,7 +258,6 @@ public final class Asset {
 				assetMan.load(f, BitmapFont.class);
 			for(String f: atlasJarFiles)
 				assetMan.load(f, TextureAtlas.class);
-		}
 	}
 	
 	private static void loadSkin(){
@@ -275,7 +279,7 @@ public final class Asset {
 * 								Music Related Global Functions											   *
 ************************************************************************************************************/
 	private static void loadMusics(){
-		if(Config.isJar){
+		if(jarFile != null){
 			for(String f: musicJarFiles){
 				Music m = assetMan.get(f, Music.class);
 				String name = f.replace("music/", "");
@@ -361,7 +365,7 @@ public final class Asset {
 * 								Sound Related Global Functions							   				   *
 ************************************************************************************************************/
 	private static void loadSounds(){
-		if(Config.isJar){
+		if(jarFile != null){
 			for(String f: soundJarFiles){
 				Sound m = assetMan.get(f, Sound.class);
 				String name = f.replace("sound/", "");
@@ -439,7 +443,7 @@ public final class Asset {
 * 								BitmapFont Related Functions							   				   *
 ************************************************************************************************************/
 	private static void loadFonts(){
-		if(Config.isJar){
+		if(jarFile != null){
 			for(String f: fontJarFiles){
 				BitmapFont m = assetMan.get(f, BitmapFont.class);
 				String name = f.replace("font/", "");
@@ -476,7 +480,7 @@ public final class Asset {
 * 								Texture Related Functions							   				   	   *
 ************************************************************************************************************/
 	private static void loadTextureRegions(){
-		if(Config.isJar){
+		if(jarFile != null){
 			for(String f: atlasJarFiles){
 				TextureAtlas atlas = assetMan.get(f, TextureAtlas.class);
 				Array<TextureAtlas.AtlasRegion> regions = atlas.getRegions();

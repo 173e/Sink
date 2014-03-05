@@ -30,31 +30,6 @@ import com.badlogic.gdx.Preferences;
  * @author pyros2097 */
 
 public final class Config {
-	public static String title = "Sink";
-	public static boolean keepAspectRatio = false;
-	public static boolean showFps = true;
-	public static boolean showLogger = false;
-	public static boolean loggingEnabled= true;
-	/*When exporting your game to jar Conif.isJar must be set so that
-	* all your assets will get loaded automatically within the jar file
-	*/
-	public static boolean isJar = false;
-	
-	/*Important:
-	 *  The Target Width  and Target Height refer to the nominal width and height of the game for the
-	 *  graphics which are created  for this width and height, this allows for the Stage to scale this
-	 *  graphics for all screen width and height. Therefore your game will work on all screen sizes 
-	 *  but maybe blurred on some.
-	 *  ex:
-	 *  My Game targetWidth = 800 targetHeight = 480
-	 *  Then my game works perfectly for SCREEN_WIDTH = 800 SCREEN_HEIGHT = 480
-	 *  and on others screen sizes it is just zoomed/scaled but works fine thats all
-	 */
-	public static float targetWidth = 0;
-	public static float targetHeight  = 0;
-	
-	public static String firstSceneClassName = "";
-	
     static final String MUSIC = "music";
     static final String SOUND = "sound";
     static final String VOLUME_MUSIC = "volumeMusic";
@@ -92,7 +67,7 @@ public final class Config {
     private static int score;
     
     static void setup(){
-       prefs =Gdx.app.getPreferences(title);
+       prefs =Gdx.app.getPreferences(Sink.jsonValue.get("title").asString());
        isMusic = prefs.getBoolean(MUSIC, true);
        isSound = prefs.getBoolean(SOUND, true);
        

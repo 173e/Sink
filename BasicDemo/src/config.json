@@ -14,7 +14,6 @@
    "vSync": false,
    "disableAudio": false,
    "audioBufferCount": 20,
-   "isJar": true,
    "keepAspectRatio": false,
    
    "useAccelerometer": false,
@@ -27,5 +26,5 @@
    "showLogger": false,
    "loggingEnabled": true,
    
-   "firstSceneClassName": "sink.demo.basic.scene.SplashScene"
+   "scenes": "Splash,Menu,Options,Credits,Levels,Login,Game"
 }

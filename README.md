@@ -1,4 +1,4 @@
-Sink v0.99
+Sink v1.00
 ==========
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
@@ -6,13 +6,7 @@ writing error free setup code etc.
 It consists of Scenes and has a SceneManager to control which scenes are to displayed when.
 It also has Scene, SceneGroup, SceneActor classes which make it easier to add resources without many 
 manual importing.  
-
-##Stage3d
-Also a Stage3d is being developed currently to support 3d games  
-Stage3d class can be used to construct a Stage for Actor3d's  
-You can use the Actor3d class to create Actors for the Stage  
-Actor3d has almost identical properties to Actor  
-You can perform actions on these actors using Action3d  
+Be sure to see the demo's source as it can help you a lot in understanding the framework
 
 Checkout: [SinkStudio](https://github.com/pyros2097/SinkStudio)  
 
@@ -92,47 +86,39 @@ found so null checking has to be manually done.
 	
 Also there is a great Config class which already has basic things needed in a game,
 like Config.isMusic to get if music is enabled
-	
 Currently Only Orthogonal Maps are supported
 
-public class  SplashScene extends SplashScene {
+    //This is our first Scene and it shows the libgdx logo until all the assets are loaded 
+    //then it automatically switches to the Menu scene
+    public class  Splash {
 		
-		@Override
-		public void onInit() {
+		public Splash() {
 			final Texture bg1 = new Texture("splash/libgdx.png");
 			final Image imgbg1 = new Image(bg1);
 			imgbg1.setFillParent(true);
-			addActor(imgbg1);
+			Sink.addActor(imgbg1);
 	    } 
-	    
-	    @Override
-		public void onAssetsLoaded() {
-			bg1.dispose();
-			Sink.registerScene("menu", new MenuScene());
-			Sink.registerScene("options", new OptionsScene());
-			Sink.registerScene("credits", new CreditsScene());
-			Sink.registerScene("login", new LoginScene());
-			Sink.setScene("menu");
-		}
    }
    
-    public class  MenuScene extends Scene{
-		
-		@Override
-		public void onInit() {
+    //This is Scene gets called once the assets are loaded
+    public class  Menu {
+    
+		public Menu() {
 			//create some actors
 			// if you used sink studio and create a scene like Menu.json then
-			// use load("Menu") it will populate your scene after parsing the json file
-			load("Menu");
+			// it will automatically call load("Menu") it will populate your scene after parsing the json file
 			
 			//you can access these objects like this
-			TextButton btn = (TextButton) findActor("TextButton1");
-			Image img = (Image) find Actor("Image5");
+			TextButton btn = (TextButton) Sink.findActor("TextButton1");
+			Image img = (Image) Sink.findActor("Image5");
 			
 			// these actors are loaded from the json file and are give names which allows
 			// easy access to them
 		}
 	}
+	
+	//In config.json
+	"scenes": "Splash,Menu"
 ```
 
 
@@ -143,11 +129,13 @@ Download
 
 Running
 --------
-Include the sink-0.99.jar in your game classpath it contains all the libgdx files also, 
+Include the sink-1.00.jar in your game classpath it contains all the libgdx files also, 
 so you dont need to include them.      
-Run the Desktop Game by using sink.main.Desktop class as it contains the static main declaration.  
-Specify the first scene which must extend the Splash Scene class in your config.json file and register  
-all your other scenes in it.  
+Run the Desktop Game by using sink.core.Sink class as it contains the static main declaration.  
+Specify the all your scenes in your config.json file.
+Note:
+	All your scenes must be located in the default package otherwise you must give your scene's
+	full class name in the scenes List in the config.json file.
 
 Todo
 -----
@@ -169,23 +157,21 @@ Thanks to all these awesome frameworks
 Create a config.json file in your src folder and add these lines to it
 ```json
 {
-   "title": "Sink",
-   "showIcon": true,
-   "iconLocation": "icon/icon_32.png",
-   "targetWidth": 320,
-   "targetHeight": 224,
-   "screenWidth": 800,
-   "screenHeight": 480,
-   "x": 280,
-   "y": 100,
-   "resize": false,
+   "title": "Sink",     // your game title name  
+   "hasIcon": true,     // your icon must be in the classpath as icon.png
+   "targetWidth": 320,  //your game's target width it will automatically scale to other sizes
+   "targetHeight": 224, //your game's target height it will automatically scale to other sizes  
+   "screenWidth": 800,  //your game's screen Width
+   "screenHeight": 480, //your game's screen Height
+   "x": 280,			//x position of your game window  
+   "y": 100,			//y position of your game window  
+   "resize": false,		//whether you can resize the window  
    "forceExit": false,
    "fullScreen": false,
    "useGL20": false,
    "vSync": false,
    "disableAudio": false,
    "audioBufferCount": 20,
-   "isJar": false,
    "keepAspectRatio": false,
    
    "useAccelerometer": false,
@@ -194,48 +180,18 @@ Create a config.json file in your src folder and add these lines to it
    "useWakelock": true,
    "useCloud": true,
    
-   "showFps": true,
-   "showLogger": false,
-   "loggingEnabled": true,
+   "showFps": true,				//Whether you want to display the fps on the game screen  
+   "showLogger": false,			//Whether you want to display the logging pane on the game screen  
+   "loggingEnabled": true,		//To Sink logging
    
-   "firstSceneClassName": "sky.warsong.scene.IntroScene"
+   "scenes": "Splash,Menu,Options"
+   
+   //Note use if scenes are in a specific package
+   "scenes": "com.mygame.Splash,com.mygame.Menu"
+   //and to change a scene
+   //setScene("com.mygame.Menu");
 }
 ```
-where  
-```
-	title -> your game title name  
-	showIcon -> whether you want to use an icon for your game  
-	iconLocation -> specify the location of your icon  
-	targetWidth -> your game's target width it will automatically scale to other sizes  
-	targetHeight -> your game's target height it will automatically scale to other sizes  
-	screenWidth -> your game's screen size  
-	screenHeight -> your game's screen size  
-	x -> x position of your game window  
-	y -> y position of your game window  
-	resize -> whether you can resize the window  
-	isJar -> When exporting your game to jar isJar must be set true so that all your assets
-			 will get loaded automatically within the jar file  
-	
-	showFps -> Whether you want to display the fps on the game screen  
-	showLogger -> Whether you want to display the logging pane on the game screen  
-	loggingEnabled -> To disable logging and improve performance
-	  
-	firstSceneClassName -> The class name for your first scene so that it is automatically loaded must
-	extend the sink.core.SplashScene class
-```
-
-##SplashScene
-Use this class as your main entry point to the sink game. Extend the class and override the onInit() method
-and display anything while your assets are loading asynchronously and when they are done loading the 
-overridden method onAssetsLoaded() will be called and you can use this to set another scene or display
-the loaded assets.
-
-##Scene
-Use this class to to create scenes or menus for your game. Just extend this class and override the
-onInit() method all other things are done automatically like clearing the stage and populating it with the
-actors of this group. A scene can be set using Sink.setScene("sceneName")
-All the Asset methods are directly built into it.
-
 ##SceneActor
 This extends the Actor class and all the Asset methods are directly built into it
 
@@ -248,29 +204,12 @@ This extends the Group class and all the Asset methods are directly built into i
 ##Sink
 The Main Entry Point for the Sink Game is the Sink class
 It consists of a single Stage and Camera which are all initialized based on the Config settings.
-The stage can be accessed in a static way like Sink.stage and methods related to camera like moveTo, moveBy,
+The stage can be accessed in a static way like Sink.getStage() and methods related to camera like moveTo, moveBy,
 are also accessed the same way.<br>
 It has extra things like gameUptime, pauseState, PauseListeners, ResumeListeners, 
 DisposeListeners.<br>
 It has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
 It can also automatically follow a actor by using followActor(Actor actor)<br>
-
-Use this class to register all your scenes and then you can switch you scenes by using Sink.setScene()
-method with the sceneName you registered your scene with.<br>
-You Must setup the Sink framework in your splash/menu or first scene and register all your other scenes in it
-and after you have loaded all your assets if you want to  show the logPane and fps then set it up<br>
-by calling Sink.setup()<br> 
-```java
-public class  Menu extends Scene{
-		
-		@Override
-		public void onInit() {
-			Image img = new Image(new TextureRegionDrawable(tex("my_awesome_image")));
-			addActor(img);
-			addActor(img, 50, 250);
-	    } 
-}
-```
 
 ##Map
 
@@ -297,3 +236,10 @@ It has many important methods like moveTo, moveBy, collides, intersects, getCent
 #Faq
 1. Performance?  
 2. Feature Requests?  
+
+##Stage3d
+Also a Stage3d is being developed currently to support 3d games  
+Stage3d class can be used to construct a Stage for Actor3d's  
+You can use the Actor3d class to create Actors for the Stage  
+Actor3d has almost identical properties to Actor  
+You can perform actions on these actors using Action3d  

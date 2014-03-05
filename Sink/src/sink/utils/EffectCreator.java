@@ -229,7 +229,7 @@ public class EffectCreator {
 		if (actor != null) {
 			actor.clearActions();
 			String actorName = actor.getName();
-			if (Sink.stage.getRoot().removeActor(actor)) {
+			if (Sink.removeActor(actor)) {
 				Sink.log("Actor removed! (Name: "+ actorName + ")");
 			} else {
 				Sink.log("Actor not removed! (Name: " + actorName + ")");

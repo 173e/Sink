@@ -21,33 +21,54 @@ import static sink.core.Asset.soundStop;
 import sink.event.DisposeListener;
 import sink.event.PauseListener;
 import sink.event.ResumeListener;
-import sink.main.Desktop;
+import sink.json.ButtonJson;
+import sink.json.CheckBoxJson;
+import sink.json.DialogJson;
+import sink.json.ImageJson;
+import sink.json.LabelJson;
+import sink.json.ListJson;
+import sink.json.SelectBoxJson;
+import sink.json.SliderJson;
+import sink.json.TableJson;
+import sink.json.TextButtonJson;
+import sink.json.TextFieldJson;
+import sink.json.TouchpadJson;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Scaling;
 
 /** The Main Entry Point for the Sink Game is the Sink class
  * <p>
  * It consists of a single Stage and Camera which are all initialized based on the {@link Config} settings.
- * The stage can be accessed in a static way like Sink.stage and methods related to camera like moveTo, moveBy,
+ * The stage can be accessed in a static way like Sink.getStage() and methods related to camera like moveTo, moveBy,
  * are also accessed the same way.<br>
  * It has extra things like gameUptime, pauseState, PauseListeners, ResumeListeners, AssetLoadedEvent
  * DisposeListeners.<br>
@@ -59,108 +80,110 @@ import com.badlogic.gdx.utils.JsonReader;
  * It has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
  * It can also automatically follow a actor by using followActor(Actor actor)<br>
  * 
- * Use this class to register all your scenes and then you can switch you scenes by using {@link #setScene}
- * method with the sceneName you registered your scene with.<br>
+ * This class will register all your scenes based on your config.json file and then you can switch you scenes by using {@link #setScene}
+ * method with the sceneName.<br>
  * 
- * You Must setup the Sink framework in your splash/menu or first scene and register all your other scenes in it
- * and after you have loaded all your assets if you want to  show the logPane and fps then set it up<br>
- * by calling {@link #setup()}<br>
- * 
- * Run the Desktop Game by using sink.main.Desktop class as it contains the static main declaration.<br>
- * Specify the first scene in your config.json file and register all your other scenes in it.<br>
- * Don't use the constructor of the Scene class as it can cause problems
- * 
- * All assets are loaded in the background(asynchronously) and the {@link #onAssetsLoaded} is called once the
- * assets are loaded .
- * Note: The first scene in the Sink Framework must always be a splash scene as the assets are yet to be loaded
- * 		 by the framework. This scene class name must be declared in the config.json file.
+ * Run the Desktop Game by using sink.core.Sink class as it contains the static main declaration.<br>
+ * Your first sceneName in the config.json file gets shown first automatically and once and all your assets <br>
+ * are loaded in the background(asynchronously) in the first scene and then automatically the next scene in the list is set.
  * <p>
  * @ex
  * <pre>
  * <code>
-    public class  SplashScene extends SplashScene {
+    //This is our first Scene and it shows the libgdx logo until all the assets are loaded 
+    //then it automatically switches to the Menu scene
+    public class  Splash {
 		
-		@Override
-		public void onInit() {
+		public Splash() {
 			final Texture bg1 = new Texture("splash/libgdx.png");
 			final Image imgbg1 = new Image(bg1);
 			imgbg1.setFillParent(true);
-			addActor(imgbg1);
+			Sink.addActor(imgbg1);
 	    } 
-	    
-	    @Override
-		public void onAssetsLoaded() {
-			bg1.dispose();
-			Sink.registerScene("menu", new MenuScene());
-			Sink.registerScene("options", new OptionsScene());
-			Sink.registerScene("credits", new CreditsScene());
-			Sink.registerScene("login", new LoginScene());
-			Sink.setScene("menu");
-		}
    }
    
-    public class  MenuScene extends Scene{
-		
-		@Override
-		public void onInit() {
+    //This is Scene gets called once the assets are loaded
+    public class  Menu {
+    
+		public Menu() {
 			//create some actors
 			// if you used sink studio and create a scene like Menu.json then
-			// use load("Menu") it will populate your scene after parsing the json file
-			load("Menu");
+			// it will automatically call load("Menu") it will populate your scene after parsing the json file
 			
 			//you can access these objects like this
-			TextButton btn = (TextButton) findActor("TextButton1");
-			Image img = (Image) find Actor("Image5");
+			TextButton btn = (TextButton) Sink.findActor("TextButton1");
+			Image img = (Image) Sink.findActor("Image5");
 			
 			// these actors are loaded from the json file and are give names which allows
 			// easy access to them
 		}
 	}
+	
+	//In config.json
+	"scenes": "Splash,Menu"
  </code>
  </pre>
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {
-	public static String version = "0.99";
+	public static String version = "1.00";
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
 	public static Json json = new Json();
 	public static JsonReader jsonReader = new JsonReader();
+	public static JsonValue jsonValue = null;
 	
-	public static Stage stage;
+	private static Stage stage;
 	private static OrthographicCamera camera;
 	private static LogPane logPane;
 	private static Label fpsLabel;
-	static Scene currentScene = null;
-	static final ArrayMap<String , Scene> sceneMap = new ArrayMap<String, Scene>();
-	public static Array<Actor> hudActors = new Array<Actor>();
+	private static Object currentScene = null;
 	public static boolean pauseState = false;
+	
+	private static int sceneIndex = 0;
+	private static final Array<String> scenesList = new Array<String>();
+	private static Array<Actor> hudActors = new Array<Actor>();
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
+	/*Important:
+	 *  The Target Width  and Target Height refer to the nominal width and height of the game for the
+	 *  graphics which are created  for this width and height, this allows for the Stage to scale this
+	 *  graphics for all screen width and height. Therefore your game will work on all screen sizes 
+	 *  but maybe blurred on some.
+	 *  ex:
+	 *  My Game targetWidth = 800 targetHeight = 480
+	 *  Then my game works perfectly for SCREEN_WIDTH = 800 SCREEN_HEIGHT = 480
+	 *  and on others screen sizes it is just zoomed/scaled but works fine thats all
+	 */
+	public static float targetWidth = 800;
+	public static float targetHeight  = 480;
 	
-	static Class<SplashScene> clazz = null;
 	
-	/**
-	 * This loads the fonts for fps and logPane from the skin file. This is called by Asset once the
-	 * assets are done loading
-	 * */
-	static void setup(){
-		fpsLabel = new Label("", Asset.skin);
-		logPane = new LogPane(Asset.skin);
-	}
-	
-	/**
-	 * This loads the fonts for fps and logPane from a BitmapFont. This is called by Asset once the
-	 * assets are done loading
-	 * */
-	static void setup(BitmapFont font){
-		if(font != null){
-			LabelStyle ls = new LabelStyle();
-			ls.font = font;
-			fpsLabel = new Label("", ls);
-			logPane = new LogPane(font);
-		}
+	/** The Main Launcher for Sink Game
+	 * <p>
+	 * Just specify the Sink class as the Main file and when you export your game to jar add
+	 * the manifest entry Main-Class: sink.core.Sink for it to work
+	 */
+	public static LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+	public static void main(String[] argc) {
+		jsonValue = jsonReader.parse(Sink.class.getClassLoader().getResourceAsStream("config.json"));
+		if(jsonValue.get("hasIcon").asBoolean())
+			cfg.addIcon("icon.png", FileType.Internal);
+		cfg.width = jsonValue.get("screenWidth").asInt();
+		cfg.height = jsonValue.get("screenHeight").asInt();
+		cfg.x = jsonValue.get("x").asInt();
+		cfg.y = jsonValue.get("y").asInt();
+		cfg.resizable = jsonValue.get("resize").asBoolean();
+		cfg.forceExit =  jsonValue.get("forceExit").asBoolean();
+		cfg.fullscreen =  jsonValue.get("fullScreen").asBoolean();
+		cfg.useGL20 = jsonValue.get("useGL20").asBoolean();
+		cfg.vSyncEnabled = jsonValue.get("vSync").asBoolean();
+		cfg.audioDeviceBufferCount = jsonValue.get("audioBufferCount").asInt();
+		LwjglApplicationConfiguration.disableAudio = jsonValue.get("disableAudio").asBoolean();
+		targetWidth = jsonValue.get("targetWidth").asInt();
+		targetHeight = jsonValue.get("targetHeight").asInt();
+		new LwjglApplication(new Sink(), cfg);
 	}
 	
 	/*
@@ -171,29 +194,18 @@ public final class Sink implements ApplicationListener {
 	public final void create() {
 		Sink.log("Sink: Created");
 		Config.setup();
-		stage = new Stage(Desktop.cfg.width, Desktop.cfg.height, Config.keepAspectRatio);
+		stage = new Stage(cfg.width, cfg.height, jsonValue.get("keepAspectRatio").asBoolean());
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, Config.targetWidth, Config.targetHeight);
-		camera.position.set(Config.targetWidth/2, Config.targetHeight/2, 0);
+		camera.setToOrtho(false, targetWidth, targetHeight);
+		camera.position.set(targetWidth/2, targetHeight/2, 0);
 		stage.setCamera(camera);
 		Gdx.input.setCatchBackKey(true);
  		Gdx.input.setCatchMenuKey(true);
  		Gdx.input.setInputProcessor(stage);
  		Sink.stage.addListener(touchInput);
- 		log("TotalTime: "+toScreenTime(Config.readTotalTime()));
- 		if(!Config.firstSceneClassName.isEmpty()){
-			try {
-				clazz = (Class<SplashScene>) Class.forName(Config.firstSceneClassName);
-				Sink.registerScene("first", clazz.newInstance());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-			setScene("first");
- 		}
+ 		for(String className: jsonValue.get("scenes").asString().split(","))
+ 			scenesList.add(className); // registering the scenes
+ 		setScene(scenesList.first());
 	}
 	
 	/*
@@ -208,10 +220,11 @@ public final class Sink implements ApplicationListener {
 		}
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT |GL20.GL_DEPTH_BUFFER_BIT);
+		Asset.loadNonBlocking();
 		stage.act(Gdx.graphics.getDeltaTime());
 		updateController();
 		stage.draw();
-		if (fpsLabel != null && Config.showFps)
+		if (fpsLabel != null && jsonValue.get("showFps").asBoolean())
 			fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
  	}
 
@@ -221,7 +234,7 @@ public final class Sink implements ApplicationListener {
 	@Override
 	public final void resize(int width, int height) {
 		Sink.log("Sink: Resize");
-		stage.setViewport(Config.targetWidth, Config.targetHeight, Config.keepAspectRatio);
+		stage.setViewport(targetWidth, targetHeight, jsonValue.get("keepAspectRatio").asBoolean());
 	}
 
 	/*
@@ -275,11 +288,19 @@ public final class Sink implements ApplicationListener {
 	}
 
 	public static void log(String log) {
-		if(Config.loggingEnabled){
+		if(jsonValue.get("loggingEnabled").asBoolean()){
 			Gdx.app.log("", log);
-			if(logPane != null && Config.showLogger)
+			if(logPane != null && jsonValue.get("showLogger").asBoolean())
 				logPane.update(log);
 		}
+	}
+	
+	public static Stage getStage(){
+		return stage;
+	}
+	
+	public static OrthographicCamera getCamera(){
+		return camera;
 	}
 	
 	public static void addListener(PauseListener pl){
@@ -355,80 +376,92 @@ public final class Sink implements ApplicationListener {
 /***********************************************************************************************************
 * 					Scene Related Functions											   		   	           *
 ************************************************************************************************************/	
-	
-	/**
-	 * You Must Register the scene with a sceneName so that it can be cached and change scenes
-	 * using the sceneName's
-	 * @param sceneName The name/key to be associated with the scene
-	 * @param scene The Scene for caching and easy switching
-	 * */
-	public static void registerScene(String sceneName, Scene scene){
-		sceneMap.put(sceneName, scene);
-	}
-
 	/**
 	 * Set the current scene to be displayed
-	 * @param sceneName The registered scene's name
+	 * @param className The registered scene's name
 	 **/
-	public static void setScene(String sceneName){
-		if(sceneMap.containsKey(sceneName)){
-			Sink.log("Current Scene :"+sceneName);
-			currentScene = sceneMap.get(sceneName);
-			Sink.clearScene();
-			currentScene.onInit();
-			Sink.showScene();
+	public static void setScene(String className){
+		if(scenesList.contains(className, false)){
+			Sink.log("Current Scene :"+className);
+			camera.position.set(targetWidth/2, targetHeight/2, 0);
+			stage.getRoot().clear();
+			stage.getRoot().setPosition(0, 0);
+			stage.getRoot().setSize(targetWidth, targetHeight);
+			stage.getRoot().setBounds(0,0,targetWidth,targetHeight);
+			hudActors.clear();
+			try {
+				currentScene = Class.forName(className).newInstance();
+				load(className);
+			} catch (InstantiationException e) {
+				Sink.log("Sink: Scene cannot be created , Check if scene class can be found");
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			if (fpsLabel != null && jsonValue.get("showFps").asBoolean()){
+				registerSceneHud(fpsLabel);
+				fpsLabel.setPosition(targetWidth - 80, targetHeight - 20);
+				stage.addActor(fpsLabel);
+			}
+			if (logPane != null && jsonValue.get("showLogger").asBoolean()){
+				registerSceneHud(logPane);
+				logPane.setPosition(0, 0);
+				stage.addActor(logPane);
+			}
 		}
-		else
-			Sink.log(sceneName+": Scene Does not Exist");
+		else{
+			Sink.log(className+": Scene Does not Exist");
+		}
 	}
 	
 	/**
 	 * Returns the current scene being Displayed on stage
 	 **/
-	public static Scene getScene(){
+	public static Object getScene(){
 		return currentScene;
 	}
 	
-	/**
-	 * Returns whether scene if it is registered in the SceneManager
-	 * else null
-	 * @param sceneName The registered scene's name
-	 **/
-	public static Scene getScene(String sceneName){
-		if(sceneMap.containsKey(sceneName))
-			return sceneMap.get(sceneName);
-		return null;
+	public static void nextScene(){
+		if(sceneIndex != scenesList.size)
+			sceneIndex++;
+		setScene(scenesList.get(sceneIndex));
 	}
 	
-	private static void showScene(){
-		stage.addActor(currentScene);
-		if (fpsLabel != null && Config.showFps){
-			registerSceneHud(fpsLabel);
-			fpsLabel.setPosition(Config.targetWidth - 80, Config.targetHeight - 20);
-			stage.addActor(fpsLabel);
-		}
-		if (logPane != null && Config.showLogger){
-			registerSceneHud(logPane);
-			logPane.setPosition(0, 0);
-			stage.addActor(logPane);
-		}
+	public static void prevScene(){
+		if(sceneIndex != 0)
+			sceneIndex--;
+		setScene(scenesList.get(sceneIndex));
 	}
-
-	private static void clearScene(){
-		camera.position.set(Config.targetWidth/2, Config.targetHeight/2, 0);
-		stage.clear();
-		currentScene.clear();
-		currentScene.setPosition(0, 0);
-		currentScene.setSize(Config.targetWidth, Config.targetHeight);
-		currentScene.setBounds(0,0,Config.targetWidth,Config.targetHeight);
-		clearSceneHud();
+	
+	/**
+	 * This loads the fonts for fps and logPane from the skin file. This is called by Asset once the
+	 * assets are done loading
+	 * */
+	static void setup(){
+		fpsLabel = new Label("", Asset.skin);
+		logPane = new LogPane(Asset.skin);
+	}
+	
+	/**
+	 * This loads the fonts for fps and logPane from a BitmapFont. This is called by Asset once the
+	 * assets are done loading
+	 * */
+	static void setup(BitmapFont font){
+		if(font != null){
+			LabelStyle ls = new LabelStyle();
+			ls.font = font;
+			fpsLabel = new Label("", ls);
+			logPane = new LogPane(font);
+		}
 	}
 	
 	/* If you want to make any elements/actors to move along with the camera like HUD's add them using
 	 * this method
 	 */
 	public static void registerSceneHud(Actor actor){
-		if(!hudActors.contains(actor, true))
+		if(!hudActors.contains(actor, false))
 			hudActors.add(actor);
 	}
 	
@@ -436,11 +469,101 @@ public final class Sink implements ApplicationListener {
 	 * by using this method
 	 */
 	public static void unregisterSceneHud(Actor actor){
-		hudActors.removeValue(actor, true);
+		hudActors.removeValue(actor, false);
 	}
 	 
 	public static void clearSceneHud(){
 		hudActors.clear();
+	}
+	
+	public static void addActor(Actor actor){
+		stage.addActor(actor);
+	}
+	
+	public static void addActor(Actor actor, float x, float y){
+		actor.setPosition(x, y);
+		stage.addActor(actor);
+	}
+	
+	public static boolean removeActor(Actor actor){
+		return stage.getRoot().removeActor(actor);
+	}
+	
+	public static void addAction(Action action) {
+		stage.addAction(action);
+	}
+	
+	public static void removeAction(Action action) {
+		stage.getRoot().removeAction(action);
+	}
+	
+	public static Actor findActor(String actorName){
+		return stage.getRoot().findActor(actorName);
+	}
+	
+	private static Image imgbg;
+	public static void setBackground(String texName) {
+		if(Asset.tex(texName) != null){
+			Drawable tBg = new TextureRegionDrawable(Asset.tex(texName));
+			imgbg = new Image(tBg, Scaling.stretch);
+			imgbg.setFillParent(true);
+			stage.addActor(imgbg);
+			Sink.log("Sink: Background Image Set "+texName);
+		}
+	}
+	
+	public static void removeBackground() {
+		stage.getRoot().removeActor(imgbg);
+	}
+	
+	private static boolean firstScene = true;
+	private static boolean serializerlock = false;
+	private static void load(String sceneName){
+		if(firstScene){
+			firstScene = false; // First time Splash Scene do not load serializers
+			return;
+		}
+		if(!serializerlock)
+			initSerializers(); 
+		FileHandle fh = Gdx.files.internal("scene/"+sceneName+".json");
+		if(fh.exists()){
+			String[] lines = fh.readString("UTF-8").split("\n");
+			for(String line: lines){
+				if(line.trim().isEmpty())
+					continue;
+				JsonValue jv = Sink.jsonReader.parse(line);
+				switch(jv.get("class").asString()){
+					case "sink.json.ImageJson":addActor(json.fromJson(ImageJson.class, line));break;
+					case "sink.json.LabelJson":addActor(json.fromJson(LabelJson.class, line));break;
+					case "sink.json.ButtonJson":addActor(json.fromJson(ButtonJson.class, line));break;
+					case "sink.json.TextButtonJson":addActor(json.fromJson(TextButtonJson.class, line));break;	
+					case "sink.json.TableJson":addActor(json.fromJson(TableJson.class, line));break;	
+					case "sink.json.CheckBoxJson":addActor(json.fromJson(CheckBoxJson.class, line));break;	
+					case "sink.json.SelectBoxJson":addActor(json.fromJson(SelectBoxJson.class, line));break;
+					case "sink.json.ListJson":addActor(json.fromJson(ListJson.class, line));break;
+					case "sink.json.SliderJson":addActor(json.fromJson(SliderJson.class, line));break;
+					case "sink.json.TextFieldJson":addActor(json.fromJson(TextFieldJson.class, line));break;
+					case "sink.json.DialogJson":addActor(json.fromJson(DialogJson.class, line));break;
+					case "sink.json.TouchpadJson":addActor(json.fromJson(TouchpadJson.class, line));break;
+				}
+			}
+		}
+	}
+	
+	private static void initSerializers(){
+		json.setSerializer(ImageJson.class, new ImageJson());
+		json.setSerializer(LabelJson.class, new LabelJson());
+		json.setSerializer(ButtonJson.class, new ButtonJson());
+		json.setSerializer(TextButtonJson.class, new TextButtonJson());
+		json.setSerializer(TableJson.class, new TableJson());
+		json.setSerializer(CheckBoxJson.class, new CheckBoxJson());
+		json.setSerializer(SelectBoxJson.class, new SelectBoxJson());
+		json.setSerializer(ListJson.class, new ListJson());
+		json.setSerializer(SliderJson.class, new SliderJson());
+		json.setSerializer(TextFieldJson.class, new TextFieldJson());
+		json.setSerializer(DialogJson.class, new DialogJson());
+		json.setSerializer(TouchpadJson.class, new TouchpadJson());
+		serializerlock = true;
 	}
     
 /***********************************************************************************************************
@@ -470,15 +593,15 @@ public final class Sink implements ApplicationListener {
 		camera.position.x = actor.getX();
 		camera.position.y = actor.getY();
 		for(Actor hudactor: Sink.hudActors) 
-			hudactor.setPosition(camera.position.x + hudactor.getWidth()/12 - Config.targetWidth/2, 
-					camera.position.y + hudactor.getHeight()/2 - Config.targetHeight/2);
+			hudactor.setPosition(camera.position.x + hudactor.getWidth()/12 - targetWidth/2, 
+					camera.position.y + hudactor.getHeight()/2 - targetHeight/2);
 	}
 	
 	public void moveTo(float x, float y) {
 		camera.position.x = x;
 		camera.position.y = y;
 		for(Actor hudactor: Sink.hudActors) 
-			hudactor.setPosition(x- Config.targetWidth/2, y - Config.targetHeight/2);
+			hudactor.setPosition(x- targetWidth/2, y - targetHeight/2);
 	}
      
      /** Moves the actor instantly. */
@@ -598,9 +721,9 @@ public final class Sink implements ApplicationListener {
     
     private float panSpeed = 5f;
     private float panXLeftOffset = 100;
-	private float panXRightOffset = Desktop.cfg.width - 100;
+	private float panXRightOffset = cfg.width - 100;
 	private float panYUpOffset = 70;
-	private float panYDownOffset = Desktop.cfg.height - 70;
+	private float panYDownOffset = cfg.height - 70;
 	public static float camOffsetX = 160f;
 	public static float camOffsetYTop = 110f;
 	public static float camOffsetYBot = 65f;
@@ -692,6 +815,91 @@ public final class Sink implements ApplicationListener {
 	};
 	
 	public void touchPad(float xPercent, float yPercent){
+	}
+	
+	
+/***********************************************************************************************************
+* 					Transition Related Functions												   	       *
+************************************************************************************************************/		
+	
+	public static void transitionLeftToRight(){
+		stage.getRoot().setPosition(-999, 0);
+ 		addAction(Actions.moveTo(0,  0, 0.5f));
+	}
+	
+	public static void transitionLeftToRight(float duration){
+		stage.getRoot().setPosition(-999, 0);
+ 		addAction(Actions.moveTo(0, 0, duration));
+	}
+	
+	public static void transitionLeftToRight(Interpolation inter){
+		stage.getRoot().setPosition(-999, 0);
+ 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	}
+	
+	public static void transitionLeftToRight(float duration, Interpolation inter){
+		stage.getRoot().setPosition(-999, 0);
+ 		addAction(Actions.moveTo(0, 0, duration, inter));
+	}
+	
+	public static void transitionRightToLeft(){
+		stage.getRoot().setPosition(999, 0);
+ 		addAction(Actions.moveTo(0,  0, 0.5f));
+	}
+	
+	public static void transitionRightToLeft(float duration){
+		stage.getRoot().setPosition(999, 0);
+ 		addAction(Actions.moveTo(0, 0, duration));
+	}
+	
+	public static void transitionRightToLeft(Interpolation inter){
+		stage.getRoot().setPosition(999, 0);
+ 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	}
+	
+	public static void transitionRightToLeft(float duration, Interpolation inter){
+		stage.getRoot().setPosition(999, 0);
+ 		addAction(Actions.moveTo(0, 0, duration, inter));
+	}
+	
+	public static void transitionUpToDown(){
+		stage.getRoot().setPosition(0, 999);
+ 		addAction(Actions.moveTo(0,  0, 0.5f));
+	}
+	
+	public static void transitionUpToDown(float duration){
+		stage.getRoot().setPosition(0, 999);
+ 		addAction(Actions.moveTo(0, 0, duration));
+	}
+	
+	public static void transitionUpToDown(Interpolation inter){
+		stage.getRoot().setPosition(0, 999);
+ 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	}
+	
+	public static void transitionUpToDown(float duration, Interpolation inter){
+		stage.getRoot().setPosition(0, 999);
+ 		addAction(Actions.moveTo(0, 0, duration, inter));
+	}
+	
+	public static void transitionDownToUp(){
+		stage.getRoot().setPosition(0, -999);
+ 		addAction(Actions.moveTo(0,  0, 0.5f));
+	}
+	
+	public static void transitionDownToUp(float duration){
+		stage.getRoot().setPosition(0, -999);
+ 		addAction(Actions.moveTo(0, 0, duration));
+	}
+	
+	public static void transitionDownToUp(Interpolation inter){
+		stage.getRoot().setPosition(0, -999);
+ 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	}
+	
+	public static void transitionDownToUp(float duration, Interpolation inter){
+		stage.getRoot().setPosition(0, -999);
+ 		addAction(Actions.moveTo(0, 0, duration, inter));
 	}
 }
 
