@@ -16,11 +16,13 @@
 package sink.demo.basic.scene;
 
 import sink.core.Asset;
+import sink.core.Config;
 import sink.core.Scene;
 import sink.core.Sink;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -29,6 +31,12 @@ public class CreditsScene extends Scene{
 	@Override
 	public void onInit(){
 		setBackground("title");
+		Table grid = new Table();
+		grid.setSize(Config.targetWidth, Config.targetHeight);
+		grid.setFillParent(true);
+		grid.setPosition(0, 0);
+		grid.top().left();
+		grid.center();
 		grid.setPosition(0, -250);
  		grid.addAction(Actions.moveTo(0,  110, 2.0f));
  		grid.center();

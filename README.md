@@ -1,4 +1,4 @@
-Sink v0.94
+Sink v0.99
 ==========
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
@@ -27,18 +27,18 @@ ScreenShots
 <img src = "https://f.cloud.github.com/assets/1687946/1814961/83e96854-6f09-11e3-81fc-d3b8eb52eb7d.png" width="480" height="320">
 <img src = "https://f.cloud.github.com/assets/1687946/1814977/1cc0408e-6f0a-11e3-87ea-9d1f61f5c07f.png" width="480" height="320">  
 Project Structure
------------------
+=================
 ><b>Important</b>  All asset files must be lowercase only.. otherwise it causes problems with android
 
 1. All Assets are to be stored in the assets directory
 2. Automatic Asset Loading the directory Structure should be like this
 	
+	assets/icon.png - your game icon which is loaded by the framework
 	assets/atlas/  --- all your Texture Atlas files .atlas and .png go here  
 	assets/font/  --- all your BitmapFont files .fnt and .png go here  
 	assets/music/  --- all your Music files .mp3 go here  
 	assets/sound/  --- all your Music files .mp3 go here  
 	assets/particle/  --- all your Particle files .part go here  
-	assets/icon/  --- all your Game related icon files go here  
 	assets/map/  --- all your TMX map files go here  
 	
 	assets/pack/  --- all your image files which are to be packed are to be stored here so
@@ -57,7 +57,7 @@ Project Structure
 					  	  
 					  	  					  	  
 Using
------
+=====
 All assets are accessed this way,
 First import what type of asset you wish to use as static,
 
@@ -90,29 +90,52 @@ Sink.log("Some important data");
 The asset functions can return null for Font, TextureRegion and Animation if the asset cannot be 
 found so null checking has to be manually done.
 	
-Also There is a great Config class which already has basic things needed in a game,
+Also there is a great Config class which already has basic things needed in a game,
 like Config.isMusic to get if music is enabled
 	
 Currently Only Orthogonal Maps are supported
 
-// This is for Stage3d
-import com.badlogix.gdx.scenes.scene3d.Actor3d;
-import com.badlogix.gdx.scenes.scene3d.Group3d;
-import com.badlogix.gdx.scenes.scene3d.Stage3d;
-import com.badlogix.gdx.scenes.scene3d.actions.Actions;
-
-stage3d = new Stage3d();
-modelBuilder = new ModelBuilder();
-model = modelBuilder.createBox(5f, 5f, 5f, new Material(ColorAttribute.createDiffuse(Color.WHITE)),
-                Usage.Position | Usage.Normal);
-r = new Actor3d(model, 9f, 0f, 0f);
-
-stage3d.addActor3d(r);
-
-r.addAction3d(Actions.moveTo(7f, 0f, 0f, 1f));
-r.addAction3d(Actions.rotateTo(59, 1f));
-	
+public class  SplashScene extends SplashScene {
+		
+		@Override
+		public void onInit() {
+			final Texture bg1 = new Texture("splash/libgdx.png");
+			final Image imgbg1 = new Image(bg1);
+			imgbg1.setFillParent(true);
+			addActor(imgbg1);
+	    } 
+	    
+	    @Override
+		public void onAssetsLoaded() {
+			bg1.dispose();
+			Sink.registerScene("menu", new MenuScene());
+			Sink.registerScene("options", new OptionsScene());
+			Sink.registerScene("credits", new CreditsScene());
+			Sink.registerScene("login", new LoginScene());
+			Sink.setScene("menu");
+		}
+   }
+   
+    public class  MenuScene extends Scene{
+		
+		@Override
+		public void onInit() {
+			//create some actors
+			// if you used sink studio and create a scene like Menu.json then
+			// use load("Menu") it will populate your scene after parsing the json file
+			load("Menu");
+			
+			//you can access these objects like this
+			TextButton btn = (TextButton) findActor("TextButton1");
+			Image img = (Image) find Actor("Image5");
+			
+			// these actors are loaded from the json file and are give names which allows
+			// easy access to them
+		}
+	}
 ```
+
+
 
 Download
 --------
@@ -120,9 +143,11 @@ Download
 
 Running
 --------
-Include the sink.jar in your game it contains all the libgdx files also so you dont need to include them.      
-Run the Desktop Game by using MainDesktop class as it contains the static main declaration.  
-Specify the first scene in your config.json file and register all your other scenes in it.  
+Include the sink-0.99.jar in your game classpath it contains all the libgdx files also, 
+so you dont need to include them.      
+Run the Desktop Game by using sink.main.Desktop class as it contains the static main declaration.  
+Specify the first scene which must extend the Splash Scene class in your config.json file and register  
+all your other scenes in it.  
 
 Todo
 -----
@@ -173,7 +198,7 @@ Create a config.json file in your src folder and add these lines to it
    "showLogger": false,
    "loggingEnabled": true,
    
-   "firstSceneClassName": "sky.warsong.scene.SplashScene"
+   "firstSceneClassName": "sky.warsong.scene.IntroScene"
 }
 ```
 where  
@@ -195,27 +220,21 @@ where
 	showLogger -> Whether you want to display the logging pane on the game screen  
 	loggingEnabled -> To disable logging and improve performance
 	  
-	firstSceneClassName -> The class name for your first scene so that it is automatically loaded  
+	firstSceneClassName -> The class name for your first scene so that it is automatically loaded must
+	extend the sink.core.SplashScene class
 ```
-	
+
+##SplashScene
+Use this class as your main entry point to the sink game. Extend the class and override the onInit() method
+and display anything while your assets are loading asynchronously and when they are done loading the 
+overridden method onAssetsLoaded() will be called and you can use this to set another scene or display
+the loaded assets.
 
 ##Scene
 Use this class to to create scenes or menus for your game. Just extend this class and override the
 onInit() method all other things are done automatically like clearing the stage and populating it with the
-actors of this group. A scene can be set using SceneManager.setScene("sceneName")
-All the Asset methods are directly built into it
-```java
-public class MenuScene extends Scene{
-	@Override
-	public void onInit(){
-		transitionLeftToRight();
-		musicPlay("title"); 
-		setBackground("title");
- 		TextButton btn1 = new TextButton("Start", Asset.skin);
- 		addActor(btn1, 45, 245);
- 	}
- }
-```
+actors of this group. A scene can be set using Sink.setScene("sceneName")
+All the Asset methods are directly built into it.
 
 ##SceneActor
 This extends the Actor class and all the Asset methods are directly built into it
@@ -242,17 +261,13 @@ You Must setup the Sink framework in your splash/menu or first scene and registe
 and after you have loaded all your assets if you want to  show the logPane and fps then set it up<br>
 by calling Sink.setup()<br> 
 ```java
-public class  SplashScene extends Scene{
-    
-	    public SplashScene(){
-			Sink.registerScene("menu", new MenuScene());
-			Sink.registerScene("options", new OptionsScene());
-			Sink.registerScene("credits", new CreditsScene());
-			Sink.registerScene("login", new LoginScene());
-		}
+public class  Menu extends Scene{
 		
 		@Override
 		public void onInit() {
+			Image img = new Image(new TextureRegionDrawable(tex("my_awesome_image")));
+			addActor(img);
+			addActor(img, 50, 250);
 	    } 
 }
 ```

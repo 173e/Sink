@@ -7,15 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class SelectBoxJson extends SelectBox<String>  implements Json.Serializer<SelectBoxJson> {
+public class SelectBoxJson extends SelectBox  implements Json.Serializer<SelectBoxJson> {
 	
 	public SelectBoxJson(){
-		super(Asset.skin);
+		super(new String[]{}, Asset.skin);
 	}
 	
 	public SelectBoxJson(String... items){
-		super(Asset.skin);
-		setItems(items);
+		super(items, Asset.skin);
+		//setItems(items);
 	}
 
 	@Override

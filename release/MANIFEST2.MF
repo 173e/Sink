@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: .
-Created-By: pyros2097
-Main-Class: sink.studio.core.SinkStudio
-SplashScreen-Image: logo.png

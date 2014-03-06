@@ -16,6 +16,7 @@
 package sink.demo.tictactoe.scene;
 
 import sink.core.Asset;
+import sink.core.Config;
 import sink.core.Scene;
 import sink.demo.tictactoe.GameMode;
 
@@ -23,6 +24,7 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -30,6 +32,12 @@ public class MenuScene extends Scene{
 	@Override
 	public void onInit(){
 		setBackground("title");
+		Table grid = new Table();
+		grid.setSize(Config.targetWidth, Config.targetHeight);
+		grid.setFillParent(true);
+		grid.setPosition(0, 0);
+		grid.top().left();
+		grid.center();
 		grid.setPosition(-999, 0);
  		grid.addAction(Actions.moveTo(0,  0, 0.5f));
  		grid.center();

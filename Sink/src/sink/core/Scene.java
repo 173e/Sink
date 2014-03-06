@@ -39,7 +39,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -47,12 +46,11 @@ import com.badlogic.gdx.utils.Scaling;
 
 /** The base class for creating Scenes
  * <p>
- * Use this class to to create screens or menus for your game. Just extend this class and override the
+ * Use this class to create screens or menus for your game. Just extend this class and override the
  * {@link #onInit} method all other things are done automatically like clearing the stage and populating it 
  * with the actors of this group and override {@link #act} method which is called in the main render method for 
  * updating your scene logic such as splash scene, timers, delays etc...
  * <p>
- * It also contains a Table which can be used as a box layout for ui components.
  * A scene can be set using {@link Sink.setScene}
  * 
  * <p>
@@ -63,12 +61,12 @@ import com.badlogic.gdx.utils.Scaling;
 
 
 public abstract class Scene extends Group {
-	protected Table grid;
-	public float xoffset, yoffset; // can be used for manual placing of widgets
-	public float xcenter, ycenter;
 	protected Image imgbg;
 	
-	public Scene(){}
+	private static boolean serializerlock = false;
+	
+	public Scene(){
+	}
 	
 	@Override
 	public void act(float delta){
@@ -235,9 +233,12 @@ public abstract class Scene extends Group {
 	}
 	
 	public void load(String sceneName){
-			FileHandle file = Gdx.files.internal("scene/"+sceneName+".json");
-			String text = file.readString();
-			String[] lines = text.split("\n");
+		if(!serializerlock){
+			initSerializers();
+		}
+		FileHandle fh = Gdx.files.internal("scene/"+sceneName+".json");
+		if(fh.exists()){
+			String[] lines = fh.readString("UTF-8").split("\n");
 			for(String line: lines){
 				if(line.trim().isEmpty())
 					continue;
@@ -257,6 +258,23 @@ public abstract class Scene extends Group {
 					case "sink.json.TouchpadJson":addActor(Sink.json.fromJson(TouchpadJson.class, line));break;
 				}
 			}
+		}
+	}
+	
+	private static void initSerializers(){
+		Sink.json.setSerializer(ImageJson.class, new ImageJson());
+		Sink.json.setSerializer(LabelJson.class, new LabelJson());
+		Sink.json.setSerializer(ButtonJson.class, new ButtonJson());
+		Sink.json.setSerializer(TextButtonJson.class, new TextButtonJson());
+		Sink.json.setSerializer(TableJson.class, new TableJson());
+		Sink.json.setSerializer(CheckBoxJson.class, new CheckBoxJson());
+		Sink.json.setSerializer(SelectBoxJson.class, new SelectBoxJson());
+		Sink.json.setSerializer(ListJson.class, new ListJson());
+		Sink.json.setSerializer(SliderJson.class, new SliderJson());
+		Sink.json.setSerializer(TextFieldJson.class, new TextFieldJson());
+		Sink.json.setSerializer(DialogJson.class, new DialogJson());
+		Sink.json.setSerializer(TouchpadJson.class, new TouchpadJson());
+		serializerlock = true;
 	}
 	
 	public abstract void onInit();

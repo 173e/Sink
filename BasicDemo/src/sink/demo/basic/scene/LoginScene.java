@@ -23,5 +23,4 @@ public class LoginScene extends Scene{
  		});
 		addActor(back);
 	}
-
 }

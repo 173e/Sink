@@ -22,7 +22,6 @@ import sink.core.Asset;
 import sink.core.Config;
 import sink.core.Scene;
 import sink.core.Sink;
-
 import sink.event.PauseListener;
 import sink.event.ResumeListener;
 import sink.map.Map;
@@ -81,8 +80,8 @@ public final class GameScene extends Scene implements PauseListener, ResumeListe
 		pauseImage.setTouchable(Touchable.disabled);
 		pauseImage.setColor(1, 1, 1, 0);
 		pauseImage.addAction(Actions.alpha(0.6f, 0.7f, Interpolation.linear));
-		pauseImage.setPosition(Sink.getCameraX() - Config.TARGET_WIDTH/2,
-				Sink.getCameraY() - Config.TARGET_HEIGHT/2);
+		pauseImage.setPosition(Sink.getCameraX() - Config.targetWidth/2,
+				Sink.getCameraY() - Config.targetHeight/2);
 		addActor(pauseImage);
 		Sink.disablePanning();
 	}

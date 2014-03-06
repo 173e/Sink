@@ -50,12 +50,12 @@ import com.badlogic.gdx.utils.ArrayMap;
  *	2. Automatic Asset Loading the directory Structure should be like this <br>
  *
  *  <p>
+ *  assets/icon.png  --- your game icon to be displayed on the window<br>
  *	assets/atlas/  --- all your Texture Atlas files .atlas and .png go here<br>
  *	assets/font/  --- all your BitmapFont files .fnt and .png go here<br>
  *	assets/music/  --- all your Music files .mp3 go here<br>
  *	assets/sound/  --- all your Music files .mp3 go here<br>
  *	assets/particle/  --- all your Particle files .part go here<br>
- *	assets/icon/  --- all your Game related icon files go here<br>
  *	assets/map/  --- all your TMX map files go here<br>
  *	assets/pack/  --- all your image files which are to be packed are to be stored here<br>
  *					  so that they are automatically packed by the texture packer and stored in
@@ -100,9 +100,9 @@ import com.badlogic.gdx.utils.ArrayMap;
  * @author pyros2097 */
 
 public final class Asset {
-	public static AssetManager assetMan = new AssetManager();
-	public static Skin skin;
+	private static AssetManager assetMan = new AssetManager();
 	
+	public static Skin skin;
 	private static FileHandle[] musicFiles;
 	private static FileHandle[] soundFiles;
 	private static FileHandle[] fontFiles;
@@ -121,17 +121,55 @@ public final class Asset {
 	public static String currentMusicName = ""; //Only file name no prefix or suffix
 	private static Sound currentSound = null;
 	
+	private static boolean readinglock = false;
+	private static boolean updatinglock = false;
 	
-	public static void finishLoading(){
+	/* This is to be used by sink studio */
+	private static String basePath = "";
+	
+	/*
+	 * This is a blocking load call blocks the display until assets are all loaded.
+	 */
+	public static void loadBlocking(){
+		readinglock = true;
+		updatinglock = true;
+		assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+		readData();
 		assetMan.finishLoading();
+		loadTextureRegions();
+		loadMusics();
+		loadSounds();
+		loadFonts();
+		loadSkin();
+		loadFPS();
 	}
 	
-	public static boolean update(){
-		
-		return assetMan.update();
+	/*
+	 * This is a non-blocking load call that allows you to display other things while the load is going
+	 * on. This is called in the act method of SplashScene so that it is runs in the background
+	 * once the assets are all loaded it will automatically stop and call SplashScene.onAssetsLoaded()
+	 */
+	static boolean loadNonBlocking(){
+		if(!readinglock){
+			assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+			readData();
+			readinglock = true;
+		}
+		// once update returns true then condition is satisfied and the lock stops update call
+		if(!updatinglock)
+			if(assetMan.update()){
+				loadTextureRegions();
+				loadMusics();
+				loadSounds();
+				loadFonts();
+				loadSkin();
+				loadFPS();
+				updatinglock = true;
+			}
+		return updatinglock;
 	}
 	
-	public static void loadData(){
+	private static void readData(){
 		if (Gdx.app.getType() == ApplicationType.Android){
 			Sink.log("Loading Music Files");
 			musicFiles = Gdx.files.internal("music").list(); //adroid works
@@ -141,32 +179,32 @@ public final class Asset {
 			fontFiles = Gdx.files.internal("font").list();
 			Sink.log("Loading Atlas Files");
 			atlasFiles = Gdx.files.internal("atlas").list();
+			assetMan.load("skin/uiskin.json", Skin.class);
 		}
 		else if(Gdx.app.getType() == ApplicationType.Desktop){
 			if(Config.isJar)
 				loadFromJar();
 			else{
 				Sink.log("Loading Music Files");
-				musicFiles = Gdx.files.internal("./bin/music").list();
+				musicFiles = Gdx.files.internal(basePath+"/music").list();
 				Sink.log("Loading Sound Files");
-				soundFiles = Gdx.files.internal("./bin/sound").list();
+				soundFiles = Gdx.files.internal(basePath+"/sound").list();
 				Sink.log("Loading Font Files");
-				fontFiles = Gdx.files.internal("./bin/font").list();
-				Sink.log("Loading Atlas Files");
-				atlasFiles = Gdx.files.internal("./bin/atlas").list();
+				fontFiles = Gdx.files.internal(basePath+"/font").list();
+				atlasFiles = Gdx.files.internal(basePath+"/atlas").list();
 				for(FileHandle f: musicFiles)
-					assetMan.load("music/"+f.name(), Music.class);
+					assetMan.load(basePath+"music/"+f.name(), Music.class);
 				for(FileHandle f: soundFiles)
-					assetMan.load("sound/"+f.name(), Sound.class);
+					assetMan.load(basePath+"sound/"+f.name(), Sound.class);
 				for(FileHandle f: fontFiles){
 					if(f.extension().equals("fnt"))
-						assetMan.load("font/"+f.name(), BitmapFont.class);
+						assetMan.load(basePath+"font/"+f.name(), BitmapFont.class);
 				}
 				for(FileHandle f: atlasFiles){
 					if(f.extension().equals("atlas"))
-						assetMan.load("atlas/"+f.name(), TextureAtlas.class);
+						assetMan.load(basePath+"atlas/"+f.name(), TextureAtlas.class);
 				}
-				
+				assetMan.load(basePath+"skin/uiskin.json", Skin.class);
 			}
 				
 		}
@@ -174,54 +212,64 @@ public final class Asset {
 	}
 	
 	private static void loadFromJar(){
-		try{
-			File jarName = new File(Asset.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-			ZipFile zf=new ZipFile(jarName.getAbsoluteFile());
-		    Enumeration<? extends ZipEntry> e=zf.entries();
-		    while (e.hasMoreElements()) 
-		     {
-		          ZipEntry ze=(ZipEntry)e.nextElement();
-		          String entryName = ze.getName();
-				  if(entryName.startsWith("music") &&  entryName.endsWith(".mp3")) {
-					  musicJarFiles.add(entryName);
-					  Sink.log(ze.getName());
-				  }
-				  else if(entryName.startsWith("sound") &&  entryName.endsWith(".mp3")){
-					  soundJarFiles.add(entryName);
-					  Sink.log(ze.getName());
-				  }
-				  else if(entryName.startsWith("font") &&  entryName.endsWith(".fnt")){
-					  fontJarFiles.add(entryName);
-					  Sink.log(ze.getName());
-				  }
-				  else if(entryName.startsWith("atlas") &&  entryName.endsWith(".atlas")){
-					  atlasJarFiles.add(entryName);
-					  Sink.log(ze.getName());
-				  }
-		     }
-		     zf.close();
+		if(Sink.clazz != null){
+			try{
+				File jarName = new File(Sink.clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
+				ZipFile zf = new ZipFile(jarName.getAbsoluteFile());
+			    Enumeration<? extends ZipEntry> e=zf.entries();
+			    while (e.hasMoreElements()) 
+			     {
+			          ZipEntry ze=(ZipEntry)e.nextElement();
+			          String entryName = ze.getName();
+					  if(entryName.startsWith("music") &&  entryName.endsWith(".mp3")) {
+						  musicJarFiles.add(entryName);
+						  Sink.log(ze.getName());
+					  }
+					  else if(entryName.startsWith("sound") &&  entryName.endsWith(".mp3")){
+						  soundJarFiles.add(entryName);
+						  Sink.log(ze.getName());
+					  }
+					  else if(entryName.startsWith("font") &&  entryName.endsWith(".fnt")){
+						  fontJarFiles.add(entryName);
+						  Sink.log(ze.getName());
+					  }
+					  else if(entryName.startsWith("atlas") &&  entryName.endsWith(".atlas")){
+						  atlasJarFiles.add(entryName);
+						  Sink.log(ze.getName());
+					  }
+					  else if(entryName.startsWith("skin") &&  entryName.endsWith(".json")){
+						  assetMan.load("skin/uiskin.json", Skin.class);
+						  Sink.log(ze.getName());
+					  }
+			     }
+			     zf.close();
+			}
+			catch (Exception e){e.printStackTrace();}
+			for(String f: musicJarFiles)
+				assetMan.load(f, Music.class);
+			for(String f: soundJarFiles)
+				assetMan.load(f, Sound.class);
+			for(String f: fontJarFiles)
+				assetMan.load(f, BitmapFont.class);
+			for(String f: atlasJarFiles)
+				assetMan.load(f, TextureAtlas.class);
 		}
-		catch (Exception e){e.printStackTrace();}
-		for(String f: musicJarFiles)
-			assetMan.load(f, Music.class);
-		for(String f: soundJarFiles)
-			assetMan.load(f, Sound.class);
-		for(String f: fontJarFiles)
-			assetMan.load(f, BitmapFont.class);
-		for(String f: atlasJarFiles)
-			assetMan.load(f, TextureAtlas.class);
-	}
-
-	public static void setup(){
-		assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-		loadTextureRegions();
-		//loadAnimations();
-		loadMusics();
-		loadSounds();
-		loadFonts();
 	}
 	
+	private static void loadSkin(){
+		skin = assetMan.get(basePath+"skin/uiskin.json", Skin.class);
+	}
 	
+	private static void loadFPS(){
+		if(skin != null)
+			Sink.setup();
+		else{
+			for(BitmapFont f: fontMap.values()){
+				Sink.setup(f);
+				break;
+			}
+		}
+	}
 	
 /***********************************************************************************************************
 * 								Music Related Global Functions											   *
@@ -236,7 +284,7 @@ public final class Asset {
 		}
 		else{
 			for(FileHandle f: musicFiles){
-				Music m = assetMan.get("music/"+f.name(), Music.class);
+				Music m = assetMan.get(basePath+"music/"+f.name(), Music.class);
 				musicMap.put(f.nameWithoutExtension(),m);
 			}
 		}
@@ -322,7 +370,7 @@ public final class Asset {
 		}
 		else{
 			for(FileHandle f: soundFiles){
-				Sound m = assetMan.get("sound/"+f.name(), Sound.class);
+				Sound m = assetMan.get(basePath+"sound/"+f.name(), Sound.class);
 				soundMap.put(f.nameWithoutExtension(),m);
 			}
 		}
@@ -401,7 +449,7 @@ public final class Asset {
 		else{
 			for(FileHandle f: fontFiles){
 				if(f.extension().equals("fnt")){
-					BitmapFont m = assetMan.get("font/"+f.name(), BitmapFont.class);
+					BitmapFont m = assetMan.get(basePath+"font/"+f.name(), BitmapFont.class);
 					fontMap.put(f.nameWithoutExtension(),m);
 				}
 			}
@@ -440,7 +488,7 @@ public final class Asset {
 		else{
 			for(FileHandle f: atlasFiles){
 				if(f.extension().equals("atlas")){
-						TextureAtlas atlas = assetMan.get("atlas/"+f.name(), TextureAtlas.class);
+						TextureAtlas atlas = assetMan.get(basePath+"atlas/"+f.name(), TextureAtlas.class);
 						Array<TextureAtlas.AtlasRegion> regions = atlas.getRegions();
 						for(TextureAtlas.AtlasRegion ar: regions){
 							texMap.put(ar.name, ar);
@@ -631,20 +679,35 @@ public final class Asset {
 /***********************************************************************************************************
 	* 								TMX MAP Related Functions							   				   *
 ************************************************************************************************************/
+	/*
+	 * Loads a Tmx map by specifying the map/level no
+	 * eg: loadTmx(4) -> returns the TiledMap "map/level4.tmx"
+	 * 
+	 * Note: Tmx Maps must be loaded manually as they may take a lot of time to laod
+	 */
 	public static TiledMap loadTmx(int i){
-		assetMan.load("map/level"+i+".tmx", TiledMap.class);
+		assetMan.load(basePath+"map/level"+i+".tmx", TiledMap.class);
 		assetMan.finishLoading();
-		return assetMan.get("map/level"+i+".tmx", TiledMap.class);
+		return assetMan.get(basePath+"map/level"+i+".tmx", TiledMap.class);
 	}
 	
+	/*
+	 * unloads a Tmx map by specifying the map/level no
+	 * eg: unloadTmx(4) -> unloads the TiledMap "map/level4.tmx"
+	 * 
+	 * Note: Tmx Maps must be unloaded manually 
+	 */
 	public static void unloadTmx(int i){
-		assetMan.unload("map/level"+i+".tmx");
+		assetMan.unload(basePath+"map/level"+i+".tmx");
 	}
 	
 /***********************************************************************************************************
 * 								LOG Related Functions							   				   	   	   *
 ************************************************************************************************************/
-	public static void logAssets(){
+	/*
+	 * Logs all the assets that are loaded and cached
+	 */
+	public static void logAll(){
 		logTextures();
 		logAnimations();
 		logFonts();
@@ -652,6 +715,9 @@ public final class Asset {
 		logMusics();
 	}
 	
+	/*
+	 * Logs all the TextureRegions that are loaded and cached
+	 */
 	public static void logTextures(){
 		Sink.log("BEGIN logging Textures------------------");
 		for(String na: texMap.keys())
@@ -659,6 +725,9 @@ public final class Asset {
 		Sink.log("END logging Textures------------------");
 	}
 	
+	/*
+	 * Logs all the Animations that are loaded and cached
+	 */
 	public static void logAnimations(){
 		Sink.log("BEGIN logging Animations------------------");
 		for(String na: animMap.keys())
@@ -666,6 +735,9 @@ public final class Asset {
 		Sink.log("END logging Animations------------------");
 	}
 	
+	/*
+	 * Logs all the BitmapFonts that are loaded and cached
+	 */
 	public static void logFonts(){
 		Sink.log("BEGIN logging Fonts------------------");
 		for(String na: fontMap.keys())
@@ -673,6 +745,9 @@ public final class Asset {
 		Sink.log("END logging Fonts------------------");
 	}
 	
+	/*
+	 * Logs all the Sounds that are loaded and cached
+	 */
 	public static void logSounds(){
 		Sink.log("BEGIN logging Sounds------------------");
 		for(String na: soundMap.keys())
@@ -680,6 +755,9 @@ public final class Asset {
 		Sink.log("END logging Sounds------------------");
 	}
 	
+	/*
+	 * Logs all the Music that are loaded and cached
+	 */
 	public static void logMusics(){
 		Sink.log("BEGIN logging Musics------------------");
 		for(String na: musicMap.keys())
@@ -687,7 +765,18 @@ public final class Asset {
 		Sink.log("END logging Musics------------------");
 	}
 	
+	/*
+	 * Unloads and disposes all the resources except for Tmx Maps
+	 * This is called by Sink.exit();
+	 */
 	public static void unloadAll(){
 		assetMan.dispose();
+	}
+	
+	/*
+	 * If using in eclipse set basePath to ./bin
+	*/
+	public static void setBasePath(String path){
+		basePath = path;
 	}
 }

@@ -21,7 +21,7 @@ import static sink.core.Asset.soundStop;
 import sink.event.DisposeListener;
 import sink.event.PauseListener;
 import sink.event.ResumeListener;
-import sink.main.MainDesktop;
+import sink.main.Desktop;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -39,7 +39,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Json;
@@ -50,8 +49,12 @@ import com.badlogic.gdx.utils.JsonReader;
  * It consists of a single Stage and Camera which are all initialized based on the {@link Config} settings.
  * The stage can be accessed in a static way like Sink.stage and methods related to camera like moveTo, moveBy,
  * are also accessed the same way.<br>
- * It has extra things like gameUptime, pauseState, PauseListeners, ResumeListeners, 
+ * It has extra things like gameUptime, pauseState, PauseListeners, ResumeListeners, AssetLoadedEvent
  * DisposeListeners.<br>
+ * 
+ * It has automatic asset unloading and disposing and you can use {@link #exit()} to quit your game safely
+ * 
+ * Note: Your TMX maps have to be unloaded manually as they can be huge resources needing to be freed early.
  * 
  * It has static methods which can be used for panning the camera using mouse, keyboard, drag.. etc.
  * It can also automatically follow a actor by using followActor(Actor actor)<br>
@@ -63,38 +66,68 @@ import com.badlogic.gdx.utils.JsonReader;
  * and after you have loaded all your assets if you want to  show the logPane and fps then set it up<br>
  * by calling {@link #setup()}<br>
  * 
- * Run the Desktop Game by using MainDesktop class as it contains the static main declaration.<br>
+ * Run the Desktop Game by using sink.main.Desktop class as it contains the static main declaration.<br>
  * Specify the first scene in your config.json file and register all your other scenes in it.<br>
+ * Don't use the constructor of the Scene class as it can cause problems
  * 
+ * All assets are loaded in the background(asynchronously) and the {@link #onAssetsLoaded} is called once the
+ * assets are loaded .
+ * Note: The first scene in the Sink Framework must always be a splash scene as the assets are yet to be loaded
+ * 		 by the framework. This scene class name must be declared in the config.json file.
  * <p>
  * @ex
  * <pre>
  * <code>
-    public class  SplashScene extends Scene{
-    
-	    public SplashScene(){
+    public class  SplashScene extends SplashScene {
+		
+		@Override
+		public void onInit() {
+			final Texture bg1 = new Texture("splash/libgdx.png");
+			final Image imgbg1 = new Image(bg1);
+			imgbg1.setFillParent(true);
+			addActor(imgbg1);
+	    } 
+	    
+	    @Override
+		public void onAssetsLoaded() {
+			bg1.dispose();
 			Sink.registerScene("menu", new MenuScene());
 			Sink.registerScene("options", new OptionsScene());
 			Sink.registerScene("credits", new CreditsScene());
 			Sink.registerScene("login", new LoginScene());
+			Sink.setScene("menu");
 		}
+   }
+   
+    public class  MenuScene extends Scene{
 		
 		@Override
 		public void onInit() {
-	    } 
-   }
+			//create some actors
+			// if you used sink studio and create a scene like Menu.json then
+			// use load("Menu") it will populate your scene after parsing the json file
+			load("Menu");
+			
+			//you can access these objects like this
+			TextButton btn = (TextButton) findActor("TextButton1");
+			Image img = (Image) find Actor("Image5");
+			
+			// these actors are loaded from the json file and are give names which allows
+			// easy access to them
+		}
+	}
  </code>
  </pre>
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {
-	public static String version = "0.94";
+	public static String version = "0.99";
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
-	
-	public static Stage stage;
 	public static Json json = new Json();
 	public static JsonReader jsonReader = new JsonReader();
+	
+	public static Stage stage;
 	private static OrthographicCamera camera;
 	private static LogPane logPane;
 	private static Label fpsLabel;
@@ -106,26 +139,22 @@ public final class Sink implements ApplicationListener {
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
 	
+	static Class<SplashScene> clazz = null;
+	
 	/**
-	 * You Must call setup the Sink framework in your splash/menu scene after you have loaded all your
-	 * assets if you want the logPane and fps to display.
-	 * This loads the fonts for fps and logPane from the skin file. You can use Asset.skin
-	 * @param skin - The Skin to set the Fps and logPane text font.
+	 * This loads the fonts for fps and logPane from the skin file. This is called by Asset once the
+	 * assets are done loading
 	 * */
-	public static void setup(Skin skin){
-		if(skin != null){
-			fpsLabel = new Label("", skin);
-			logPane = new LogPane(skin);
-		}
+	static void setup(){
+		fpsLabel = new Label("", Asset.skin);
+		logPane = new LogPane(Asset.skin);
 	}
 	
 	/**
-	 * You Must call setup the Sink framework in your splash/menu scene after you have loaded all your
-	 * assets if you want the logPane and fps to display.
-	 * This loads the fonts for fps and logPane from the specified BitmapFont font
-	 * @param font - The BitmapFont to set the Fps and logPane text font.
+	 * This loads the fonts for fps and logPane from a BitmapFont. This is called by Asset once the
+	 * assets are done loading
 	 * */
-	public static void setup(BitmapFont font){
+	static void setup(BitmapFont font){
 		if(font != null){
 			LabelStyle ls = new LabelStyle();
 			ls.font = font;
@@ -134,11 +163,15 @@ public final class Sink implements ApplicationListener {
 		}
 	}
 	
+	/*
+	 * This is where the stage and camera are created and the splash scene in created
+	 * dynamically and set as the first scene;
+	*/
 	@Override
 	public final void create() {
 		Sink.log("Sink: Created");
 		Config.setup();
-		stage = new Stage(MainDesktop.cfg.width, MainDesktop.cfg.height, Config.keepAspectRatio);
+		stage = new Stage(Desktop.cfg.width, Desktop.cfg.height, Config.keepAspectRatio);
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, Config.targetWidth, Config.targetHeight);
 		camera.position.set(Config.targetWidth/2, Config.targetHeight/2, 0);
@@ -150,7 +183,7 @@ public final class Sink implements ApplicationListener {
  		log("TotalTime: "+toScreenTime(Config.readTotalTime()));
  		if(!Config.firstSceneClassName.isEmpty()){
 			try {
-				Class<Scene> clazz = (Class<Scene>) Class.forName(Config.firstSceneClassName);
+				clazz = (Class<SplashScene>) Class.forName(Config.firstSceneClassName);
 				Sink.registerScene("first", clazz.newInstance());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
@@ -163,6 +196,10 @@ public final class Sink implements ApplicationListener {
  		}
 	}
 	
+	/*
+	 * This is the main rendering call that updates the time, updates the stage
+	 * and loads updates the camera and fps text
+	 */
 	@Override
 	public final void render(){
 		if (System.nanoTime() - startTime >= 1000000000) {
@@ -178,12 +215,19 @@ public final class Sink implements ApplicationListener {
 			fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
  	}
 
+	/*
+	 * This will resize the stage accordingly to fit to your target width and height
+	 */
 	@Override
 	public final void resize(int width, int height) {
 		Sink.log("Sink: Resize");
 		stage.setViewport(Config.targetWidth, Config.targetHeight, Config.keepAspectRatio);
 	}
 
+	/*
+	 * This will pause any music and stop any sound being played
+	 * and will fire the Pause event
+	 */
 	@Override
 	public final void pause() {
 		Sink.log("Sink: Pause");
@@ -192,6 +236,10 @@ public final class Sink implements ApplicationListener {
 		firePauseEvent();
 	}
 
+	/*
+	 * This will resume any music currently being played
+	 * and will fire the Resume event
+	 */
 	@Override
 	public final void resume() {
 		Sink.log("Sink: Resume");
@@ -199,9 +247,26 @@ public final class Sink implements ApplicationListener {
 		fireResumeEvent();
 	}
 
+	/*
+	 * When disposed is called
+	 * It will automatically unload all your assets and dispose the stage
+	 */
 	@Override
 	public final void dispose() {
 		Sink.log("Sink: Disposing");
+		fireDisposeEvent();
+		stage.dispose();
+		Asset.unloadAll();
+		Config.writeTotalTime(gameUptime);
+		Gdx.app.exit();
+	}
+	
+	/*
+	 * Use this to exit your game safely
+	 * It will automatically unload all your assets and dispose the stage
+	*/
+	public static final void exit(){
+		Sink.log("Sink: Disposing and Exiting");
 		fireDisposeEvent();
 		stage.dispose();
 		Asset.unloadAll();
@@ -287,14 +352,13 @@ public final class Sink implements ApplicationListener {
 		return str;
 	}
 	
-	
 /***********************************************************************************************************
 * 					Scene Related Functions											   		   	           *
 ************************************************************************************************************/	
 	
 	/**
 	 * You Must Register the scene with a sceneName so that it can be cached and change scenes
-	 * using sceneName's
+	 * using the sceneName's
 	 * @param sceneName The name/key to be associated with the scene
 	 * @param scene The Scene for caching and easy switching
 	 * */
@@ -357,13 +421,6 @@ public final class Sink implements ApplicationListener {
 		currentScene.setPosition(0, 0);
 		currentScene.setSize(Config.targetWidth, Config.targetHeight);
 		currentScene.setBounds(0,0,Config.targetWidth,Config.targetHeight);
-		currentScene.grid = new Table();
-		currentScene.grid.setSize(Config.targetWidth, Config.targetHeight);
-		currentScene.grid.setFillParent(true);
-		currentScene.grid.setPosition(0, 0);
-		currentScene.grid.top().left();
-		currentScene.xcenter = currentScene.getWidth()/2;
-		currentScene.ycenter = currentScene.getHeight()/2;
 		clearSceneHud();
 	}
 	
@@ -541,9 +598,9 @@ public final class Sink implements ApplicationListener {
     
     private float panSpeed = 5f;
     private float panXLeftOffset = 100;
-	private float panXRightOffset = MainDesktop.cfg.width - 100;
+	private float panXRightOffset = Desktop.cfg.width - 100;
 	private float panYUpOffset = 70;
-	private float panYDownOffset = MainDesktop.cfg.height - 70;
+	private float panYDownOffset = Desktop.cfg.height - 70;
 	public static float camOffsetX = 160f;
 	public static float camOffsetYTop = 110f;
 	public static float camOffsetYBot = 65f;
@@ -638,6 +695,10 @@ public final class Sink implements ApplicationListener {
 	}
 }
 
+/*
+ * This class is used to display the sink logs on the game screen itself so it
+ * becomes easier to track game states can be disabled in the options
+*/
 class LogPane extends SceneGroup{
 	Label logLabel;
 	ScrollPane scroll;

@@ -1,7 +1,6 @@
 {
-   "title": "TicTacToe",
-   "showIcon": true,
-   "iconLocation": "icon/icon_32.png",
+   "title": "Tic Tac Toe",
+   "hasIcon": true,
    "targetWidth": 800,
    "targetHeight": 480,
    "screenWidth": 800,
@@ -28,6 +27,5 @@
    "showLogger": false,
    "loggingEnabled": true,
    
-   "firstScene": "splash",
-   "firstSceneClassName": "sink.demo.tictactoe.scene.SplashScene"
+   "firstSceneClassName": "sink.demo.tictactoe.scene.IntroScene"
 }

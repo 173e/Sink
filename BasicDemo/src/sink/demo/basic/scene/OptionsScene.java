@@ -25,17 +25,28 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class OptionsScene extends Scene{
+	Table grid;
+	
 	@Override
 	public void onInit(){
 		setBackground("title");
 		setPosition(0, -999);
 		addAction(Actions.moveTo(0,  0, 0.3f));
-		xoffset = 100;
-		yoffset = Config.TARGET_HEIGHT - 80;
+		grid = new Table();
+		grid.setSize(Config.targetWidth, Config.targetHeight);
+		grid.setFillParent(true);
+		grid.setPosition(0, 0);
+		grid.top().left();
+		grid.center();
+		float xoffset = 100;
+		float yoffset = Config.targetHeight - 80;
+		float xcenter = getWidth()/2;
+		float ycenter = getHeight()/2;
 
 		/*	________________________
 		 * |_______Options__________|
@@ -105,5 +116,4 @@ public class OptionsScene extends Scene{
 	void addRight(Actor a){
 		grid.add(a).expand().fill().right().padTop(10).row();
 	}
-
 }

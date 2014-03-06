@@ -22,6 +22,7 @@ import sink.core.Sink;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -29,6 +30,12 @@ public class LevelScene extends Scene{
 	public final static int maxLevel = 20;
 	@Override
 	public void onInit(){
+		Table grid = new Table();
+		grid.setSize(Config.targetWidth, Config.targetHeight);
+		grid.setFillParent(true);
+		grid.setPosition(0, 0);
+		grid.top().left();
+		grid.center();
 		grid.setPosition(-999, 0);
 		grid.addAction(Actions.moveTo(0, 0, 0.3f));
 		grid.top().left().pad(10, 10, 10, 10);

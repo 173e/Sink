@@ -7,14 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class ListJson extends List<String> implements Json.Serializer<ListJson> {
+public class ListJson extends List implements Json.Serializer<ListJson> {
 	
 	public ListJson(){
-		super(Asset.skin);
+		super(new String[]{} ,Asset.skin);
 	}
 	
 	public ListJson(String... items){
-		super(Asset.skin);
+		super(items, Asset.skin);
 		setItems(items);
 	}
 
