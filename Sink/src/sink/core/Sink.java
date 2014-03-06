@@ -141,7 +141,7 @@ public final class Sink implements ApplicationListener {
 	public static boolean pauseState = false;
 	
 	private static int sceneIndex = 0;
-	private static final Array<String> scenesList = new Array<String>();
+	public static final Array<String> scenesList = new Array<String>();
 	private static Array<Actor> hudActors = new Array<Actor>();
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
@@ -159,6 +159,9 @@ public final class Sink implements ApplicationListener {
 	public static float targetWidth = 800;
 	public static float targetHeight  = 480;
 	
+	public static boolean useClassLoader = false;
+	public static ClassLoader cl = null;
+	
 	
 	/** The Main Launcher for Sink Game
 	 * <p>
@@ -168,21 +171,21 @@ public final class Sink implements ApplicationListener {
 	public static LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 	public static void main(String[] argc) {
 		jsonValue = jsonReader.parse(Sink.class.getClassLoader().getResourceAsStream("config.json"));
-		if(jsonValue.get("hasIcon").asBoolean())
+		if(jsonValue.getBoolean("hasIcon"))
 			cfg.addIcon("icon.png", FileType.Internal);
-		cfg.width = jsonValue.get("screenWidth").asInt();
-		cfg.height = jsonValue.get("screenHeight").asInt();
-		cfg.x = jsonValue.get("x").asInt();
-		cfg.y = jsonValue.get("y").asInt();
-		cfg.resizable = jsonValue.get("resize").asBoolean();
-		cfg.forceExit =  jsonValue.get("forceExit").asBoolean();
-		cfg.fullscreen =  jsonValue.get("fullScreen").asBoolean();
-		cfg.useGL20 = jsonValue.get("useGL20").asBoolean();
-		cfg.vSyncEnabled = jsonValue.get("vSync").asBoolean();
-		cfg.audioDeviceBufferCount = jsonValue.get("audioBufferCount").asInt();
-		LwjglApplicationConfiguration.disableAudio = jsonValue.get("disableAudio").asBoolean();
-		targetWidth = jsonValue.get("targetWidth").asInt();
-		targetHeight = jsonValue.get("targetHeight").asInt();
+		cfg.width = jsonValue.getInt("screenWidth");
+		cfg.height = jsonValue.getInt("screenHeight");
+		cfg.x = jsonValue.getInt("x");
+		cfg.y = jsonValue.getInt("y");
+		cfg.resizable = jsonValue.getBoolean("resize");
+		cfg.forceExit =  jsonValue.getBoolean("forceExit");
+		cfg.fullscreen =  jsonValue.getBoolean("fullScreen");
+		cfg.useGL20 = jsonValue.getBoolean("useGL20");
+		cfg.vSyncEnabled = jsonValue.getBoolean("vSync");
+		cfg.audioDeviceBufferCount = jsonValue.getInt("audioBufferCount");
+		LwjglApplicationConfiguration.disableAudio = jsonValue.getBoolean("disableAudio");
+		targetWidth = jsonValue.getInt("targetWidth");
+		targetHeight = jsonValue.getInt("targetHeight");
 		new LwjglApplication(new Sink(), cfg);
 	}
 	
@@ -194,7 +197,7 @@ public final class Sink implements ApplicationListener {
 	public final void create() {
 		Sink.log("Sink: Created");
 		Config.setup();
-		stage = new Stage(cfg.width, cfg.height, jsonValue.get("keepAspectRatio").asBoolean());
+		stage = new Stage(cfg.width, cfg.height, jsonValue.getBoolean("keepAspectRatio"));
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, targetWidth, targetHeight);
 		camera.position.set(targetWidth/2, targetHeight/2, 0);
@@ -203,8 +206,8 @@ public final class Sink implements ApplicationListener {
  		Gdx.input.setCatchMenuKey(true);
  		Gdx.input.setInputProcessor(stage);
  		Sink.stage.addListener(touchInput);
- 		for(String className: jsonValue.get("scenes").asString().split(","))
- 			scenesList.add(className); // registering the scenes
+ 		for(String className: jsonValue.getString("scenes").split(","))
+ 			scenesList.add(className.trim()); // registering the scenes
  		setScene(scenesList.first());
 	}
 	
@@ -224,7 +227,7 @@ public final class Sink implements ApplicationListener {
 		stage.act(Gdx.graphics.getDeltaTime());
 		updateController();
 		stage.draw();
-		if (fpsLabel != null && jsonValue.get("showFps").asBoolean())
+		if (fpsLabel != null && jsonValue.getBoolean("showFps"))
 			fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
  	}
 
@@ -234,7 +237,7 @@ public final class Sink implements ApplicationListener {
 	@Override
 	public final void resize(int width, int height) {
 		Sink.log("Sink: Resize");
-		stage.setViewport(targetWidth, targetHeight, jsonValue.get("keepAspectRatio").asBoolean());
+		stage.setViewport(targetWidth, targetHeight, jsonValue.getBoolean("keepAspectRatio"));
 	}
 
 	/*
@@ -288,9 +291,9 @@ public final class Sink implements ApplicationListener {
 	}
 
 	public static void log(String log) {
-		if(jsonValue.get("loggingEnabled").asBoolean()){
+		if(jsonValue.getBoolean("loggingEnabled")){
 			Gdx.app.log("", log);
-			if(logPane != null && jsonValue.get("showLogger").asBoolean())
+			if(logPane != null && jsonValue.getBoolean("showLogger"))
 				logPane.update(log);
 		}
 	}
@@ -390,8 +393,11 @@ public final class Sink implements ApplicationListener {
 			stage.getRoot().setBounds(0,0,targetWidth,targetHeight);
 			hudActors.clear();
 			try {
-				currentScene = Class.forName(className).newInstance();
 				load(className);
+				if(!useClassLoader)
+					currentScene = Class.forName(className).newInstance();
+				else
+					currentScene = cl.loadClass(className).newInstance();
 			} catch (InstantiationException e) {
 				Sink.log("Sink: Scene cannot be created , Check if scene class can be found");
 				e.printStackTrace();
@@ -400,12 +406,12 @@ public final class Sink implements ApplicationListener {
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
-			if (fpsLabel != null && jsonValue.get("showFps").asBoolean()){
+			if (fpsLabel != null && jsonValue.getBoolean("showFps")){
 				registerSceneHud(fpsLabel);
 				fpsLabel.setPosition(targetWidth - 80, targetHeight - 20);
 				stage.addActor(fpsLabel);
 			}
-			if (logPane != null && jsonValue.get("showLogger").asBoolean()){
+			if (logPane != null && jsonValue.getBoolean("showLogger")){
 				registerSceneHud(logPane);
 				logPane.setPosition(0, 0);
 				stage.addActor(logPane);
@@ -525,7 +531,7 @@ public final class Sink implements ApplicationListener {
 		}
 		if(!serializerlock)
 			initSerializers(); 
-		FileHandle fh = Gdx.files.internal("scene/"+sceneName+".json");
+		FileHandle fh = Gdx.files.internal(Asset.basePath+"scene/"+sceneName+".json");
 		if(fh.exists()){
 			String[] lines = fh.readString("UTF-8").split("\n");
 			for(String line: lines){
@@ -550,7 +556,7 @@ public final class Sink implements ApplicationListener {
 		}
 	}
 	
-	private static void initSerializers(){
+	public static void initSerializers(){
 		json.setSerializer(ImageJson.class, new ImageJson());
 		json.setSerializer(LabelJson.class, new LabelJson());
 		json.setSerializer(ButtonJson.class, new ButtonJson());

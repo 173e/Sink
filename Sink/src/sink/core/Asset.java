@@ -122,7 +122,7 @@ public final class Asset {
 	
 	private static File jarFile = null;
 	/* This is to be used by sink studio */
-	private static String basePath = "";
+	static String basePath = "";
 	
 	/*
 	 * This is a blocking load call blocks the display until assets are all loaded.
@@ -178,7 +178,7 @@ public final class Asset {
 			fontFiles = Gdx.files.internal("font").list();
 			Sink.log("Loading Atlas Files");
 			atlasFiles = Gdx.files.internal("atlas").list();
-			assetMan.load("skin/uiskin.json", Skin.class);
+			assetMan.load(basePath+"skin/uiskin.json", Skin.class);
 		}
 		else if(Gdx.app.getType() == ApplicationType.Desktop){
 			try {

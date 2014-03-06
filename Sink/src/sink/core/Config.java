@@ -67,7 +67,7 @@ public final class Config {
     private static int score;
     
     static void setup(){
-       prefs =Gdx.app.getPreferences(Sink.jsonValue.get("title").asString());
+       prefs =Gdx.app.getPreferences(Sink.jsonValue.getString("title"));
        isMusic = prefs.getBoolean(MUSIC, true);
        isSound = prefs.getBoolean(SOUND, true);
        
