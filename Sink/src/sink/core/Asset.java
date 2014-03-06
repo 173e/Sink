@@ -133,9 +133,9 @@ public final class Asset {
 	public static void loadBlocking(){
 		readinglock = true;
 		updatinglock = true;
-		assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		readData();
 		assetMan.finishLoading();
+		assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		loadTextureRegions();
 		loadMusics();
 		loadSounds();
@@ -151,13 +151,13 @@ public final class Asset {
 	 */
 	static boolean loadNonBlocking(){
 		if(!readinglock){
-			assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 			readData();
 			readinglock = true;
 		}
 		// once update returns true then condition is satisfied and the lock stops update call
 		if(!updatinglock)
 			if(assetMan.update()){
+				assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 				loadTextureRegions();
 				loadMusics();
 				loadSounds();
@@ -686,6 +686,7 @@ public final class Asset {
 	 * Note: Tmx Maps must be loaded manually as they may take a lot of time to laod
 	 */
 	public static TiledMap loadTmx(int i){
+		assetMan.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		assetMan.load(basePath+"map/level"+i+".tmx", TiledMap.class);
 		assetMan.finishLoading();
 		return assetMan.get(basePath+"map/level"+i+".tmx", TiledMap.class);
@@ -774,7 +775,7 @@ public final class Asset {
 	}
 	
 	/*
-	 * If using in eclipse set basePath to ./bin
+	 * If using in eclipse set basePath to ./bin/
 	*/
 	public static void setBasePath(String path){
 		basePath = path;
