@@ -18,7 +18,9 @@ package sink.core;
 import static sink.core.Asset.musicPause;
 import static sink.core.Asset.musicResume;
 import static sink.core.Asset.soundStop;
+import sink.event.ClickedListener;
 import sink.event.DisposeListener;
+import sink.event.DraggedListener;
 import sink.event.PauseListener;
 import sink.event.ResumeListener;
 import sink.json.ButtonJson;
@@ -41,15 +43,17 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -57,13 +61,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.SnapshotArray;
+import com.badlogic.gdx.utils.StringBuilder;
 
 /** The Main Entry Point for the Sink Game is the Sink class
  * <p>
@@ -126,10 +132,10 @@ import com.badlogic.gdx.utils.Scaling;
  * @author pyros2097 */
 
 public final class Sink implements ApplicationListener {
-	public static String version = "1.00";
+	public static String version = "1.01";
 	private float startTime = System.nanoTime();
 	public static float gameUptime = 0;
-	public static Json json = new Json();
+	private static Json json = new Json();
 	public static JsonReader jsonReader = new JsonReader();
 	public static JsonValue jsonValue = null;
 	
@@ -137,20 +143,25 @@ public final class Sink implements ApplicationListener {
 	private static OrthographicCamera camera;
 	private static LogPane logPane;
 	private static Label fpsLabel;
-	private static Object currentScene = null;
-	public static boolean pauseState = false;
 	
+	private static Object currentScene = null;
+	private static String currentSceneName = "";
 	private static int sceneIndex = 0;
 	public static final Array<String> scenesList = new Array<String>();
+	public static final Array<String> objectList = new Array<String>();
+	private static final Array<String> serializerList = new Array<String>();
 	private static Array<Actor> hudActors = new Array<Actor>();
+	private static final Array<ClickedListener> clickedListeners = new Array<ClickedListener>();
+	private static final Array<DraggedListener> draggedListeners = new Array<DraggedListener>();
 	private static final Array<PauseListener> pauseListeners = new Array<PauseListener>();
 	private static final Array<ResumeListener> resumeListeners = new Array<ResumeListener>();
 	private static final Array<DisposeListener> disposeListeners = new Array<DisposeListener>();
+	
 	/*Important:
 	 *  The Target Width  and Target Height refer to the nominal width and height of the game for the
 	 *  graphics which are created  for this width and height, this allows for the Stage to scale this
 	 *  graphics for all screen width and height. Therefore your game will work on all screen sizes 
-	 *  but maybe blurred on some.
+	 *  but maybe blurred or look awkward on some devices.
 	 *  ex:
 	 *  My Game targetWidth = 800 targetHeight = 480
 	 *  Then my game works perfectly for SCREEN_WIDTH = 800 SCREEN_HEIGHT = 480
@@ -158,9 +169,28 @@ public final class Sink implements ApplicationListener {
 	 */
 	public static float targetWidth = 800;
 	public static float targetHeight  = 480;
+	public static boolean pauseState = false;
 	
-	public static boolean useClassLoader = false;
-	public static ClassLoader cl = null;
+	public static ClassLoader classLoader = null;
+	private static boolean firstScene = true;
+	private static boolean serializerlock = false;
+	
+	//Studio Related Stuff
+	/* Selected Actor can never be null as when the stage is clicked it may return an actor or the root actor */
+	public static Actor selectedActor = null;
+	private ShapeRenderer shapeRenderer;
+	public static boolean showGrid = false;
+	public static boolean debug = false;
+	
+	public static int dots = 20;
+	public static int xlines = (int)Sink.targetWidth/dots;
+	public static int ylines = (int)Sink.targetHeight/dots;
+	
+	public static String sceneBackground = "";
+	public static String sceneMusic = "";
+	public static String sceneTransition = "";
+	public static float sceneDuration = 0;
+	public static Interpolation sceneInterpolation = Interpolation.linear;
 	
 	
 	/** The Main Launcher for Sink Game
@@ -205,10 +235,12 @@ public final class Sink implements ApplicationListener {
 		Gdx.input.setCatchBackKey(true);
  		Gdx.input.setCatchMenuKey(true);
  		Gdx.input.setInputProcessor(stage);
- 		Sink.stage.addListener(touchInput);
+ 		stage.addListener(touchInput);
+ 		shapeRenderer = new ShapeRenderer();
  		for(String className: jsonValue.getString("scenes").split(","))
  			scenesList.add(className.trim()); // registering the scenes
  		setScene(scenesList.first());
+ 		selectedActor = stage.getRoot();
 	}
 	
 	/*
@@ -223,13 +255,38 @@ public final class Sink implements ApplicationListener {
 		}
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT |GL20.GL_DEPTH_BUFFER_BIT);
-		Asset.loadNonBlocking();
+		Asset.load();
 		stage.act(Gdx.graphics.getDeltaTime());
-		updateController();
 		stage.draw();
+		updateController();
+		if(debug){
+			drawGrid();
+			drawSelection();
+		}
 		if (fpsLabel != null && jsonValue.getBoolean("showFps"))
 			fpsLabel.setText("Fps: " + Gdx.graphics.getFramesPerSecond());
  	}
+	
+	void drawGrid(){
+		if(showGrid){
+	        shapeRenderer.begin(ShapeType.Point);
+	        shapeRenderer.setColor(Color.BLACK);
+	        for(int i = 0; i<xlines; i++)
+	        	for(int j = 0; j<ylines; j++)
+	        		shapeRenderer.point(i*dots, j*dots, 0);
+	        shapeRenderer.end();
+		}
+	}
+	
+	void drawSelection(){
+		if(selectedActor.getName() != null){
+			shapeRenderer.begin(ShapeType.Line);
+			shapeRenderer.setColor(Color.GREEN);
+			shapeRenderer.rect(selectedActor.getX(), selectedActor.getY(), 
+					selectedActor.getWidth(),selectedActor.getHeight());
+			shapeRenderer.end();
+		}
+	}
 
 	/*
 	 * This will resize the stage accordingly to fit to your target width and height
@@ -306,6 +363,14 @@ public final class Sink implements ApplicationListener {
 		return camera;
 	}
 	
+	public static void addListener(ClickedListener cl){
+		clickedListeners.add(cl);
+	}
+	
+	public static void addListener(DraggedListener dl){
+		draggedListeners.add(dl);
+	}
+	
 	public static void addListener(PauseListener pl){
 		pauseListeners.add(pl);
 	}
@@ -316,6 +381,14 @@ public final class Sink implements ApplicationListener {
 	
 	public static void addListener(DisposeListener dl){
 		disposeListeners.add(dl);
+	}
+	
+	public static void removeListener(ClickedListener cl){
+		clickedListeners.removeValue(cl, true);
+	}
+	
+	public static void removeListener(DraggedListener dl){
+		draggedListeners.removeValue(dl, true);
 	}
 	
 	public static void removeListener(PauseListener pl){
@@ -331,9 +404,12 @@ public final class Sink implements ApplicationListener {
 	}
 	
 	public static void clearAllListeners(){
+		clickedListeners.clear();
+		draggedListeners.clear();
 		pauseListeners.clear();
 		resumeListeners.clear();
 		disposeListeners.clear();
+		hudActors.clear();
 	}
 	
 	/**
@@ -387,17 +463,19 @@ public final class Sink implements ApplicationListener {
 		if(scenesList.contains(className, false)){
 			Sink.log("Current Scene :"+className);
 			camera.position.set(targetWidth/2, targetHeight/2, 0);
-			stage.getRoot().clear();
+			clearAllListeners();
+			stage.clear();
+			stage.addListener(touchInput);
 			stage.getRoot().setPosition(0, 0);
 			stage.getRoot().setSize(targetWidth, targetHeight);
 			stage.getRoot().setBounds(0,0,targetWidth,targetHeight);
-			hudActors.clear();
 			try {
-				load(className);
-				if(!useClassLoader)
+				currentSceneName = className;
+				load();
+				if(classLoader == null)
 					currentScene = Class.forName(className).newInstance();
 				else
-					currentScene = cl.loadClass(className).newInstance();
+					currentScene = classLoader.loadClass(className).newInstance();
 			} catch (InstantiationException e) {
 				Sink.log("Sink: Scene cannot be created , Check if scene class can be found");
 				e.printStackTrace();
@@ -429,14 +507,20 @@ public final class Sink implements ApplicationListener {
 		return currentScene;
 	}
 	
+	/**
+	 * Changes to the next scene in the scnesList
+	 **/
 	public static void nextScene(){
-		if(sceneIndex != scenesList.size)
+		if(sceneIndex <= scenesList.size)
 			sceneIndex++;
 		setScene(scenesList.get(sceneIndex));
 	}
 	
+	/**
+	 * Changes to the previous scene in the scnesList
+	 **/
 	public static void prevScene(){
-		if(sceneIndex != 0)
+		if(sceneIndex >= 0)
 			sceneIndex--;
 		setScene(scenesList.get(sceneIndex));
 	}
@@ -507,13 +591,23 @@ public final class Sink implements ApplicationListener {
 		return stage.getRoot().findActor(actorName);
 	}
 	
-	private static Image imgbg;
+	public static SnapshotArray<Actor> getChildren(){
+		return stage.getRoot().getChildren();
+	}
+	
+	public static Actor hit(float x, float y){
+		return stage.getRoot().hit(x, y, true);
+	}
+	
+	private static Image imgbg = null;
 	public static void setBackground(String texName) {
+		if(imgbg != null)
+			removeBackground();
 		if(Asset.tex(texName) != null){
-			Drawable tBg = new TextureRegionDrawable(Asset.tex(texName));
-			imgbg = new Image(tBg, Scaling.stretch);
+			imgbg = new Image(new TextureRegionDrawable(Asset.tex(texName)), Scaling.stretch);
 			imgbg.setFillParent(true);
 			stage.addActor(imgbg);
+			imgbg.toBack();
 			Sink.log("Sink: Background Image Set "+texName);
 		}
 	}
@@ -522,65 +616,173 @@ public final class Sink implements ApplicationListener {
 		stage.getRoot().removeActor(imgbg);
 	}
 	
-	private static boolean firstScene = true;
-	private static boolean serializerlock = false;
-	private static void load(String sceneName){
+	private static void load(){
+		Sink.log("Loading");
 		if(firstScene){
-			firstScene = false; // First time Splash Scene do not load serializers
+			firstScene = false; 
+			// First time Splash Scene do not load serializers as assets are yet to be loaded
 			return;
 		}
 		if(!serializerlock)
 			initSerializers(); 
-		FileHandle fh = Gdx.files.internal(Asset.basePath+"scene/"+sceneName+".json");
+		FileHandle fh = Gdx.files.internal(Asset.basePath+"scene/"+currentSceneName+".json");
 		if(fh.exists()){
 			String[] lines = fh.readString("UTF-8").split("\n");
 			for(String line: lines){
 				if(line.trim().isEmpty())
 					continue;
-				JsonValue jv = Sink.jsonReader.parse(line);
-				switch(jv.get("class").asString()){
-					case "sink.json.ImageJson":addActor(json.fromJson(ImageJson.class, line));break;
-					case "sink.json.LabelJson":addActor(json.fromJson(LabelJson.class, line));break;
-					case "sink.json.ButtonJson":addActor(json.fromJson(ButtonJson.class, line));break;
-					case "sink.json.TextButtonJson":addActor(json.fromJson(TextButtonJson.class, line));break;	
-					case "sink.json.TableJson":addActor(json.fromJson(TableJson.class, line));break;	
-					case "sink.json.CheckBoxJson":addActor(json.fromJson(CheckBoxJson.class, line));break;	
-					case "sink.json.SelectBoxJson":addActor(json.fromJson(SelectBoxJson.class, line));break;
-					case "sink.json.ListJson":addActor(json.fromJson(ListJson.class, line));break;
-					case "sink.json.SliderJson":addActor(json.fromJson(SliderJson.class, line));break;
-					case "sink.json.TextFieldJson":addActor(json.fromJson(TextFieldJson.class, line));break;
-					case "sink.json.DialogJson":addActor(json.fromJson(DialogJson.class, line));break;
-					case "sink.json.TouchpadJson":addActor(json.fromJson(TouchpadJson.class, line));break;
+				JsonValue jv = jsonReader.parse(line);
+				deserialize(jv.get("class").asString(), line);
+			}
+		}
+		Sink.log("Loaded");
+	}
+	
+	/* This is used by the studio so dont use this */
+	public static void load(String sceneName){
+		Sink.log("Loading");
+		currentSceneName = sceneName;
+		FileHandle fh = Gdx.files.internal(Asset.basePath+"scene/"+currentSceneName+".json");
+		if(fh.exists()){
+			String[] lines = fh.readString("UTF-8").split("\n");
+			for(String line: lines){
+				if(line.trim().isEmpty())
+					continue;
+				JsonValue jv = jsonReader.parse(line);
+				deserialize(jv.get("class").asString(), line);
+			}
+		}
+		Sink.log("Loaded");
+	}
+	
+	/* This is used by the studio so dont use this */
+	public static void save(){
+		Sink.log("Saving");
+		StringBuilder sb = new StringBuilder();
+		sb.append("{class:SceneJson,");
+		sb.append("background:\""+sceneBackground+"\",");
+		sb.append("music:\""+sceneMusic+"\",");
+		sb.append("transition:\""+sceneTransition+"\",");
+		sb.append("duration:"+sceneDuration+",");
+		for(int i=0;i<interpolationsValue.length;i++){
+			if(sceneInterpolation.equals(interpolationsValue[i])){
+				sb.append("interpolation:"+Interpolations.values()[i].toString()+"}");
+				break;
+			}
+		}
+		sb.append("\n");
+		for(Actor actor: getChildren()){
+			if(actor.getName() != null){
+				sb.append(json.toJson(actor));
+				sb.append("\n");
+			}
+		}
+		FileHandle fh = Gdx.files.local(Asset.basePath+"scene/"+currentSceneName+".json");
+		if(fh.exists())
+			fh.writeString(sb.toString(), false, "UTF-8");
+		Sink.log("Saved");
+	}
+	
+	public static enum Transitions{
+		None, leftToRight, rightToLeft, upToDown, downToUp ,FadeIn, FadeOut, ScaleIn, ScaleOut
+	};
+	
+	public static enum Interpolations{
+		Bounce, BounceIn, BounceOut, Circle, CircleIn, CircleOut, 
+		Elastic, ElasticIn, ElasticOut, Exp10, Exp10In, Exp10Out, 
+		Exp5, Exp5In, Exp5Out, Linear, Fade,
+		Pow2, Pow2In, Pow2Out, Pow3, Pow3In, Pow3Out,
+		Pow4, Pow4In, pow4Out, Pow5, Pow5In, Pow5Out, 
+		Sine, SineIn, SineOut, Swing, SwingIn, SwingOut
+	};
+	
+	public static Interpolation[] interpolationsValue = {
+		Interpolation.bounce, Interpolation.bounceIn,  Interpolation.bounceOut,  
+		Interpolation.circle,  Interpolation.circleIn,  Interpolation.circleOut, 
+		Interpolation.elastic,  Interpolation.elasticIn,  Interpolation.elasticOut, 
+		Interpolation.exp10,  Interpolation.exp10In,  Interpolation.exp10Out, 
+		Interpolation.exp5,  Interpolation.exp5In,  Interpolation.exp5Out, 
+		Interpolation.linear,  Interpolation.fade,
+		Interpolation.pow2,  Interpolation.pow2In,  Interpolation.pow2Out, 
+		Interpolation.pow3,  Interpolation.pow3In,  Interpolation.pow3Out, 
+		Interpolation.pow4,  Interpolation.pow4In,  Interpolation.pow4Out, 
+		Interpolation.pow5,  Interpolation.pow5In,  Interpolation.pow5Out, 
+		Interpolation.sine,  Interpolation.sineIn,  Interpolation.sineOut, 
+		Interpolation.swing,  Interpolation.swingIn,  Interpolation.swingOut, 
+	};
+	
+	public static void deserialize(String className, String value){
+		if(className.equals("SceneJson")){
+			JsonValue jv = jsonReader.parse(value);
+			sceneBackground = jv.getString("background");
+			sceneMusic = jv.getString("music");
+			sceneTransition = jv.getString("transition");
+			sceneDuration = jv.getFloat("duration");
+			Sink.setBackground(sceneBackground);
+			Asset.musicPlay(sceneMusic);
+			Interpolations interp = Interpolations.valueOf(jv.getString("interpolation"));
+			int i = 0;
+			for(Interpolations interpolation: Interpolations.values()){
+				if(interp.equals(interpolation)){
+					sceneInterpolation = interpolationsValue[i];
+					break;
 				}
+				i++;
+			}
+			switch(Transitions.valueOf(sceneTransition)){
+				case None: break;
+				case leftToRight: transitionLeftToRight();break;
+				case rightToLeft: transitionRightToLeft();break;
+				case upToDown: transitionUpToDown();break;
+				case downToUp: transitionDownToUp();break;
+				case FadeIn: transitionFadeIn();break;
+				case FadeOut: transitionFadeOut();break;
+				case ScaleIn: transitionScaleIn();break;
+				case ScaleOut: transitionScaleOut();break;
+			}
+		}
+		else{
+			try {
+				Class cc = Class.forName(className);
+				addActor((Actor)json.fromJson(cc, value));
+			}
+			catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 	
+	public static void registerSerializer(Class clazz, Json.Serializer serializer){
+		json.setSerializer(clazz, serializer);
+	}
+	
 	public static void initSerializers(){
-		json.setSerializer(ImageJson.class, new ImageJson());
-		json.setSerializer(LabelJson.class, new LabelJson());
-		json.setSerializer(ButtonJson.class, new ButtonJson());
-		json.setSerializer(TextButtonJson.class, new TextButtonJson());
-		json.setSerializer(TableJson.class, new TableJson());
-		json.setSerializer(CheckBoxJson.class, new CheckBoxJson());
-		json.setSerializer(SelectBoxJson.class, new SelectBoxJson());
-		json.setSerializer(ListJson.class, new ListJson());
-		json.setSerializer(SliderJson.class, new SliderJson());
-		json.setSerializer(TextFieldJson.class, new TextFieldJson());
-		json.setSerializer(DialogJson.class, new DialogJson());
-		json.setSerializer(TouchpadJson.class, new TouchpadJson());
+		/*registerSerializer(ActorJson.class, new ActorJson());*/
+		registerSerializer(ImageJson.class, new ImageJson());
+		registerSerializer(LabelJson.class, new LabelJson());
+		registerSerializer(ButtonJson.class, new ButtonJson());
+		registerSerializer(TextButtonJson.class, new TextButtonJson());
+		registerSerializer(TableJson.class, new TableJson());
+		registerSerializer(CheckBoxJson.class, new CheckBoxJson());
+		registerSerializer(SelectBoxJson.class, new SelectBoxJson());
+		registerSerializer(ListJson.class, new ListJson());
+		registerSerializer(SliderJson.class, new SliderJson());
+		registerSerializer(TextFieldJson.class, new TextFieldJson());
+		registerSerializer(DialogJson.class, new DialogJson());
+		registerSerializer(TouchpadJson.class, new TouchpadJson());
 		serializerlock = true;
 	}
     
 /***********************************************************************************************************
 * 					Camera Related Functions											   		   	       *
 ************************************************************************************************************/	
-    private float duration, time;
-	private Interpolation interpolation;
-    private boolean complete;
-    private float lastPercent;
-    private float panSpeedX, panSpeedY;
-    private final Vector3 mousePos = new Vector3();
+    private static float duration;
+    private static float time;
+	private static Interpolation interpolation;
+    private static boolean complete;
+    private static float lastPercent;
+    private static float panSpeedX, panSpeedY;
+    private static final Vector3 mousePos = new Vector3();
 	
     // try to re-implement this with statetime
     private void updateController(){
@@ -611,19 +813,19 @@ public final class Sink implements ApplicationListener {
 	}
      
      /** Moves the actor instantly. */
-    public void moveBy (float amountX, float amountY) {
+    public static void moveBy (float amountX, float amountY) {
          moveBy(amountX, amountY, 0, null);
     }
 
-    public void moveBy (float amountX, float amountY, float duration) {
+    public static void moveBy (float amountX, float amountY, float duration) {
          moveBy(amountX, amountY, duration, null);
     }
 
-    public void moveBy (float amountX, float amountY, float duration, Interpolation interpolation) {
-    	this.duration = duration;
-     	this.interpolation = interpolation;
-     	this.panSpeedX = amountX;
-     	this.panSpeedY = amountY;
+    public static void moveBy (float amountX, float amountY, float dur, Interpolation interp) {
+    	duration = dur;
+     	interpolation = interp;
+     	panSpeedX = amountX;
+     	panSpeedY = amountY;
      	lastPercent = 0;
      	restart();
     }
@@ -653,7 +855,7 @@ public final class Sink implements ApplicationListener {
     		actor.setPosition(actor.getX()+panSpeedX * percentDelta, actor.getY()+panSpeedY * percentDelta);
     }
 
-    private void restart () {
+    private static void restart () {
         time = 0;
         complete = false;
     }
@@ -777,13 +979,13 @@ public final class Sink implements ApplicationListener {
     			moveBy(0, -panSpeed);
     }
     	
-	private final Vector3 curr = new Vector3();
-	private final Vector3 last = new Vector3(-1, -1, -1);
-	private final Vector3 delta = new Vector3();
-	private float deltaCamX = 0;
-	private float deltaCamY = 0;
+	private final static Vector3 curr = new Vector3();
+	private final static Vector3 last = new Vector3(-1, -1, -1);
+	private final static Vector3 delta = new Vector3();
+	private static float deltaCamX = 0;
+	private static float deltaCamY = 0;
 	
-	private void dragCam(int x, int y){
+	private static void dragCam(int x, int y){
 		camera.unproject(curr.set(x, y, 0));
     	if (!(last.x == -1 && last.y == -1 && last.z == -1)) {
     		camera.unproject(delta.set(last.x, last.y, 0));
@@ -798,7 +1000,16 @@ public final class Sink implements ApplicationListener {
     	last.set(x, y, 0);
     }
     
-    private final InputListener touchInput = new InputListener(){
+    private final static ClickListener touchInput = new ClickListener(){
+    	@Override
+    	public void clicked(InputEvent event, float x, float y){
+    		super.clicked(event, x, y);
+    		selectedActor = hit(x,y);
+    		if(selectedActor != null)
+    			for(ClickedListener cl: clickedListeners) 
+    				cl.onClicked();
+    	}
+    	
 		@Override
 		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 			super.touchDown(event, x, y, pointer, button);
@@ -808,6 +1019,8 @@ public final class Sink implements ApplicationListener {
 		@Override
 		public void touchDragged(InputEvent event, float x, float y, int pointer){
 			super.touchDragged(event, x, y, pointer);
+			for(DraggedListener dl: draggedListeners)
+				dl.onDragged();
 			if(hasControl)
 				if(Config.useDrag) dragCam((int)x, (int)-y);
 		}
@@ -815,6 +1028,7 @@ public final class Sink implements ApplicationListener {
 		@Override
 		public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 			super.touchUp(event, x, y, pointer, button);
+			
 			if(hasControl)
 				last.set(-1, -1, -1);
 		}
@@ -830,82 +1044,58 @@ public final class Sink implements ApplicationListener {
 	
 	public static void transitionLeftToRight(){
 		stage.getRoot().setPosition(-999, 0);
- 		addAction(Actions.moveTo(0,  0, 0.5f));
-	}
-	
-	public static void transitionLeftToRight(float duration){
-		stage.getRoot().setPosition(-999, 0);
- 		addAction(Actions.moveTo(0, 0, duration));
-	}
-	
-	public static void transitionLeftToRight(Interpolation inter){
-		stage.getRoot().setPosition(-999, 0);
- 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
-	}
-	
-	public static void transitionLeftToRight(float duration, Interpolation inter){
-		stage.getRoot().setPosition(-999, 0);
- 		addAction(Actions.moveTo(0, 0, duration, inter));
+ 		addAction(Actions.moveTo(0, 0, sceneDuration, sceneInterpolation));
 	}
 	
 	public static void transitionRightToLeft(){
 		stage.getRoot().setPosition(999, 0);
- 		addAction(Actions.moveTo(0,  0, 0.5f));
-	}
-	
-	public static void transitionRightToLeft(float duration){
-		stage.getRoot().setPosition(999, 0);
- 		addAction(Actions.moveTo(0, 0, duration));
-	}
-	
-	public static void transitionRightToLeft(Interpolation inter){
-		stage.getRoot().setPosition(999, 0);
- 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
-	}
-	
-	public static void transitionRightToLeft(float duration, Interpolation inter){
-		stage.getRoot().setPosition(999, 0);
- 		addAction(Actions.moveTo(0, 0, duration, inter));
+ 		addAction(Actions.moveTo(0, 0, sceneDuration, sceneInterpolation));
 	}
 	
 	public static void transitionUpToDown(){
 		stage.getRoot().setPosition(0, 999);
- 		addAction(Actions.moveTo(0,  0, 0.5f));
-	}
-	
-	public static void transitionUpToDown(float duration){
-		stage.getRoot().setPosition(0, 999);
- 		addAction(Actions.moveTo(0, 0, duration));
-	}
-	
-	public static void transitionUpToDown(Interpolation inter){
-		stage.getRoot().setPosition(0, 999);
- 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
-	}
-	
-	public static void transitionUpToDown(float duration, Interpolation inter){
-		stage.getRoot().setPosition(0, 999);
- 		addAction(Actions.moveTo(0, 0, duration, inter));
+ 		addAction(Actions.moveTo(0, 0, sceneDuration, sceneInterpolation));
 	}
 	
 	public static void transitionDownToUp(){
 		stage.getRoot().setPosition(0, -999);
- 		addAction(Actions.moveTo(0,  0, 0.5f));
+ 		addAction(Actions.moveTo(0, 0, sceneDuration, sceneInterpolation));
 	}
 	
-	public static void transitionDownToUp(float duration){
-		stage.getRoot().setPosition(0, -999);
- 		addAction(Actions.moveTo(0, 0, duration));
+	public static void transitionFadeIn(){
+		Color color = stage.getRoot().getColor();
+		color.a = 0f;
+		stage.getRoot().setColor(color);
+ 		addAction(Actions.fadeIn(sceneDuration, sceneInterpolation));
 	}
 	
-	public static void transitionDownToUp(Interpolation inter){
-		stage.getRoot().setPosition(0, -999);
- 		addAction(Actions.moveTo(0,  0, 0.5f, inter));
+	public static void transitionFadeOut(){
+		Action action2 = new Action(){
+			@Override 
+			public boolean act(float delta){
+				Color color = stage.getRoot().getColor();
+				color.a = 1f;
+				stage.getRoot().setColor(color);
+				return true;
+			}
+		};
+		addAction(Actions.sequence(Actions.fadeOut(sceneDuration, sceneInterpolation), action2));
 	}
 	
-	public static void transitionDownToUp(float duration, Interpolation inter){
-		stage.getRoot().setPosition(0, -999);
- 		addAction(Actions.moveTo(0, 0, duration, inter));
+	public static void transitionScaleIn(){
+		Sink.stage.getRoot().setScale(0, 0);
+ 		addAction(Actions.scaleTo(1, 1, sceneDuration, sceneInterpolation));
+	}
+	
+	public static void transitionScaleOut(){
+		Action action2 = new Action(){
+			@Override 
+			public boolean act(float delta){
+				stage.getRoot().scale(1f);
+				return true;
+			}
+		};
+		addAction(Actions.sequence(Actions.scaleTo(1, 1, sceneDuration, sceneInterpolation), action2));
 	}
 }
 

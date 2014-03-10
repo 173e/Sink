@@ -18,11 +18,13 @@ public class TableJson extends Table implements Json.Serializer<TableJson> {
 	public TableJson(boolean useSkin){
 		super(Asset.skin);
 		this.useSkin = useSkin;
+		setSize(200, 200);
 	}
 	
 	public TableJson(String bgTexName){
 		setBackground(new TextureRegionDrawable(Asset.tex(bgTexName)));
 		this.bgTexName = bgTexName;
+		setSize(200, 200);
 	}
 
 	@Override

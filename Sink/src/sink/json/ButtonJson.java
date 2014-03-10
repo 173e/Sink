@@ -19,12 +19,16 @@ public class ButtonJson extends Button implements Json.Serializer<ButtonJson> {
 	public ButtonJson(boolean useSkin){
 		super(Asset.skin);
 		this.useSkin = useSkin;
+		setWidth(100);
+		setHeight(70);
 	}
 	
 	public ButtonJson(String upTexName, String downTexName){
 		super(new TextureRegionDrawable(Asset.tex(upTexName)), new TextureRegionDrawable(Asset.tex(downTexName)));
 		this.upTexName = upTexName;
 		this.downTexName = downTexName;
+		setWidth(100);
+		setHeight(70);
 	}
 
 	@Override

@@ -124,6 +124,17 @@ public final class Asset {
 	/* This is to be used by sink studio */
 	static String basePath = "";
 	
+	public static boolean musicOn = true;
+	public static boolean musicOff = false;
+	public static boolean loadAsynchronous = true;
+	public static boolean isStudio = false;
+	
+	public static void load(){
+		if(loadAsynchronous)
+			loadNonBlocking();
+		//else
+		//	loadBlocking();
+	}
 	/*
 	 * This is a blocking load call blocks the display until assets are all loaded.
 	 */
@@ -146,7 +157,7 @@ public final class Asset {
 	 * on. This is called in the act method of SplashScene so that it is runs in the background
 	 * once the assets are all loaded it will automatically stop and call SplashScene.onAssetsLoaded()
 	 */
-	static boolean loadNonBlocking(){
+	private static boolean loadNonBlocking(){
 		if(!readinglock){
 			readData();
 			readinglock = true;
@@ -189,7 +200,7 @@ public final class Asset {
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-			if(jarFile != null)
+			if(jarFile != null && isStudio == false)
 				loadFromJar();
 			else{
 				Sink.log("Loading Music Files");
