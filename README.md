@@ -1,4 +1,4 @@
-Sink v1.01
+Sink v1.01(Deprecated checkout RpgIDE)
 ==========
 Sink is a Game Framework built on top of libGDX with all the batteries included. It has all configuration for assets,
 sound, music, textures, animations already setup. You can directly start coding your game without any knowledge of 
